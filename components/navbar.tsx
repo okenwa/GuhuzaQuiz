@@ -11,11 +11,11 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-600 text-white p-4">
+    <nav className="bg-blue-600 text-white p-4 ">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div>
           <Link href="/" className="text-2xl font-bold">
-            MyApp
+            Guhazo
           </Link>
         </div>
         <div className="hidden md:flex space-x-6">
