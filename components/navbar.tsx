@@ -15,7 +15,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div>
           <Link href="/" className="text-2xl font-bold">
-            Guhazo
+            Guhazo quijshdbvbsidcisncldia
           </Link>
         </div>
         <div className="hidden md:flex space-x-6">
