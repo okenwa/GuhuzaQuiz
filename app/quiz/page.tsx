@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { useState } from "react";
-import Pbtn from "../components/buttons/pbtn";
-import Sbtn from "../components/buttons/sbtn";
+import Pbtn from "../components/buttons/primarybtn";
+import Sharebtn from "../components/buttons/sharebtn";
 import Image from "next/image";
 import WhyplaySection from "./whyplaySection";
 
@@ -17,8 +17,11 @@ function QuizHomePage() {
             win as you take your job search to next level
           </p>
           <div className="hero-button">
-            <Pbtn />
-            <Sbtn />
+            <Pbtn message="Start Quiz" toDestination="/1" />
+            <Sharebtn />
+            <a href="mailto:youremail@domain.com?subject=sharing%20link&body=I%20am%20sharing%20a%20link:%20https://google.com">
+              Share this link
+            </a>
           </div>
         </div>
         <div>
