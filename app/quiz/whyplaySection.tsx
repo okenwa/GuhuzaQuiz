@@ -16,29 +16,41 @@ function WhyplaySection() {
         "From leaderboards to rewards for achievements, the Guhuza Quiz Game keeps you motivated and engaged as you level up your job search.",
     },
     {
-      image: "/WhyGraphics/LightBulb.svg",
+      image: "/WhyGraphics/Aproved.svg",
       title: "Trusted Content",
       description:
         "Powered by expert-curated questions, our game covers essential job search topics, ensuring you're prepared for every step of the hiring process.",
     },
   ];
+
   return (
-    <div>
-      {content.map((reason) => {
-        return (
-          <div>
-            <Image
-              src={reason.image}
-              alt={reason.title + "image"}
-              width={100}
-              height={100}
-            />
-            <h4>{reason.title}</h4>
-            <p>{reason.description}</p>
-          </div>
-        );
-      })}
-    </div>
+    <section className="bg-white py-16">
+      <div className="container mx-auto px-4">
+        <h2 className="text-center px-4 py-1 bg-blue-400 text-3xl w-fit m-auto rounded font-bold text-gray-900 mb-10">
+          Why Play the Guhuza Quiz Game?
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {content.map((reason, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center text-center p-6 rounded-lg   transition"
+            >
+              <Image
+                src={reason.image}
+                alt={reason.title + " image"}
+                width={80}
+                height={80}
+                className="mb-4"
+              />
+              <h4 className="text-xl font-semibold text-gray-800 mb-2">
+                {reason.title}
+              </h4>
+              <p className=" text-gray-600 text-justify">{reason.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 

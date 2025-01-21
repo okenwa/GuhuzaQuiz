@@ -9,36 +9,40 @@ import WhyplaySection from "./whyplaySection";
 function QuizHomePage() {
   return (
     <div className="container">
-      <div className="hero-section">
-        <div className="hero-text">
-          <h1>Level Up Your Job Search with Guhuza Quiz Game</h1>
-          <p>
-            A fun and interavive way to sharpen your skill. Complete, learn and
-            win as you take your job search to next level
+     
+      <div className="hero-section flex flex-col md:flex-row items-center bg-white py-8 mt-10 ">
+        {/* Text Section */}
+        <div className="hero-text md:w-1/2 space-y-6">
+          <h1 className="text-5xl font-bold text-gray-800">
+            Level Up Your Job Search with Guhuza Quiz Game
+          </h1>
+          <p className="text-gray-600 ">
+            A fun and interactive way to sharpen your skills, earn rewards, and
+            stand out in your career journey. Compete, learn, and win as you
+            take your job search to the next level!
           </p>
-          <div className="hero-button">
-            <Pbtn message="Start Quiz" toDestination="/1" />
-            <Sharebtn />
-            <a href="mailto:youremail@domain.com?subject=sharing%20link&body=I%20am%20sharing%20a%20link:%20https://google.com">
-              Share this link
-            </a>
+          <div className="hero-button flex space-x-4">
+            <Pbtn message="Start Quiz" toDestination="/1" theme="dark" />
           </div>
         </div>
-        <div>
+
+        {/* Image Section */}
+        <div className="mt-8 md:mt-0 md:w-1/2 flex justify-center">
           <Image
-            src={"/heroimage.webp"}
-            alt="A person giving interview and smiling :)"
-            width={100}
-            height={100}
+            src="/heroimage.webp"
+            alt="A person giving an interview and smiling"
+            className="rounded-md shadow-lg max-w-full h-auto"
+            width={500}
+            height={300}
           />
         </div>
-        <div></div>
       </div>
+
       <div className="whyplay">
-        <h2>Why Play The Guhuza Quiz Game?</h2>
-        <div>
+        
+        
           <WhyplaySection />
-        </div>
+        
       </div>
     </div>
   );
