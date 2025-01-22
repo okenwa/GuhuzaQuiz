@@ -21,4 +21,59 @@ export const Players = [
 ]
 
 
-export const Lavels = [{name:"title", group : 1}]
+// db.ts
+
+// db.ts
+
+export const levels = [
+  { "levelnumber": 1, "title": "The First Steps", "link": "1" },
+  { "levelnumber": 2, "title": "Basic Understanding", "link": "2" },
+  { "levelnumber": 3, "title": "Exploring Concepts", "link": "3" },
+  { "levelnumber": 4, "title": "Fundamentals Mastery", "link": "4" },
+  { "levelnumber": 5, "title": "Beginning Challenges", "link": "5" },
+  { "levelnumber": 6, "title": "Intermediate Insights", "link": "6" },
+  { "levelnumber": 7, "title": "Building Knowledge", "link": "7" },
+  { "levelnumber": 8, "title": "Progressive Learning", "link": "8" },
+  { "levelnumber": 9, "title": "Advanced Foundations", "link": "9" },
+  { "levelnumber": 10, "title": "Challenge Mode", "link": "10" },
+  { "levelnumber": 11, "title": "Intermediate Proficiency", "link": "11" },
+  { "levelnumber": 12, "title": "Expertise Development", "link": "12" },
+  { "levelnumber": 13, "title": "Mastering the Basics", "link": "13" },
+  { "levelnumber": 14, "title": "Refined Understanding", "link": "14" },
+  { "levelnumber": 15, "title": "Conceptual Expansion", "link": "15" },
+  { "levelnumber": 16, "title": "Elite Skill Building", "link": "16" },
+  { "levelnumber": 17, "title": "Pro-Level Insights", "link": "17" },
+  { "levelnumber": 18, "title": "Comprehensive Mastery", "link": "18" },
+  { "levelnumber": 19, "title": "Deep Knowledge", "link": "19" },
+  { "levelnumber": 20, "title": "Advanced Challenges", "link": "20" },
+  { "levelnumber": 21, "title": "Sharpening Expertise", "link": "21" },
+  { "levelnumber": 22, "title": "Masterclass Concepts", "link": "22" },
+  { "levelnumber": 23, "title": "High-Level Insights", "link": "23" },
+  { "levelnumber": 24, "title": "Strategic Thinking", "link": "24" },
+  { "levelnumber": 25, "title": "Conceptual Excellence", "link": "25" },
+  { "levelnumber": 26, "title": "Deep Diving Challenges", "link": "26" },
+  { "levelnumber": 27, "title": "Pro-Level Mastery", "link": "27" },
+  { "levelnumber": 28, "title": "Advanced Expertise", "link": "28" },
+  { "levelnumber": 29, "title": "Elite Challenges", "link": "29" },
+  { "levelnumber": 30, "title": "Skill Refinement", "link": "30" },
+  { "levelnumber": 31, "title": "In-Depth Understanding", "link": "31" },
+  { "levelnumber": 32, "title": "Advanced Problem Solving", "link": "32" },
+  { "levelnumber": 33, "title": "Critical Thinking", "link": "33" },
+  { "levelnumber": 34, "title": "Strategic Mastery", "link": "34" },
+  { "levelnumber": 35, "title": "Final Countdown", "link": "35" },
+  { "levelnumber": 36, "title": "Path to Mastery", "link": "36" },
+  { "levelnumber": 37, "title": "Extreme Challenges", "link": "37" },
+  { "levelnumber": 38, "title": "Ultimate Insights", "link": "38" },
+  { "levelnumber": 39, "title": "Top-Tier Strategies", "link": "39" },
+  { "levelnumber": 40, "title": "Proficiency Peak", "link": "40" },
+  { "levelnumber": 41, "title": "Final Mastery", "link": "41" },
+  { "levelnumber": 42, "title": "Challenge Extreme", "link": "42" },
+  { "levelnumber": 43, "title": "Excellence in Practice", "link": "43" },
+  { "levelnumber": 44, "title": "Precision Skills", "link": "44" },
+  { "levelnumber": 45, "title": "Strategic Genius", "link": "45" },
+  { "levelnumber": 46, "title": "Legendary Learning", "link": "46" },
+  { "levelnumber": 47, "title": "Supreme Understanding", "link": "47" },
+  { "levelnumber": 48, "title": "Ultra Mastery", "link": "48" },
+  { "levelnumber": 49, "title": "Top Challenge", "link": "49" },
+  { "levelnumber": 50, "title": "The Ultimate Test", "link": "50" }
+];
