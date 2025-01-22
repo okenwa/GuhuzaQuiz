@@ -13,22 +13,22 @@ function QuizHomePage() {
       <div className=" container hero-section flex flex-col md:flex-row items-center bg-white py-16 mt-10 ">
         {/* Text Section */}
         <div className="hero-text md:w-1/2 space-y-6">
-          <h1 className="text-7xl font-bold text-gray-800">
+          <h1 className="text-7xl font-bold text-gray-800 intersect:motion-preset-slide-up intersect-once">
             Level Up Your Job Search with Guhuza Quiz Game
           </h1>
 
-          <p className="text-gray-600 text-lg ">
+          <p className="text-gray-600 text-lg intersect:motion-preset-slide-up  motion-delay-100 intersect-once">
             A fun and interactive way to sharpen your skills, earn rewards, and
             stand out in your career journey. Compete, learn, and win as you
             take your job search to the next level!
           </p>
-          <div className="hero-button flex space-x-4">
+          <div className="hero-button flex space-x-4 intersect:motion-preset-slide-up motion-delay-200 intersect-once">
             <Pbtn message="Start Quiz" toDestination="/1" theme="dark" />
           </div>
         </div>
 
         {/* Image Section */}
-        <div className="mt-8 md:mt-0 md:w-1/2 flex justify-center">
+        <div className="mt-8 md:mt-0 md:w-1/2 flex justify-center intersect:motion-preset-blur-up-sm motion-delay-300 intersect-once">
           <Image
             src="/heroimage.webp"
             alt="A person giving an interview and smiling"
