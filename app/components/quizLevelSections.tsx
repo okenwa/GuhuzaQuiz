@@ -27,7 +27,7 @@ function QuizLevelSections({ currentLevel }: quizLevelSectionsType) {
           <QuizLevelCard
             key={level.levelnumber}
             levelNumber={level.levelnumber}
-            levelLink={level.link}
+            levelLink={`quiz/${level.link}`}
             levelName={level.title}
             currentLevel={currentLevel}
           />

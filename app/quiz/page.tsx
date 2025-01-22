@@ -13,7 +13,7 @@ function QuizHomePage() {
       <div className=" container hero-section flex flex-col md:flex-row items-center bg-white py-16 mt-10 ">
         {/* Text Section */}
         <div className="hero-text md:w-1/2 space-y-6">
-          <h1 className="text-7xl font-bold text-gray-800 intersect:motion-preset-slide-up intersect-once">
+          <h1 className="text-7xl font-bold text-gray-800 intersect:motion-preset-slide-up ">
             Level Up Your Job Search with Guhuza Quiz Game
           </h1>
 
@@ -23,7 +23,7 @@ function QuizHomePage() {
             take your job search to the next level!
           </p>
           <div className="hero-button flex space-x-4 intersect:motion-preset-slide-up motion-delay-200 intersect-once">
-            <Pbtn message="Start Quiz" toDestination="/1" theme="dark" />
+            <Pbtn message="Start Quiz" toDestination="quiz/1" theme="dark" />
           </div>
         </div>
 
