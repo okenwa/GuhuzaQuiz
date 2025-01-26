@@ -13,8 +13,8 @@ function QuizLevelSections({ currentLevel }: quizLevelSectionsType) {
     .sort((a, b) => b.levelnumber - a.levelnumber);
   return (
     <div className="space-y-8 ">
-      <div className=" container flex gap-12 ">
-        <h2 className=" px-4 py-1 bg-blue-400 text-4xl w-fit  rounded font-bold text-gray-900 mb-10">
+      <div className=" container flex lg:gap-12 flex-wrap ">
+        <h2 className=" px-4 lg:py-1 bg-blue-400 text-4xl w-fit  rounded font-bold text-gray-900 lg:mb-10 mb-4">
           Your Journey{" "}
         </h2>
         <p className="w-96">
@@ -22,7 +22,7 @@ function QuizLevelSections({ currentLevel }: quizLevelSectionsType) {
           Challenges will appear as you grow
         </p>
       </div>
-      <div className=" container grid gap-16   ">
+      <div className=" container grid lg:gap-16  gap-8  ">
         {filteredLevels.map((level) => (
           <QuizLevelCard
             key={level.levelnumber}
