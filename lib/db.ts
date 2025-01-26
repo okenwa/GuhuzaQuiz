@@ -1,24 +1,85 @@
 export const Players = [
-    {   player_id :1,
-        name : "Sudip Bhusal", 
-        level: 0,
-        point: 0 , 
-        streak :0, 
-    }, 
-        {   player_id :2,
-        name : "Manoj Kafle", 
-        level: 3,
-        point: 12000 , 
-        streak :4, 
-    }
-    ,
-        {   player_id :3,
-        name : "Kalika Devi", 
-        level: 7,
-        point: 50000 , 
-        streak :0, 
-    }
-]
+  {
+    player_id: 1,
+    name: "Sudip Bhusal",
+    level: 0,
+    point: 0,
+    streak: 0,
+    friends: [2, 3], // Friends with Manoj and Kalika
+  },
+  {
+    player_id: 2,
+    name: "Manoj Kafle",
+    level: 3,
+    point: 12000,
+    streak: 4,
+    friends: [1, 4], // Friends with Sudip and Rajesh
+  },
+  {
+    player_id: 3,
+    name: "Kalika Devi",
+    level: 7,
+    point: 50000,
+    streak: 0,
+    friends: [1, 5], // Friends with Sudip and Anjali
+  },
+  {
+    player_id: 4,
+    name: "Rajesh Sharma",
+    level: 5,
+    point: 30000,
+    streak: 2,
+    friends: [2, 6], // Friends with Manoj and Bibek
+  },
+  {
+    player_id: 5,
+    name: "Anjali Thapa",
+    level: 2,
+    point: 8000,
+    streak: 1,
+    friends: [3, 7], // Friends with Kalika and Suman
+  },
+  {
+    player_id: 6,
+    name: "Bibek Gurung",
+    level: 4,
+    point: 20000,
+    streak: 3,
+    friends: [4, 8], // Friends with Rajesh and Nabin
+  },
+  {
+    player_id: 7,
+    name: "Suman Poudel",
+    level: 6,
+    point: 45000,
+    streak: 0,
+    friends: [5, 9], // Friends with Anjali and Ramesh
+  },
+  {
+    player_id: 8,
+    name: "Nabin Rai",
+    level: 1,
+    point: 5000,
+    streak: 0,
+    friends: [6, 10], // Friends with Bibek and Sunita
+  },
+  {
+    player_id: 9,
+    name: "Ramesh KC",
+    level: 8,
+    point: 60000,
+    streak: 5,
+    friends: [7, 10], // Friends with Suman and Sunita
+  },
+  {
+    player_id: 10,
+    name: "Sunita Lama",
+    level: 9,
+    point: 70000,
+    streak: 0,
+    friends: [8, 9], // Friends with Nabin and Ramesh
+  },
+];
 
 
 // db.ts

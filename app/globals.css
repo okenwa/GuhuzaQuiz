@@ -17,4 +17,6 @@
     }
 }
 
-
+.first-element-gradient {
+    @apply first:bg-gradient-to-r first:from-[#191A23] first:to-[#2A2B38] first:text-white p-8;
+}

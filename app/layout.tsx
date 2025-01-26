@@ -4,6 +4,7 @@ import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/app/components/navbar";
 import ObserverProvider from "./components/ObserverPovider";
+import Footer from "./components/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 const spacegrotesk = Space_Grotesk({ subsets: ["latin"] });
@@ -23,6 +24,7 @@ export default function RootLayout({
         <ObserverProvider>
           <Navbar />
           {children}
+          <Footer/>
         </ObserverProvider>
       </body>
     </html>
