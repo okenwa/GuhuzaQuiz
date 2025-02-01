@@ -1,9 +1,27 @@
-import React from 'react'
+"use client";
+import React, { useState } from "react";
 
-function Qbtn() {
+type QbtnType = {
+  option: string;
+  index: number;
+  correctAnswer: number;
+};
+
+function Qbtn({ option, index, correctAnswer }: QbtnType) {
+  const [selected, setSeleted] = useState(false);
+
   return (
-    <div>Qbtn</div>
-  )
+    <div>
+      <button
+        className={`${selected ? "border-b-1 border-blue-500" : ""}`}
+        onClick={() => {
+          setSeleted(true);
+        }}
+      >{index}
+        {option}
+      </button>
+    </div>
+  );
 }
 
-export default Qbtn
+export default Qbtn;
