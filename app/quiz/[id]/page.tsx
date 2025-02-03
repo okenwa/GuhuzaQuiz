@@ -1,6 +1,7 @@
 import Qbtn from "@/app/components/buttons/quizbtn";
 import { fetchQuiz } from "@/lib/api";
 import QuizCard from "@/app/components/quizCard";
+import QuizPageSection from "@/app/components/quizPageSection";
 
 type quizeType = {
   question: string;
@@ -19,14 +20,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     const Quizes = data.test.question;
     return (
       <div>
-        {Quizes.map((quiz: quizeType, index: number) => (
-          <QuizCard
-            key={index}
-            Question={quiz.question}
-            CorrectAns={quiz.test_answer}
-            Answers={quiz.answers}
-          />
-        ))}
+        <QuizPageSection Quizes={Quizes} />
       </div>
     );
   } catch (error) {

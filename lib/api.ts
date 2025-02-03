@@ -20,3 +20,10 @@ export const fetchQuiz = async (level: string): Promise<QuizApiResponse> => {
   if (!res.ok) throw new Error('Failed to fetch quiz');
   return res.json();
 };
+
+
+
+const fetchQuestion = async() => { 
+  const quresponse = await fetch("https://api-ghz-v2.azurewebsites.net/api/v2/quiz?level=8")
+  const questions = quresponse.json()
+}

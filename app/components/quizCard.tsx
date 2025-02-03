@@ -1,3 +1,5 @@
+"use client";
+import { useState } from "react";
 import Qbtn from "./buttons/quizbtn";
 
 type quizCardType = {
@@ -11,6 +13,8 @@ export default function QuizCard({
   Answers,
   CorrectAns,
 }: quizCardType) {
+  const [selectedAnswer, setSelectedAnswer] = useState(-1);
+  const [answerChecked, setAnswerChecked] = useState(false);
   return (
     <div className="container mx-auto bg-white shadow-xl rounded-2xl p-6 py-20 border border-gray-200 transition-transform transform ">
       <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
@@ -23,6 +27,9 @@ export default function QuizCard({
             option={answer}
             correctAnswer={CorrectAns}
             index={key}
+            selectedAnswer={selectedAnswer}
+            answerChecked={answerChecked}
+            setSelectedAnswer={setAnswerChecked}
           />
         ))}
       </div>

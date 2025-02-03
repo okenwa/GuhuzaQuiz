@@ -53,16 +53,16 @@ function Navbar() {
           <Link href="/quiz">
             <span className="text-white hover:underline">Quiz</span>
           </Link>
-          <Link href="/login">
+          <Link href="#">
             <span className="text-white hover:underline">Login</span>
           </Link>
-          <Link href="/register">
+          <Link href="#">
             <span className="text-white hover:underline">Register</span>
           </Link>
-          <Link href="/plans">
+          <Link href="#">
             <span className="text-white hover:underline">Plans & Services</span>
           </Link>
-          <Link href="/help">
+          <Link href="#">
             <span className="text-white hover:underline">Help</span>
           </Link>
         </div>
@@ -120,18 +120,18 @@ function Navbar() {
             <Link href="/quiz">
               <span className="text-white hover:underline">Quiz</span>
             </Link>
-            <Link href="/login">
+            <Link href="#">
               <span className="text-white hover:underline">Login</span>
             </Link>
-            <Link href="/register">
+            <Link href="#">
               <span className="text-white hover:underline">Register</span>
             </Link>
-            <Link href="/plans">
+            <Link href="#">
               <span className="text-white hover:underline">
                 Plans & Services
               </span>
             </Link>
-            <Link href="/help">
+            <Link href="#">
               <span className="text-white hover:underline">Help</span>
             </Link>
           </div>
