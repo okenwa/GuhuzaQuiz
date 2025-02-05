@@ -33,7 +33,8 @@ export default function QuizPageSection({ Quizes }: any) {
   };
   const handleScore = () => {
     setAnswerChecked(true);
-    if (ansCorrect) {
+
+    if (selectedAnswer == quizer.test_answer) {
       setScore(score + 1);
     }
   };
@@ -72,27 +73,32 @@ export default function QuizPageSection({ Quizes }: any) {
         <div className="mt-10">
           {answerChecked ? (
             <div>
-              <button
-                onClick={() => {
-                  setSelectedAnswer(-1);
-                  setAnswerChecked(false);
-                  setRetried(true);
-                }}
-                disabled={usedHint}
-              >
-                Retry
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedAnswer(quizer.test_answer);
-                  setUsedHint(true);
-                }}
-              >
-                Display Answer
-              </button>
-              <button onClick={() => handleNextQuestion()}>
-                Next Question
-              </button>
+              {!ansCorrect ? (
+                <div>
+                  <button
+                    onClick={() => {
+                      setSelectedAnswer(-1);
+                      setAnswerChecked(false);
+                      setRetried(true);
+                    }}
+                    disabled={usedHint}
+                  >
+                    Retry
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedAnswer(quizer.test_answer);
+                      setUsedHint(true);
+                    }}
+                  >
+                    Display Answer
+                  </button>{" "}
+                </div>
+              ) : (
+                <button onClick={() => handleNextQuestion()}>
+                  Next Question
+                </button>
+              )}
             </div>
           ) : (
             <button onClick={() => handleScore()}>Check Answer</button>
