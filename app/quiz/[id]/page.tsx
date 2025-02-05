@@ -14,13 +14,13 @@ type quizesType = {
   question: quizeType[];
 };
 
+
 export default async function Page({ params }: { params: { id: string } }) {
   try {
     const data = await fetchQuiz(params.id);
     const Quizes = data.test.question;
     return (
       <div>
-        
         <QuizPageSection Quizes={Quizes} />
       </div>
     );
