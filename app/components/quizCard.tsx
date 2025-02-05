@@ -16,7 +16,7 @@ export default function QuizCard({
   const [selectedAnswer, setSelectedAnswer] = useState(-1);
   const [answerChecked, setAnswerChecked] = useState(false);
   return (
-    <div className="container mx-auto bg-white shadow-xl rounded-2xl p-6 py-20 border border-gray-200 transition-transform transform ">
+    <div className="container mx-auto bg-white  rounded-2xl p-6 py-20   transition-transform transform ">
       <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
         {Question}
       </h3>

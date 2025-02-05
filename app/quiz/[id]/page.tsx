@@ -20,6 +20,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     const Quizes = data.test.question;
     return (
       <div>
+        
         <QuizPageSection Quizes={Quizes} />
       </div>
     );
