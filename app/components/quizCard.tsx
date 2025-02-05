@@ -9,7 +9,7 @@ type quizCardType = {
   selectedAnswer: number;
   setSelectedAnswer: any;
   checked: boolean;
-  setCorrect: any;
+  setAnsCorrect: any;
 };
 
 export default function QuizCard({
@@ -19,7 +19,7 @@ export default function QuizCard({
   selectedAnswer,
   setSelectedAnswer,
   checked,
-  setCorrect,
+  setAnsCorrect,
 }: quizCardType) {
   const handleOptionSelected = (key: number) => {
     setSelectedAnswer(key);
@@ -30,7 +30,7 @@ export default function QuizCard({
     if (key == selectedAnswer) {
       if (checked) {
         if (selectedAnswer == CorrectAns) {
-          setCorrect(true);
+          setAnsCorrect(true);
           return "bg-green-500"; //correct answer
         }
         return "bg-red-500"; //incorrect selection
