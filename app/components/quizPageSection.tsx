@@ -3,7 +3,7 @@ import React, { use, useState } from "react";
 import QuizCard from "./quizCard";
 import { div } from "framer-motion/client";
 import Image from "next/image";
-
+import LeaderBoard from "./leaderBoard";
 type quizeType = {
   question: string;
   comment: string;
@@ -22,7 +22,6 @@ export default function QuizPageSection({ Quizes }: any) {
   const [ansCorrect, setAnsCorrect] = useState(false);
   const [usedHint, setUsedHint] = useState(false);
   const [retried, setRetried] = useState(false);
-  const [mascot, setMascote] = useState("thinkingMascot");
 
   var quizer: quizeType = Quizes[questionNumber];
 
@@ -48,7 +47,7 @@ export default function QuizPageSection({ Quizes }: any) {
     }
   };
 
-  return (
+  return questionNumber < len ? (
     <div className="md:py-16 py-8">
       <div className="container flex  justify-between flex-wrap">
         <h2 className=" md:mb-16 mb-4 title intersect: motion-preset-slide-up motion-delay-200 intersect-once">
@@ -112,7 +111,9 @@ export default function QuizPageSection({ Quizes }: any) {
                             className="quizPbtn ml-auto "
                             onClick={() => handleNextQuestion()}
                           >
-                            Next Question
+                            {questionNumber < len - 1
+                              ? "Next Question"
+                              : "Finish Quiz"}
                           </button>
                         </div>
                       )}
@@ -132,10 +133,11 @@ export default function QuizPageSection({ Quizes }: any) {
           }
           <div className=" hidden md:block flex-1/2 w-100">
             {answerChecked ? (
-              <div className="w-full motion-preset-slide-left-md motion-preset-fade">
+              <div className="w-full ">
                 {!ansCorrect ? (
                   <Image
                     src="/mascot/sadMascot.svg"
+                    className="motion-preset-slide-left-md motion-preset-fade"
                     alt="Guhuza Mascot"
                     height={100}
                     width={200}
@@ -143,6 +145,7 @@ export default function QuizPageSection({ Quizes }: any) {
                 ) : (
                   <Image
                     src="/mascot/proudMascot.svg"
+                    className="motion-preset-slide-left-md motion-preset-fade"
                     alt="Guhuza Mascot"
                     height={100}
                     width={200}
@@ -152,13 +155,32 @@ export default function QuizPageSection({ Quizes }: any) {
             ) : (
               <Image
                 className="motion-preset-slide-up-md motion-preset-fade"
-                src="/mascot/thinkingMascot.svg"
+                src="/mascot/greetingMascot.svg"
                 alt="Guhuza Mascot"
                 height={100}
                 width={200}
               />
             )}
           </div>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div className="md:py-16 py-8">
+      <div className="container">
+        <div className="quizPoints">
+          <h1 className="title">Lesson Complete !</h1>
+          <p>PTS GAINED</p>
+          <h1>+{score}</h1>
+          <p>Total Score = {55 + score} </p>
+          <button> Retry Same Lesson</button>
+          <button> Share Score on social Media</button>
+          <button className="quizPbtn">Continue to Next Level</button>
+        </div>
+        <div>
+          <h1 className="title">LeaderBoard</h1>
+          <p>Check our top performer</p>
+          <LeaderBoard player={1} friends={[2, 4, 9]} />
         </div>
       </div>
     </div>
