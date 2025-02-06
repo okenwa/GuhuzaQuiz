@@ -1,7 +1,6 @@
-"use client"; // Mark this as a Client Component in Next.js
+// Mark this as a Client Component in Next.js
 
 import React from "react";
-import { useState } from "react";
 import Pbtn from "../components/buttons/primarybtn";
 import Sharebtn from "../components/buttons/sharebtn";
 import Image from "next/image";
@@ -36,7 +35,7 @@ function QuizHomePage() {
           {/* Image Section */}
           <div className="mt-8 md:mt-0 md:w-1/2 flex justify-center">
             <Image
-              src="/heroimage.webp"
+              src="/Images/herosection/heroimage.webp"
               alt="A person giving an interview and smiling"
               className="rounded-md shadow-lg w-full hidden lg:max-w-lg md:block intersect:motion-preset-blur-right-sm motion-delay-200 intersect-once "
               width={500}
