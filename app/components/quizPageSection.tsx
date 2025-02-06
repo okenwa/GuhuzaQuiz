@@ -2,6 +2,7 @@
 import React, { use, useState } from "react";
 import QuizCard from "./quizCard";
 import { div } from "framer-motion/client";
+import Image from "next/image";
 
 type quizeType = {
   question: string;
@@ -21,6 +22,7 @@ export default function QuizPageSection({ Quizes }: any) {
   const [ansCorrect, setAnsCorrect] = useState(false);
   const [usedHint, setUsedHint] = useState(false);
   const [retried, setRetried] = useState(false);
+  const [mascot, setMascote] = useState("thinkingMascot");
 
   var quizer: quizeType = Quizes[questionNumber];
 
@@ -47,62 +49,116 @@ export default function QuizPageSection({ Quizes }: any) {
   };
 
   return (
-    <div className="py-16">
-      <div className="container flex justify-between ">
-        <h2 className=" px-4 py-1 bg-blue-400 text-4xl w-fit  rounded font-bold text-gray-900 mb-16 intersect:motion-preset-slide-up motion-delay-200 intersect-once">
+    <div className="md:py-16 py-8">
+      <div className="container flex  justify-between flex-wrap">
+        <h2 className=" md:mb-16 mb-4 title intersect: motion-preset-slide-up motion-delay-200 intersect-once">
           Level 1: The first Step
         </h2>
-        <p>
+        <p className="mb-6">
           Question : {questionNumber + 1}/{len}
         </p>
-        {score}
       </div>
-      {
-        <QuizCard
-          Question={quizer.question}
-          CorrectAns={quizer.test_answer}
-          Answers={quizer.answers}
-          selectedAnswer={selectedAnswer}
-          setSelectedAnswer={setSelectedAnswer}
-          checked={answerChecked}
-          setAnsCorrect={setAnsCorrect}
-        />
-      }
+      <div className="container">
+        <div className=" flex  justify-start md:gap-20  ">
+          {
+            <div className="flex-1">
+              <QuizCard
+                Question={quizer.question}
+                CorrectAns={quizer.test_answer}
+                Answers={quizer.answers}
+                selectedAnswer={selectedAnswer}
+                setSelectedAnswer={setSelectedAnswer}
+                checked={answerChecked}
+                setAnsCorrect={setAnsCorrect}
+              />
 
-      <div className="container ">
-        <div className="mt-10">
-          {answerChecked ? (
-            <div>
-              {!ansCorrect ? (
-                <div>
-                  <button
-                    onClick={() => {
-                      setSelectedAnswer(-1);
-                      setAnswerChecked(false);
-                      setRetried(true);
-                    }}
-                    disabled={usedHint}
-                  >
-                    Retry
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSelectedAnswer(quizer.test_answer);
-                      setUsedHint(true);
-                    }}
-                  >
-                    Display Answer
-                  </button>{" "}
+              {/* buton section */}
+              <div className=" ">
+                <div className="mt-10 ">
+                  {answerChecked ? (
+                    <div className="w-full ">
+                      {!ansCorrect ? (
+                        <div>
+                          <div className="flex gap-10">
+                            <button
+                              className="quizPbtn"
+                              onClick={() => {
+                                setSelectedAnswer(-1);
+                                setAnswerChecked(false);
+                                setRetried(true);
+                              }}
+                              disabled={usedHint}
+                            >
+                              Retry
+                            </button>
+                            <button
+                              className="quizSbtn"
+                              onClick={() => {
+                                setSelectedAnswer(quizer.test_answer);
+                                setUsedHint(true);
+                              }}
+                            >
+                              Display Answer
+                            </button>
+                          </div>
+                          <p className="mt-6 text-sm absolute">
+                            You can use Display Answer to force move to next
+                            question without any point
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="flex">
+                          <button
+                            className="quizPbtn ml-auto "
+                            onClick={() => handleNextQuestion()}
+                          >
+                            Next Question
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <button
+                      className="quizPbtn"
+                      onClick={() => handleScore()}
+                      disabled={selectedAnswer == -1 ? true : false}
+                    >
+                      Check Answer
+                    </button>
+                  )}
                 </div>
-              ) : (
-                <button onClick={() => handleNextQuestion()}>
-                  Next Question
-                </button>
-              )}
+              </div>
             </div>
-          ) : (
-            <button onClick={() => handleScore()}>Check Answer</button>
-          )}
+          }
+          <div className=" hidden md:block flex-1/2 w-100">
+            {answerChecked ? (
+              <div className="w-full motion-preset-slide-left-md motion-preset-fade">
+                {!ansCorrect ? (
+                  <Image
+                    src="/mascot/sadMascot.svg"
+                    alt="Guhuza Mascot"
+                    height={100}
+                    width={200}
+                  />
+                ) : (
+                  <Image
+                    src="/mascot/proudMascot.svg"
+                    alt="Guhuza Mascot"
+                    height={100}
+                    width={200}
+                  />
+                )}
+              </div>
+            ) : (
+              <Image
+                className="motion-preset-slide-up-md motion-preset-fade"
+                src="/mascot/thinkingMascot.svg"
+                alt="Guhuza Mascot"
+                height={100}
+                width={200}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
