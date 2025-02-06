@@ -36,7 +36,11 @@ export default function QuizPageSection({ Quizes }: any) {
     setAnswerChecked(true);
 
     if (selectedAnswer == quizer.test_answer) {
-      setScore(score + 1);
+      if (retried) {
+        setScore(score + 1);
+      } else {
+        setScore(score + 3);
+      }
     }
   };
 
@@ -55,6 +59,7 @@ export default function QuizPageSection({ Quizes }: any) {
         </h2>
         <p className="mb-6">
           Question : {questionNumber + 1}/{len}
+          Score : {score}
         </p>
       </div>
       <div className="container">

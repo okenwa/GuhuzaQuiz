@@ -42,7 +42,9 @@ export default function QuizCard({
   };
   return (
     <div className=" m-0 p-0">
-      <h3 className="text-3xl font-semibold text-gray-800  ">{Question}</h3>
+      <h3 className="text-3xl font-semibold text-gray-800 motion-delay-150  motion-preset-slide-up ">
+        {Question}
+      </h3>
       <div className="grid gap-8 pt-9 w-full">
         {Answers.map((answer: string, key: number) => (
           <div className="w-full group relative">
