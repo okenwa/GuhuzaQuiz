@@ -31,12 +31,12 @@ export default function QuizCard({
       if (checked) {
         if (selectedAnswer == CorrectAns) {
           setAnsCorrect(true);
-          return "bg-green-500"; //correct answer
+          return "bg-green-100 border-green-400  disabled:border-green-500 after:content-['✅'] after:absolute after:right-10"; //correct answer
         }
-        return "bg-red-500"; //incorrect selection
+        return "bg-red-100 border-red-400 disabled:border-red-500 after:content-['❌'] after:absolute after:right-10"; //incorrect selection
       }
 
-      return "bg-blue-500"; //just the selection
+      return "bg-blue-100 border-blue-400 disabled:border-gray-400 "; //just the selection
     }
     return "";
   };
@@ -47,7 +47,10 @@ export default function QuizCard({
         {Answers.map((answer: string, key: number) => (
           <div className="w-full group relative">
             <button
-              className={setButtonStyle(key)}
+              className={
+                setButtonStyle(key) +
+                ` px-6 py-3 border-1 border-b-3  disabled:translate-y-0 hover:border-blue-400 disabled:border-gray-200 rounded-lg  transition-transform transform active:translate-y-1 text-gray-900  text-lg w-full text-left "`
+              }
               onClick={() => handleOptionSelected(key)}
               disabled={checked}
             >
