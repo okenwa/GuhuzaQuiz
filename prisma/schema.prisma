@@ -9,32 +9,29 @@ datasource db {
 
 model User {
   User_Id   Int    @id @default(autoincrement())
-  // One-to-one relation with Player using an explicit relation name "UserPlayer"
-  Player    Player @relation("UserPlayer", fields: [Player_Id], references: [Player_ID])
-  Player_Id Int    @unique
   Username  String
+  Password String 
+  Player  Player?
 }
 
 model Player {
   Player_ID    Int    @id @default(autoincrement())
   Player_name  String
   Playerpoint  Int
-  Streak       Int
-  LastLogin    DateTime
-  
+  streak       Int
+  lastLogin    DateTime
+
   Level        Level?     @relation(fields: [Level_Id], references: [Level_Id])
   Level_Id     Int?
-  
+
   Milestone    Milestone? @relation(fields: [Milestone_Id], references: [Milestone_Id])
   Milestone_Id Int?
-  
-  Temp_Score   Int @default(-1)
-  
-  // Back-relation for the one-to-one User <-> Player relation.
-  User         User? @relation("UserPlayer")
-  
-}
 
+  Temp_Score   Int @default(-1)
+  User         User @relation(fields: [user_Id], references: [User_Id])
+  user_Id Int @unique
+
+}
 
 
 model Level {
@@ -50,4 +47,3 @@ model Milestone {
   Milestone_description String
   Players               Player[] 
 }
-
