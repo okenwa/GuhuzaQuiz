@@ -1,7 +1,9 @@
+"use client";
 import React from "react";
 import QuizLevelSections from "../components/quizLevelSections";
 import LeaderBoard from "../components/leaderBoard";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 type ProgressBarType = {
   percentage: number;
@@ -21,6 +23,11 @@ const ProgressBar = ({ percentage }: ProgressBarType) => {
 };
 
 function Profile() {
+  const router = useRouter();
+  const handleClaimReward = () => {
+    router.push("/reward");
+  };
+
   return (
     <div className="p-6 min-h-screen">
       <div className="container mx-auto max-w-6xl">
@@ -71,7 +78,9 @@ function Profile() {
                 Solve 3 more questions to get your reward
               </p>
               <ProgressBar percentage={25} />
-              <button className="quizPbtn mt-4">Claim Reward</button>
+              <button className="quizPbtn mt-4" onClick={handleClaimReward}>
+                Claim Reward
+              </button>
             </div>
           </div>
         </div>
