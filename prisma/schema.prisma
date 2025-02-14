@@ -7,43 +7,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  User_Id   Int    @id @default(autoincrement())
-  Username  String
-  Password String 
-  Player  Player?
+model level {
+  Level_Id     Int      @id @default(autoincrement())
+  Level_Title  String
+  Level_number Int
+  player       player[]
 }
 
-model Player {
-  Player_ID    Int    @id @default(autoincrement())
+model milestone {
+  Milestone_Id          Int      @id @default(autoincrement())
+  Milestone_Title       String
+  Milestone_description String
+  player                player[]
+}
+
+model player {
+  Player_ID    Int        @id @default(autoincrement())
   Player_name  String
   Playerpoint  Int
   streak       Int
   lastLogin    DateTime
-
-  Level        Level?     @relation(fields: [Level_Id], references: [Level_Id])
   Level_Id     Int?
-
-  Milestone    Milestone? @relation(fields: [Milestone_Id], references: [Milestone_Id])
   Milestone_Id Int?
+  Temp_Score   Int        @default(-1)
+  user_Id      Int        @unique(map: "Player_user_Id_key")
+  level        level?     @relation(fields: [Level_Id], references: [Level_Id], map: "Player_Level_Id_fkey")
+  milestone    milestone? @relation(fields: [Milestone_Id], references: [Milestone_Id], map: "Player_Milestone_Id_fkey")
+  user         user       @relation(fields: [user_Id], references: [User_Id], map: "Player_user_Id_fkey")
 
-  Temp_Score   Int @default(-1)
-  User         User @relation(fields: [user_Id], references: [User_Id])
-  user_Id Int @unique
-
+  @@index([Level_Id], map: "Player_Level_Id_fkey")
+  @@index([Milestone_Id], map: "Player_Milestone_Id_fkey")
 }
 
-
-model Level {
-  Level_Id     Int    @id @default(autoincrement())
-  Level_Title  String
-  Level_number Int
-  Players      Player[]
-}
-
-model Milestone { 
-  Milestone_Id          Int    @id @default(autoincrement())
-  Milestone_Title       String
-  Milestone_description String
-  Players               Player[] 
+model user {
+  User_Id  Int     @id @default(autoincrement())
+  Username String
+  Password String
+  player   player?
 }
