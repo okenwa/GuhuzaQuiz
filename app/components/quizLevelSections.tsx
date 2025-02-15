@@ -1,20 +1,24 @@
 import React from "react";
-import { levels } from "@/lib/db";
 import QuizLevelCard from "./quizLevelCard";
-import { a } from "framer-motion/client";
 import fetchLevels from "@/lib/fetchLevels";
 
 type quizLevelSectionsType = {
   currentLevel: number;
 };
 
+type levelType = {
+  Level_Id: number;
+  Level_Title: string;
+  Level_number: number;
+};
+type levelsType = levelType[];
+
 async function QuizLevelSections({ currentLevel }: quizLevelSectionsType) {
-  const data = await fetchLevels();
-  const test = typeof data;
+  const levels: levelsType = (await fetchLevels()) || [];
 
   const filteredLevels = levels
-    .filter((level) => level.levelnumber <= currentLevel)
-    .sort((a, b) => b.levelnumber - a.levelnumber);
+    .filter((level: levelType) => level.Level_Id <= currentLevel)
+    .sort((a, b) => b.Level_Id - a.Level_Id);
   return (
     <div className="space-y-8 ">
       <div className=" container flex lg:gap-12 flex-wrap ">
@@ -27,16 +31,15 @@ async function QuizLevelSections({ currentLevel }: quizLevelSectionsType) {
         </p>
       </div>
       <div className=" container grid lg:gap-16  gap-8  ">
-        {test}
-        {/* {filteredLevels.map((level) => (
+        {filteredLevels.map((level) => (
           <QuizLevelCard
-            key={level.levelnumber}
-            levelNumber={level.levelnumber}
-            levelLink={`quiz/${level.link}`}
-            levelName={level.title}
+            key={level.Level_Id}
+            levelNumber={level.Level_Id}
+            levelLink={`quiz/${level.Level_Id}`}
+            levelName={level.Level_Title}
             currentLevel={currentLevel}
           />
-        ))} */}
+        ))}
       </div>
     </div>
   );
