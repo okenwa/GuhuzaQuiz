@@ -54,12 +54,11 @@ function SignUp() {
 
       if (reponse.ok) {
         router.push("/quiz");
+        console.log("User created successfully!");
       } else {
         const errorData = await reponse.json();
         console.log(errorData.message);
       }
-
-      console.log("User created successfully!");
 
       setUsername("");
       setPassword("");
