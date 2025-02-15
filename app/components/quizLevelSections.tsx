@@ -1,6 +1,6 @@
 import React from "react";
 import QuizLevelCard from "./quizLevelCard";
-import fetchLevels from "@/lib/fetchLevels";
+import fetchLevels from "@/utils/fLevels";
 
 type quizLevelSectionsType = {
   currentLevel: number;

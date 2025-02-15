@@ -1,5 +1,5 @@
 import Qbtn from "@/app/components/buttons/quizbtn";
-import { fetchQuiz } from "@/lib/api";
+import { fetchQuiz } from "@/utils/fQuiz";
 import QuizCard from "@/app/components/quizCard";
 import QuizPageSection from "@/app/components/quizPageSection";
 
@@ -13,7 +13,6 @@ type quizeType = {
 type quizesType = {
   question: quizeType[];
 };
-
 
 export default async function Page({ params }: { params: { id: string } }) {
   try {

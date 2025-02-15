@@ -1,6 +1,5 @@
-import { PrismaClient } from "@prisma/client"
+import prisma from "@/lib/prisma"
 
-const prisma = new PrismaClient()
 async function fetchLevels() {
     try {
         const levels = await prisma.level.findMany();

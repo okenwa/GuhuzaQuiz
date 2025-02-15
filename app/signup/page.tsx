@@ -40,7 +40,25 @@ function SignUp() {
       //   }
 
       // If sign-up is successful, you can redirect the user or show a success message
-      router.push("/quiz");
+      const reponse = await fetch("/api/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          name,
+          password,
+        }),
+      });
+
+      if (reponse.ok) {
+        router.push("/quiz");
+      } else {
+        const errorData = await reponse.json();
+        console.log(errorData.message);
+      }
+
       console.log("User created successfully!");
 
       setUsername("");
