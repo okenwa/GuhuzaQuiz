@@ -34,7 +34,7 @@ function ProfileHerosection() {
 
   const { player } = useContext(playerContext)
   const mileStoneCounter = () => {
-    if ((player?.milestone.UnlockingLevel - player?.Level_Id) < 0) {
+    if ((player?.milestone?.UnlockingLevel - player?.Level_Id) < 0) {
       return <span></span>
     } else {
       return <span>(player?.milestone.UnlockingLevel - player?.Level_Id).toString</span>
@@ -91,10 +91,10 @@ function ProfileHerosection() {
 
           <div className="">
             <p className="text-gray-600 mb-4">
-              Solve {((player?.milestone.UnlockingLevel - player?.Level_Id) < 0 ? 0 : player?.milestone.UnlockingLevel - player?.Level_Id).toString()} more questions to get your reward
+              Solve {((player?.milestone?.UnlockingLevel - player?.Level_Id) < 0 ? 0 : player?.milestone.UnlockingLevel - player?.Level_Id).toString()} more questions to get your reward
             </p>
-            <ProgressBar percentage={(player?.milestone.UnlockingLevel - player?.Level_Id) < 0 ? 100 :(player?.Level_Id / player?.milestone.UnlockingLevel) * 100} />
-            <button className="quizPbtn mt-4" disabled={player?.Level_Id < player?.milestone.UnlockingLevel} onClick={handleClaimReward}>
+            <ProgressBar percentage={(player?.milestone?.UnlockingLevel - player?.Level_Id) < 0 ? 100 :(player?.Level_Id / player?.milestone.UnlockingLevel) * 100} />
+            <button className="quizPbtn mt-4" disabled={player?.Level_Id < player?.milestone?.UnlockingLevel} onClick={handleClaimReward}>
               Claim Reward
             </button>
           </div>

@@ -5,10 +5,10 @@ export async function POST(req: Request) {
 
 
     try {
-        const { playerId, finalScore, newlevel } = await req.json()
-        if (!playerId || !finalScore ) {
+        const { playerId,nextMilestone } = await req.json()
+        if (!playerId || !nextMilestone ) {
             return NextResponse.json(
-                { message: "All field are required" + finalScore + newlevel+playerId },
+                { message: "All field are required" +nextMilestone +playerId },
                 { status: 400 }
                 
             )
@@ -19,17 +19,15 @@ export async function POST(req: Request) {
             Player_ID: playerId
         }, 
         data : { 
-            Playerpoint : finalScore, 
-            Level_Id : newlevel
+            Milestone_Id: nextMilestone
 
-        }, 
-        include: {
+        }, include: {
             milestone: true
 
         }
        })
 
-        return NextResponse.json({ message: "User Created Sucessfullt", player : updatePlayer, newlevel : newlevel }, { status: 201 })
+        return NextResponse.json({ message: "User Created Sucessfullt", player : updatePlayer, nextMilestone : nextMilestone }, { status: 201 })
     } catch (e) {
         console.error(e)
         return NextResponse.json({ message: "Failed to create user" + e, error: e }, { status: 500 })
