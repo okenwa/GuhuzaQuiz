@@ -9,14 +9,15 @@ import ProfileHerosection from "../components/profileHerosection";
 
 
 
+
 function Profile() {
   
   return (
     <div className="p-6 min-h-screen">
+  
       <ProfileHerosection  />
-      {/* Quiz Level Section */}
-      <div className="mt-12">
-        <QuizLevelSections currentLevel={3} />
+       <div className="mt-12">
+        <QuizLevelSections currentLevel={20}/>
       </div>
       {/* Leaderboard Section */}
 

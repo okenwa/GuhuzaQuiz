@@ -1,6 +1,11 @@
-import React from "react";
+
+import React, { useContext, useEffect } from "react";
 import QuizLevelCard from "./quizLevelCard";
 import fetchLevels from "@/utils/fLevels";
+import { playerContext } from "../context/playerContext";
+import { usePlayer } from "../context/playerContext";
+import QuizList from "./quizList";
+
 
 type quizLevelSectionsType = {
   currentLevel: number;
@@ -11,16 +16,19 @@ type levelType = {
   Level_Title: string;
   Level_number: number;
 };
+
 type levelsType = levelType[];
 
 async function QuizLevelSections({ currentLevel }: quizLevelSectionsType) {
-  const levels: levelsType = (await fetchLevels()) || [];
 
-  const filteredLevels = levels
-    .filter((level: levelType) => level.Level_Id <= currentLevel)
-    .sort((a, b) => b.Level_Id - a.Level_Id);
+  
+  const levels: levelsType = (await fetchLevels()) || [];
+  
+
+ 
   return (
     <div className="space-y-8 ">
+      
       <div className=" container flex lg:gap-12 flex-wrap ">
         <h2 className=" px-4 lg:py-1 bg-blue-400 text-4xl w-fit  rounded font-bold text-gray-900 lg:mb-10 mb-4">
           Your Journey{" "}
@@ -31,7 +39,7 @@ async function QuizLevelSections({ currentLevel }: quizLevelSectionsType) {
         </p>
       </div>
       <div className=" container grid lg:gap-16  gap-8  ">
-        {filteredLevels.map((level) => (
+        {/* {filteredLevels.map((level) => (
           <QuizLevelCard
             key={level.Level_Id}
             levelNumber={level.Level_Id}
@@ -39,7 +47,11 @@ async function QuizLevelSections({ currentLevel }: quizLevelSectionsType) {
             levelName={level.Level_Title}
             currentLevel={currentLevel}
           />
-        ))}
+        ))} */}
+        <QuizList 
+  allLevels={levels}
+/>
+
       </div>
     </div>
   );

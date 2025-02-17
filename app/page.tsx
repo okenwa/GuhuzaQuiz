@@ -8,7 +8,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { AssignPlayerData, player } = useContext(playerContext) as any;
+  const { AssignPlayerData, player, setPlayerLevel } = useContext(playerContext) as any;
   const [error, setError]= useState("")
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -26,6 +26,7 @@ export default function LoginPage() {
             const data = await response.json();
             console.log("User logged in successfully!", data);
             AssignPlayerData(data.player);
+            setPlayerLevel(data.player.Level_Id)
             if(data.player.Level_Id == 1){ 
               router.push("/quiz"); 
             } else { 
