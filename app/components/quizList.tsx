@@ -23,7 +23,7 @@ type levelType = {
             levelNumber={level.Level_Id}
             levelLink={`quiz/${level.Level_Id}`}
             levelName={level.Level_Title}
-            currentLevel={3}
+            currentLevel={playerLevel}
           />
         ))}
       </div>
