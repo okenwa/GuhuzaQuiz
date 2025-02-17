@@ -28,7 +28,7 @@ const ProgressBar = ({ percentage }: ProgressBarType) => {
 
 
 
-async function ProfileHerosection() {
+ function ProfileHerosection() {
 
 
 

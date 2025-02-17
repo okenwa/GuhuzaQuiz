@@ -5,6 +5,8 @@ import Image from "next/image";
 import WhyplaySection from "./whyplaySection";
 import QuizLevelSections from "../components/quizLevelSections";
 import LeaderBoard from "../components/leaderBoard";
+import ProfileHerosection from "../components/profileHerosection";
+
 
 function QuizHomePage() {
   return (
@@ -43,6 +45,7 @@ function QuizHomePage() {
           </div>
         </div>
       </div>
+
 
       {/* Why Play Section */}
       <div className="whyplay">
