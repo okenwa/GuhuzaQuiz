@@ -16,11 +16,11 @@ export async function POST(req: Request) {
 
         const user = await prisma.user.create({
             data: {
-                Username: "username",
-                Password: "hasedPassword",
+                Username: username,
+                Password: hasedPassword,
                 player: {
                     create: {
-                        Player_name: "name",
+                        Player_name: name,
                         Playerpoint: 0,
                         streak: 0,
                         lastLogin: new Date(),
