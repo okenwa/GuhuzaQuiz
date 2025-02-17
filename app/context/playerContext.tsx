@@ -1,5 +1,5 @@
 "use client"
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type typePlayer = {
   Level_Id: number;
@@ -8,34 +8,50 @@ type typePlayer = {
   Player_name: string;
   Playerpoint: number;
   Temp_Score: number;
-  lastLogin: Date; // Can be Date if parsed
+  lastLogin: Date;
   streak: number;
   user_Id: number;
-}
-
-const playerInitialState = async() => { 
-  const player = localStorage.getItem("player")
-  return player ? JSON.parse(player) : null
 }
 
 export const playerContext = createContext<any>(null);
 
 function PlayerContextProvider({ children }: { children: React.ReactNode }) {
-  const [player, setPlayer] = useState<any>(null);
-  const [tempScore, setTempScore] = useState(-1);
-  const[playerLevel, setPlayerLevel] = useState(player?.Level_Id)
+  // Initialize state with localStorage data if available
+  const [player, setPlayer] = useState<typePlayer | null>(() => {
+    if (typeof window !== 'undefined') {
+      const savedPlayer = localStorage.getItem('player');
+      return savedPlayer ? JSON.parse(savedPlayer, (key, value) => {
+        if (key === 'lastLogin') return new Date(value);
+        return value;
+      }) : null;
+    }
+    return null;
+  });
 
-  
-  
-  const AssignPlayerData = (playerData:any) => { 
+  const [tempScore, setTempScore] = useState(-1);
+
+  // Save to localStorage whenever player changes
+  useEffect(() => {
+    if (player !== null) {
+      localStorage.setItem('player', JSON.stringify(player));
+    }
+  }, [player]);
+
+  const AssignPlayerData = (playerData: typePlayer) => { 
     setPlayer(playerData);
-    localStorage.setItem("player", JSON.stringify(playerData))
-    setPlayerLevel(playerData?.Level_Id   )
-    console.log(playerData?.Level_Id   )
+  };
+
+  const value = {
+    player,
+    AssignPlayerData,
+    playerLevel: player?.Level_Id,
+    setPlayerLevel: (newLevel: number) => {
+      setPlayer(prev => prev ? {...prev, Level_Id: newLevel} : null);
+    }
   };
 
   return (
-    <playerContext.Provider value={{player, AssignPlayerData, playerLevel, setPlayerLevel}}>
+    <playerContext.Provider value={value}>
       {children}
     </playerContext.Provider>
   );
@@ -43,11 +59,10 @@ function PlayerContextProvider({ children }: { children: React.ReactNode }) {
 
 export default PlayerContextProvider;
 
-
 export function usePlayer() { 
-  const {playerLevel} = useContext(playerContext)
-  if (!playerLevel) {
-    throw new Error('cannot find context')
+  const context = useContext(playerContext);
+  if (!context) {
+    throw new Error('usePlayer must be used within a PlayerContextProvider');
   }
-  return playerLevel
+  return context;
 }

@@ -1,8 +1,6 @@
-// Mark this as a Client Component in Next.js
 
 import React from "react";
 import Pbtn from "../components/buttons/primarybtn";
-import Sharebtn from "../components/buttons/sharebtn";
 import Image from "next/image";
 import WhyplaySection from "./whyplaySection";
 import QuizLevelSections from "../components/quizLevelSections";

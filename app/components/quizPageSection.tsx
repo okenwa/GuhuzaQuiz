@@ -3,6 +3,7 @@ import React, { use, useState } from "react";
 import QuizCard from "./quizCard";
 import { div } from "framer-motion/client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import LeaderBoard from "./leaderBoard";
 type quizeType = {
   question: string;
@@ -11,10 +12,10 @@ type quizeType = {
   answers: string[];
 };
 
-const handleCheck = () => {};
 
 export default function QuizPageSection({ Quizes, levelNumber, levelTitle}: any) {
   const len = Quizes.length;
+  const router = useRouter()
   const [score, setScore] = useState<number>(0);
   const [questionNumber, setQuestionNumber] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(-1);
@@ -32,14 +33,19 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle}: any)
     setUsedHint(false);
     setRetried(false);
   };
+
+  const handleNextLevel = () =>  {
+    const newlevel = Number(levelNumber) + 1
+    router.push(`/quiz/${newlevel}` )
+  }
   const handleScore = () => {
     setAnswerChecked(true);
 
     if (selectedAnswer == quizer.test_answer) {
       if (retried) {
-        setScore(score + 1);
+        setScore(score + 10);
       } else {
-        setScore(score + 3);
+        setScore(score + 30);
       }
     }
   };
@@ -179,7 +185,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle}: any)
           <p>Total Score = {55 + score} </p>
           <button> Retry Same Lesson</button>
           <button> Share Score on social Media</button>
-          <button className="quizPbtn">Continue to Next Level</button>
+          <button className="quizPbtn" onClick={handleNextLevel}>Continue to Next Level</button>
         </div>
         <div>
           <h1 className="title">LeaderBoard</h1>

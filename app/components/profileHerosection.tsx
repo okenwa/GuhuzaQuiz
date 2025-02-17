@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useContext } from "react";
 import { playerContext } from "../context/playerContext";
-import { levels } from "@/lib/db";
 
 
 type ProgressBarType = {
@@ -34,7 +33,6 @@ async function ProfileHerosection() {
 
 
   const {player} = useContext(playerContext)
-  const [remainingLevels, setRemainingLevels] = useState(0)
   const mileStoneCounter = () => { 
     if((player?.milestone.UnlockingLevel - player?.Level_Id)<0){
       return <span></span>

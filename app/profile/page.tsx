@@ -1,5 +1,5 @@
 
-import React, { useContext } from "react";
+import React from "react";
 import QuizLevelSections from "../components/quizLevelSections";
 import LeaderBoard from "../components/leaderBoard";
 import ProfileHerosection from "../components/profileHerosection";
