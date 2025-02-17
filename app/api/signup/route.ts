@@ -34,9 +34,12 @@ export async function POST(req: Request) {
                 }
 
 
+            },
+            include : { 
+                player : true
             }
         })
-        return NextResponse.json({ message: "User Created Sucessfullt" }, { status: 201 })
+        return NextResponse.json({ message: "User Created Sucessfullt", player : user?.player }, { status: 201 })
     } catch (e) {
         console.error(e)
         return NextResponse.json({ message: "Failed to create user" + e, error: e }, { status: 500 })
