@@ -18,7 +18,7 @@ const ProgressBar = ({ percentage }: ProgressBarType) => {
         className="bg-blue-600 text-xs  font-medium text-blue-100 text-center p-0.5 leading-none rounded-full"
         style={{ width: `${percentage}%` }}
       >
-        {Math.floor(percentage) }%
+        {Math.floor(percentage)}%
       </div>
     </div>
   );
@@ -28,16 +28,16 @@ const ProgressBar = ({ percentage }: ProgressBarType) => {
 
 
 
- function ProfileHerosection() {
+function ProfileHerosection() {
 
 
 
-  const {player} = useContext(playerContext)
-  const mileStoneCounter = () => { 
-    if((player?.milestone.UnlockingLevel - player?.Level_Id)<0){
+  const { player } = useContext(playerContext)
+  const mileStoneCounter = () => {
+    if ((player?.milestone.UnlockingLevel - player?.Level_Id) < 0) {
       return <span></span>
-    } else { 
-      return<span>(player?.milestone.UnlockingLevel - player?.Level_Id).toString</span> 
+    } else {
+      return <span>(player?.milestone.UnlockingLevel - player?.Level_Id).toString</span>
     }
   }
 
@@ -91,10 +91,10 @@ const ProgressBar = ({ percentage }: ProgressBarType) => {
 
           <div className="">
             <p className="text-gray-600 mb-4">
-              Solve {(player?.milestone.UnlockingLevel - player?.Level_Id).toString()} more questions to get your reward
+              Solve {((player?.milestone.UnlockingLevel - player?.Level_Id) < 0 ? 0 : player?.milestone.UnlockingLevel - player?.Level_Id).toString()} more questions to get your reward
             </p>
-            <ProgressBar percentage={ (player?.Level_Id / player?.milestone.UnlockingLevel )*100} />
-            <button className="quizPbtn mt-4" disabled={player?.Level_Id <player?.milestone.UnlockingLevel } onClick={handleClaimReward}>
+            <ProgressBar percentage={(player?.milestone.UnlockingLevel - player?.Level_Id) < 0 ? 100 :(player?.Level_Id / player?.milestone.UnlockingLevel) * 100} />
+            <button className="quizPbtn mt-4" disabled={player?.Level_Id < player?.milestone.UnlockingLevel} onClick={handleClaimReward}>
               Claim Reward
             </button>
           </div>
