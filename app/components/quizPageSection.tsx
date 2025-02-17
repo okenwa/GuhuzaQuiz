@@ -5,6 +5,8 @@ import { div } from "framer-motion/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import LeaderBoard from "./leaderBoard";
+import { useContext } from "react";
+import { playerContext } from "../context/playerContext";
 type quizeType = {
   question: string;
   comment: string;
@@ -14,6 +16,9 @@ type quizeType = {
 
 
 export default function QuizPageSection({ Quizes, levelNumber, levelTitle}: any) {
+
+
+  const {AssignPlayerData, setPlayerLevel, player} = useContext(playerContext)
   const len = Quizes.length;
   const router = useRouter()
   const [score, setScore] = useState<number>(0);
@@ -34,9 +39,43 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle}: any)
     setRetried(false);
   };
 
-  const handleNextLevel = () =>  {
-    const newlevel = Number(levelNumber) + 1
-    router.push(`/quiz/${newlevel}` )
+  const handleNextLevel = async () =>  {
+    const newlevel =Number(levelNumber) +1
+    const finalScore = score + player.Playerpoint
+    const playerId = player.Player_ID
+
+
+    try {
+      const response = await fetch("/api/updateScore", { 
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ playerId,finalScore,newlevel  }),
+      });
+
+      if (response.ok) {
+          const data = await response.json();
+          console.log("User updated in successfully!", data);
+          AssignPlayerData(data.player);
+          setPlayerLevel(data.player.Level_Id)
+          router.push(`/quiz/${newlevel}` )
+          console.log(data.newlevel)
+          console.log(player)
+
+          
+          
+      } else {
+          const errorData = await response.json();
+          console.error("Login failed:", errorData.message);
+         
+          
+      }
+  } catch (error) {
+      console.error("An error occurred during login:", error);
+     
+     
+  }
   }
   const handleScore = () => {
     setAnswerChecked(true);
