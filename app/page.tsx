@@ -8,8 +8,8 @@ export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { AssignPlayerData } = useContext(playerContext) as any;
-
+  const { AssignPlayerData, player } = useContext(playerContext) as any;
+  const [error, setError]= useState("")
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,14 +26,23 @@ export default function LoginPage() {
             const data = await response.json();
             console.log("User logged in successfully!", data);
             AssignPlayerData(data.player);
-            router.push("/profile"); 
+            if(data.player.Level_Id == 1){ 
+              router.push("/quiz"); 
+            } else { 
+              router.push("/profile")
+            }
+
+            console.log()
+            
         } else {
             const errorData = await response.json();
             console.error("Login failed:", errorData.message);
+            setError("Log in Failed " +errorData.message )
             
         }
     } catch (error) {
         console.error("An error occurred during login:", error);
+        setError("An error occurred during login " + error)
        
     }
   };
@@ -70,6 +79,7 @@ export default function LoginPage() {
                     setPassword(e.target.value);
                   }}
                 />
+                <p className="text-red-500">{error} </p>
               </div>
             </div>
           </div>
