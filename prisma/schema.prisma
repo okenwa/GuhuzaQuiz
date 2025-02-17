@@ -18,6 +18,8 @@ model milestone {
   Milestone_Id          Int      @id @default(autoincrement())
   Milestone_Title       String
   Milestone_description String
+  UnlockingLevel        Int
+  UploadRequired        Boolean
   player                player[]
 }
 

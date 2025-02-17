@@ -30,6 +30,10 @@ export async function POST(req: Request) {
         const player = await prisma.player.findFirst({
             where: {
                 user_Id: user.User_Id, // Assuming there's a userId field in Player model linking to User
+            },
+            include : { 
+                milestone : true
+                
             }
         });
 
@@ -41,6 +45,6 @@ export async function POST(req: Request) {
 
     } catch (error) {
         console.error("Login error:", error);
-        return NextResponse.json({ message: "An error occurred during login" }, { status: 500 });
+        return NextResponse.json({ message: "An error occurred during login" + error }, { status: 500 });
     }
 }
