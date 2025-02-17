@@ -10,7 +10,7 @@ type levelType = {
   type levelsType = levelType[];
 
   function QuizList({ allLevels }: { allLevels: levelsType }) {
-    const [levels, setLevels] = useState(0)
+    
     const{playerLevel} = useContext(playerContext)
     const filteredLevels = allLevels.filter((level:levelType)=> level.Level_Id <= playerLevel).sort((a,b)=> b.Level_Id - a.Level_Id)
    

@@ -2,6 +2,7 @@ import Qbtn from "@/app/components/buttons/quizbtn";
 import { fetchQuiz } from "@/utils/fQuiz";
 import QuizCard from "@/app/components/quizCard";
 import QuizPageSection from "@/app/components/quizPageSection";
+import fetchLevels from "@/utils/fLevels";
 
 type quizeType = {
   question: string;
@@ -18,9 +19,14 @@ export default async function Page({ params }: { params: { id: string } }) {
   try {
     const data = await fetchQuiz(params.id);
     const Quizes = data.test.question;
+    const levels = (await fetchLevels()|| [])
+    const levelNumber = params.id
+    const levelTitle = levels?.[Number(levelNumber)-1].Level_Title
+    
     return (
       <div>
-        <QuizPageSection Quizes={Quizes} />
+        
+        <QuizPageSection Quizes={Quizes} levelNumber = {levelNumber}  levelTitle = {levelTitle} />
       </div>
     );
   } catch (error) {

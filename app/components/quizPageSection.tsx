@@ -13,7 +13,7 @@ type quizeType = {
 
 const handleCheck = () => {};
 
-export default function QuizPageSection({ Quizes }: any) {
+export default function QuizPageSection({ Quizes, levelNumber, levelTitle}: any) {
   const len = Quizes.length;
   const [score, setScore] = useState<number>(0);
   const [questionNumber, setQuestionNumber] = useState(0);
@@ -55,7 +55,7 @@ export default function QuizPageSection({ Quizes }: any) {
     <div className="md:py-16 py-8">
       <div className="container flex  justify-between flex-wrap">
         <h2 className=" md:mb-16 mb-4 title intersect: motion-preset-slide-up motion-delay-200 intersect-once">
-          Level 1: The first Step
+          Level { levelNumber} : {levelTitle} 
         </h2>
         <p className="mb-6">
           Question : {questionNumber + 1}/{len}
