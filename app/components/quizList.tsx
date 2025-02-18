@@ -16,7 +16,7 @@ type levelType = {
    
     return (
       <div>
-        player level should be here {playerLevel}
+        
         {filteredLevels.map((level: levelType) => (
           <QuizLevelCard
             key={level.Level_Id}
