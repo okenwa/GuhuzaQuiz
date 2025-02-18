@@ -4,7 +4,7 @@ import { FaShareAlt, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp } from "react
 const ShareButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
-  const websiteUrl = "https://www.pidus.net/"; // Replace with your website URL
+  const websiteUrl = "https://guhuza.com/"; // Replace with your website URL
   const text = encodeURIComponent("Check out this amazing website! 🚀");
 
   // Close popup when clicking outside

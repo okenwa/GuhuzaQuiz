@@ -5,6 +5,7 @@ import fetchLevels from "@/utils/fLevels";
 import { playerContext } from "../context/playerContext";
 import { usePlayer } from "../context/playerContext";
 import QuizList from "./quizList";
+import Link from "next/link";
 
 
 type quizLevelSectionsType = {
@@ -48,10 +49,11 @@ async function QuizLevelSections({ currentLevel }: quizLevelSectionsType) {
             currentLevel={currentLevel}
           />
         ))} */}
-        <QuizList 
+        <QuizList  cutEnding = {true}
   allLevels={levels}
 />
 
+<Link href={"/allquiz"} className="font-semibold underline text-center">View All Quiz</Link>
       </div>
     </div>
   );

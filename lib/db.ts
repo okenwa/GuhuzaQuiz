@@ -6,6 +6,7 @@ export const Players = [
     point: 0,
     streak: 0,
     friends: [2, 3], // Friends with Manoj and Kalika
+    reward: "Resume Checkup",
   },
   {
     player_id: 2,
@@ -14,6 +15,7 @@ export const Players = [
     point: 120,
     streak: 4,
     friends: [1, 4], // Friends with Sudip and Rajesh
+    reward: "Cover Letter Review",
   },
   {
     player_id: 3,
@@ -22,6 +24,7 @@ export const Players = [
     point: 500,
     streak: 0,
     friends: [1, 5], // Friends with Sudip and Anjali
+    reward: "LinkedIn Profile Optimization",
   },
   {
     player_id: 4,
@@ -30,6 +33,7 @@ export const Players = [
     point: 300,
     streak: 2,
     friends: [2, 6], // Friends with Manoj and Bibek
+    reward: "Job Application Strategies",
   },
   {
     player_id: 5,
@@ -38,6 +42,7 @@ export const Players = [
     point: 800,
     streak: 1,
     friends: [3, 7], // Friends with Kalika and Suman
+    reward: "Mock Interview Preparation",
   },
   {
     player_id: 6,
@@ -46,6 +51,7 @@ export const Players = [
     point: 200,
     streak: 3,
     friends: [4, 8], // Friends with Rajesh and Nabin
+    reward: "Technical Skills Assessment",
   },
   {
     player_id: 7,
@@ -54,6 +60,7 @@ export const Players = [
     point: 450,
     streak: 0,
     friends: [5, 9], // Friends with Anjali and Ramesh
+    reward: "Soft Skills Evaluation",
   },
   {
     player_id: 8,
@@ -62,6 +69,7 @@ export const Players = [
     point: 500,
     streak: 0,
     friends: [6, 10], // Friends with Bibek and Sunita
+    reward: "Salary Negotiation Tips",
   },
   {
     player_id: 9,
@@ -70,6 +78,7 @@ export const Players = [
     point: 600,
     streak: 5,
     friends: [7, 10], // Friends with Suman and Sunita
+    reward: "Personal Branding Workshop",
   },
   {
     player_id: 10,
@@ -78,9 +87,9 @@ export const Players = [
     point: 700,
     streak: 0,
     friends: [8, 9], // Friends with Nabin and Ramesh
+    reward: "Final Interview Readiness",
   },
 ];
-
 
 // db.ts
 

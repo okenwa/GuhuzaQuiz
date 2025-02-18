@@ -46,49 +46,38 @@ export default  function LeaderBoard({ player, friends }: leaderBoardType) {
         </p>
       </div>
       <div className="overflow-x-auto">
-        <table className="intersect:motion-preset-slide-up motion-delay-200 intersect-once min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-          <thead>
-            <tr className=" bg-blue-200 rounded-lg">
-              <th className="px-6 py-3 text-left font-medium uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                Points
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                Level
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {topPlayers.map((playerData) => {
-              // Check if the current row is the player or a friend
-              const isCurrentPlayer = playerData.player_id === player;
-              const isFriend = friends.includes(playerData.player_id);
+      <table className="intersect:motion-preset-slide-up motion-delay-200 intersect-once min-w-full bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
+  <thead className="bg-gradient-to-b from-gray-950 to-gray-800 text-white uppercase text-sm font-semibold">
+    <tr>
+      <th className="px-6 py-3 text-left tracking-wider">Name</th>
+      <th className="px-6 py-3 text-left tracking-wider">Points</th>
+      <th className="px-6 py-3 text-left tracking-wider">Level</th>
+      <th className="px-6 py-3 text-left tracking-wider">Upcoming Reward</th>
+    </tr>
+  </thead>
+  <tbody className="divide-y divide-gray-300">
+    {topPlayers.map((playerData) => {
+      const isCurrentPlayer = playerData.player_id === player;
+      const isFriend = friends.includes(playerData.player_id);
 
-              // Apply conditional styling
-              const rowClass = isCurrentPlayer
-                ? "bg-blue-100" // Highlight the current player
-                : isFriend
-                ? "bg-gray-100" // Highlight friends
-                : "";
+      const rowClass = isCurrentPlayer
+        ? "bg-blue-100 font-semibold text-gray-900"
+        : isFriend
+        ? "bg-gray-100 text-gray-800"
+        : "hover:bg-gray-50";
 
-              return (
-                <tr key={playerData.player_id} className={rowClass}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {playerData.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {playerData.point}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {playerData.level}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      return (
+        <tr key={playerData.player_id} className={`${rowClass} transition-all`}>
+          <td className="px-6 py-4 text-sm ">{playerData.name}</td>
+          <td className="px-6 py-4 text-sm">{playerData.point}</td>
+          <td className="px-6 py-4 text-sm">{playerData.level}</td>
+          <td className="px-6 py-4 text-sm">{playerData.reward}</td>
+        </tr>
+      );
+    })}
+  </tbody>
+</table>
+
       </div>
     </div>
   );
