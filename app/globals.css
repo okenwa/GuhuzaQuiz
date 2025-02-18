@@ -26,7 +26,7 @@
 }
 
 .quizSbtn {
-    @apply relative inline-block px-6 py-3 text-sm font-bold rounded-lg shadow-sm transition-transform transform active:translate-y-1 border-b-4 text-gray-900 bg-gray-100 border-gray-300 hover:bg-gray-200;
+    @apply relative  px-6 py-3 text-sm font-bold rounded-lg shadow-sm transition-transform transform active:translate-y-1 border-b-4 text-gray-900 bg-gray-100 border-gray-300 hover:bg-gray-200;
 }
 
 .quizPbtn {

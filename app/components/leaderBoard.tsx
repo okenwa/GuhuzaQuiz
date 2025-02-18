@@ -6,7 +6,12 @@ type leaderBoardType = {
   friends: Array<number>;
 };
 
-export default function LeaderBoard({ player, friends }: leaderBoardType) {
+import ShareButton from "./buttons/sharebtn";
+import fetchPlayers from "@/utils/fPlayers";
+
+export default  function LeaderBoard({ player, friends }: leaderBoardType) {
+  
+  
   // Sort players by points in descending order
   const sortedPlayers = Players.sort((a, b) => b.point - a.point);
 
@@ -31,6 +36,7 @@ export default function LeaderBoard({ player, friends }: leaderBoardType) {
 
   return (
     <div className=" py-24">
+     
       <div className="container">
         <h2 className="px-4 py-1 text-center bg-blue-400 text-4xl w-fit rounded font-bold text-gray-900 m-auto intersect:motion-preset-slide-up motion-delay-200 intersect-once ">
           Leader Board
