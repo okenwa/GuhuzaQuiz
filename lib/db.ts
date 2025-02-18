@@ -11,7 +11,7 @@ export const Players = [
     player_id: 2,
     name: "Manoj Kafle",
     level: 3,
-    point: 12000,
+    point: 120,
     streak: 4,
     friends: [1, 4], // Friends with Sudip and Rajesh
   },
@@ -19,7 +19,7 @@ export const Players = [
     player_id: 3,
     name: "Kalika Devi",
     level: 7,
-    point: 50000,
+    point: 500,
     streak: 0,
     friends: [1, 5], // Friends with Sudip and Anjali
   },
@@ -27,7 +27,7 @@ export const Players = [
     player_id: 4,
     name: "Rajesh Sharma",
     level: 5,
-    point: 30000,
+    point: 300,
     streak: 2,
     friends: [2, 6], // Friends with Manoj and Bibek
   },
@@ -35,7 +35,7 @@ export const Players = [
     player_id: 5,
     name: "Anjali Thapa",
     level: 2,
-    point: 8000,
+    point: 800,
     streak: 1,
     friends: [3, 7], // Friends with Kalika and Suman
   },
@@ -43,7 +43,7 @@ export const Players = [
     player_id: 6,
     name: "Bibek Gurung",
     level: 4,
-    point: 20000,
+    point: 200,
     streak: 3,
     friends: [4, 8], // Friends with Rajesh and Nabin
   },
@@ -51,7 +51,7 @@ export const Players = [
     player_id: 7,
     name: "Suman Poudel",
     level: 6,
-    point: 45000,
+    point: 450,
     streak: 0,
     friends: [5, 9], // Friends with Anjali and Ramesh
   },
@@ -59,7 +59,7 @@ export const Players = [
     player_id: 8,
     name: "Nabin Rai",
     level: 1,
-    point: 5000,
+    point: 500,
     streak: 0,
     friends: [6, 10], // Friends with Bibek and Sunita
   },
@@ -67,7 +67,7 @@ export const Players = [
     player_id: 9,
     name: "Ramesh KC",
     level: 8,
-    point: 60000,
+    point: 600,
     streak: 5,
     friends: [7, 10], // Friends with Suman and Sunita
   },
@@ -75,7 +75,7 @@ export const Players = [
     player_id: 10,
     name: "Sunita Lama",
     level: 9,
-    point: 70000,
+    point: 700,
     streak: 0,
     friends: [8, 9], // Friends with Nabin and Ramesh
   },
