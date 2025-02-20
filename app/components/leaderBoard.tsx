@@ -5,7 +5,7 @@ type leaderBoardType = {
   player: number;
   friends: Array<number>;
 };
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { playerContext } from "../context/playerContext";
 
 import ShareButton from "./buttons/sharebtn";
@@ -32,26 +32,26 @@ type playerType = {
 type PlayersType ={ Players : playerType[]}
 
 export default  function LeaderBoard({Players}:PlayersType) {
+  const {player}= useContext(playerContext)
   
+
   
   // Sort players by points in descending order
   const sortedPlayers = [...Players]?.sort((a, b) => b?.Playerpoint - a?.Playerpoint);
-
   // Get the top 5 players
   let topPlayers = sortedPlayers?.slice(0, 5);
 
   // Check if the current player is in the top 5
-  // const isPlayerInTop5 = topPlayers?.some((p) => p.player_id === Players);
+  const isPlayerInTop5 = topPlayers?.some((p) => p.Player_ID === player.Player_ID);
 
   // If the current player is not in the top 5, add them to the table
-  // if (!isPlayerInTop5) {
-  //   const currentPlayer = Players?.find((p) => p.player_id === player);
-  //   if (currentPlayer) {
-  //     topPlayers.push(currentPlayer); // Replace the 5th player with the current player
-  //   }
-  // }
+  if (!isPlayerInTop5) {
+    const currentPlayer = Players?.find((p) => p.Player_ID === player.Player_ID);
+    if (currentPlayer) {
+      topPlayers.push(currentPlayer); // Replace the 5th player with the current player
+    }
+  }
  
-  //   check if the friends are in the top 5 or no
 
   return (
     <div className=" py-24">
@@ -76,16 +76,12 @@ export default  function LeaderBoard({Players}:PlayersType) {
   </thead>
   <tbody className="divide-y divide-gray-300">
     {topPlayers.map((playerData) => {
-      // const isCurrentPlayer = playerData.player_id === player;
-      // const isFriend = friends.includes(playerData.player_id);
+      const isCurrentPlayer = playerData.Player_ID === player.Player_ID;
 
-      // const rowClass = isCurrentPlayer
-      //   ? "bg-blue-100 font-semibold text-gray-900"
-      //   : isFriend
-      //   ? "bg-gray-100 text-gray-800"
-      //   : "hover:bg-gray-50";
+      const rowClass = isCurrentPlayer
+        && "bg-blue-100 font-semibold text-gray-900"
+        
 
-      const rowClass = "bg-gray-50"
 
       return (
         <tr key={playerData?.Player_ID} className={`${rowClass} transition-all`}>
