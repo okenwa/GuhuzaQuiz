@@ -1,5 +1,6 @@
-
-import prisma from "@/lib/prisma"
+import React from 'react'
+import fetchPlayers from '@/utils/fPlayers'
+import LeaderBoard from './leaderBoard'
 
 type milestoneType = { 
     Milestone_Id : number, 
@@ -22,19 +23,14 @@ type milestoneType = {
   
   type Players = playerType[]
 
+  async function LeaderBoardSection() {
+    const Players: Players = await fetchPlayers();
+  
+    return (
+      <div>
+        <LeaderBoard Players={Players} />
+      </div>
+    );
+  }
 
-async function fetchPlayers(): Promise<Players> {
-    try {
-        const players = await prisma.player.findMany(
-            {include: { 
-                milestone : true
-            }}
-        );
-        return players as Players
-
-    } catch (e) {
-        console.error(e)
-    }
-}
-
-export default fetchPlayers
+export default LeaderBoardSection

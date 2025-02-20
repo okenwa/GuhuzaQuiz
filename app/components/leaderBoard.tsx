@@ -5,33 +5,52 @@ type leaderBoardType = {
   player: number;
   friends: Array<number>;
 };
+import { useContext } from "react";
+import { playerContext } from "../context/playerContext";
 
 import ShareButton from "./buttons/sharebtn";
-import fetchPlayers from "@/utils/fPlayers";
 
-export default  function LeaderBoard({ player, friends }: leaderBoardType) {
+type milestoneType = { 
+  Milestone_Id : number, 
+  Milestone_Title : string, 
+  Milestone_description : string , 
+  UnlockingLevel : number, 
+  UploadRequired : boolean, 
+}
+
+type playerType = { 
+  Player_ID :number, 
+  Player_name : string, 
+  Playerpoint : number, 
+  streak : number, 
+  lastLogin : Date, 
+  Level_Id ?: number,
+  Milestone_Id ?: number , 
+  milestone : milestoneType
+}
+
+type PlayersType ={ Players : playerType[]}
+
+export default  function LeaderBoard({Players}:PlayersType) {
   
   
   // Sort players by points in descending order
-  const sortedPlayers = Players.sort((a, b) => b.point - a.point);
+  const sortedPlayers = [...Players]?.sort((a, b) => b?.Playerpoint - a?.Playerpoint);
 
   // Get the top 5 players
-  let topPlayers = sortedPlayers.slice(0, 5);
+  let topPlayers = sortedPlayers?.slice(0, 5);
 
   // Check if the current player is in the top 5
-  const isPlayerInTop5 = topPlayers.some((p) => p.player_id === player);
+  // const isPlayerInTop5 = topPlayers?.some((p) => p.player_id === Players);
 
   // If the current player is not in the top 5, add them to the table
-  if (!isPlayerInTop5) {
-    const currentPlayer = Players.find((p) => p.player_id === player);
-    if (currentPlayer) {
-      topPlayers.push(currentPlayer); // Replace the 5th player with the current player
-    }
-  }
-  const friendsToBeAdded = friends.filter((a) => {
-    topPlayers.some((p) => p.player_id != a);
-  });
-
+  // if (!isPlayerInTop5) {
+  //   const currentPlayer = Players?.find((p) => p.player_id === player);
+  //   if (currentPlayer) {
+  //     topPlayers.push(currentPlayer); // Replace the 5th player with the current player
+  //   }
+  // }
+ 
   //   check if the friends are in the top 5 or no
 
   return (
@@ -57,21 +76,23 @@ export default  function LeaderBoard({ player, friends }: leaderBoardType) {
   </thead>
   <tbody className="divide-y divide-gray-300">
     {topPlayers.map((playerData) => {
-      const isCurrentPlayer = playerData.player_id === player;
-      const isFriend = friends.includes(playerData.player_id);
+      // const isCurrentPlayer = playerData.player_id === player;
+      // const isFriend = friends.includes(playerData.player_id);
 
-      const rowClass = isCurrentPlayer
-        ? "bg-blue-100 font-semibold text-gray-900"
-        : isFriend
-        ? "bg-gray-100 text-gray-800"
-        : "hover:bg-gray-50";
+      // const rowClass = isCurrentPlayer
+      //   ? "bg-blue-100 font-semibold text-gray-900"
+      //   : isFriend
+      //   ? "bg-gray-100 text-gray-800"
+      //   : "hover:bg-gray-50";
+
+      const rowClass = "bg-gray-50"
 
       return (
-        <tr key={playerData.player_id} className={`${rowClass} transition-all`}>
-          <td className="px-6 py-4 text-sm ">{playerData.name}</td>
-          <td className="px-6 py-4 text-sm">{playerData.point}</td>
-          <td className="px-6 py-4 text-sm">{playerData.level}</td>
-          <td className="px-6 py-4 text-sm">{playerData.reward}</td>
+        <tr key={playerData?.Player_ID} className={`${rowClass} transition-all`}>
+          <td className="px-6 py-4 text-sm ">{playerData?.Player_name}</td>
+          <td className="px-6 py-4 text-sm">{playerData?.Playerpoint}</td>
+          <td className="px-6 py-4 text-sm">{playerData?.Level_Id}</td>
+          <td className="px-6 py-4 text-sm">{playerData?.milestone?.Milestone_Title}</td>
         </tr>
       );
     })}
