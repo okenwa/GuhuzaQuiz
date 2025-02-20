@@ -42,11 +42,11 @@ export default  function LeaderBoard({Players}:PlayersType) {
   let topPlayers = sortedPlayers?.slice(0, 5);
 
   // Check if the current player is in the top 5
-  const isPlayerInTop5 = topPlayers?.some((p) => p.Player_ID === player.Player_ID);
+  const isPlayerInTop5 = topPlayers?.some((p) => p?.Player_ID === player?.Player_ID);
 
   // If the current player is not in the top 5, add them to the table
   if (!isPlayerInTop5) {
-    const currentPlayer = Players?.find((p) => p.Player_ID === player.Player_ID);
+    const currentPlayer = Players?.find((p) => p?.Player_ID === player?.Player_ID);
     if (currentPlayer) {
       topPlayers.push(currentPlayer); // Replace the 5th player with the current player
     }
@@ -76,7 +76,7 @@ export default  function LeaderBoard({Players}:PlayersType) {
   </thead>
   <tbody className="divide-y divide-gray-300">
     {topPlayers.map((playerData) => {
-      const isCurrentPlayer = playerData.Player_ID === player.Player_ID;
+      const isCurrentPlayer = playerData?.Player_ID === player?.Player_ID;
 
       const rowClass = isCurrentPlayer
         && "bg-blue-100 font-semibold text-gray-900"

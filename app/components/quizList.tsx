@@ -13,7 +13,7 @@ type levelType = {
     
     const{playerLevel} = useContext(playerContext)
     const filteredLevels = allLevels.filter((level:levelType)=> level.Level_Id <= playerLevel).sort((a,b)=> b.Level_Id - a.Level_Id)
-    const endingPoint = cutEnding ? filteredLevels[0].Level_Id - 3 : 1
+    const endingPoint = cutEnding ? filteredLevels[0]?.Level_Id - 3 : 1
       const isBrowser = () => typeof window !== 'undefined'; //The approach recommended by Next.js
     
         function scrollToTop() {

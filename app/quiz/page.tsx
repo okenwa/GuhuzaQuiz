@@ -11,7 +11,7 @@ import QuizHero from "../components/quizHero";
 import fetchPlayers from "@/utils/fPlayers";
 
 async function  QuizHomePage() {
-  const players = await fetchPlayers()
+  const players = (await fetchPlayers() || {})
   console.log(players)
   return (
     <div className="mt-10">
@@ -31,7 +31,7 @@ async function  QuizHomePage() {
 
       {/* Leaderboard Section */}
       <div className="leaderboard section container">
-        <LeaderBoard player={1} friends={[2, 4, 9]}  />
+        <LeaderBoard Players={players}  />
       </div>
     </div>
   );
