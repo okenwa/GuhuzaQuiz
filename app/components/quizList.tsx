@@ -11,10 +11,17 @@ type levelType = {
 
   function QuizList({ allLevels, cutEnding=true }: { allLevels: levelsType, cutEnding : boolean }) {
     
-    const{playerLevel} = useContext(playerContext)
-    const filteredLevels = allLevels.filter((level:levelType)=> level.Level_Id <= playerLevel).sort((a,b)=> b.Level_Id - a.Level_Id)
+    const{playerLevel} = useContext(playerContext) 
+    const displayLevel = playerLevel ? playerLevel : 1
+    
+    
+    const filteredLevels = allLevels.filter((level:levelType)=> level.Level_Id <= displayLevel).sort((a,b)=> b.Level_Id - a.Level_Id)
+    
+    
+    
+    
     const endingPoint = cutEnding ? filteredLevels[0]?.Level_Id - 3 : 0
-      const isBrowser = () => typeof window !== 'undefined'; //The approach recommended by Next.js
+      const isBrowser = () => typeof window !== 'undefined';
     
         function scrollToTop() {
             if (!isBrowser()) return;
@@ -30,7 +37,7 @@ type levelType = {
             levelNumber={level.Level_Id}
             levelLink={`quiz/${level.Level_Id}`}
             levelName={level.Level_Title}
-            currentLevel={playerLevel}
+            currentLevel={displayLevel}
           />)
         ))}
 

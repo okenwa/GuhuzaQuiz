@@ -1,11 +1,10 @@
 "use client"; // Mark this as a Client Component in Next.js
 
-import { Players } from "@/lib/db";
 type leaderBoardType = {
   player: number;
   friends: Array<number>;
 };
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { playerContext } from "../context/playerContext";
 
 import ShareButton from "./buttons/sharebtn";

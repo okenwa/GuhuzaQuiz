@@ -13,9 +13,9 @@ type quizeType = {
   test_answer: number;
   answers: string[];
 };
+import fetchPlayers from "@/utils/fPlayers";
 
-
-export default function QuizPageSection({ Quizes, levelNumber, levelTitle }: any) {
+export default function QuizPageSection({ Quizes, levelNumber, levelTitle, players }: any) {
 
 
   const { AssignPlayerData, setPlayerLevel, player } = useContext(playerContext)
@@ -28,7 +28,6 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle }: any
   const [ansCorrect, setAnsCorrect] = useState(false);
   const [usedHint, setUsedHint] = useState(false);
   const [retried, setRetried] = useState(false);
-
   var quizer: quizeType = Quizes[questionNumber];
 
   const setDefault = () => {
@@ -77,6 +76,11 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle }: any
 
     }
   }
+
+const handleGetPlayer = async() => { 
+  const players = await fetchPlayers()
+ 
+}
   const handleScore = () => {
     setAnswerChecked(true);
 
@@ -87,6 +91,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle }: any
         setScore(score + 30);
       }
     }
+    handleGetPlayer()
   };
 
   const handleNextQuestion = () => {
@@ -105,7 +110,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle }: any
   }
 
   return questionNumber < len ? (
-    <div className="md:py-16 py-8">
+    <div className="md:py-16 pt-8 pb-28">
       <div className="container flex  justify-between flex-wrap">
         <h2 className=" md:mb-16 mb-4 title intersect: motion-preset-slide-up motion-delay-200 intersect-once">
           Level { levelNumber} : {levelTitle} 
@@ -268,7 +273,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle }: any
         </div>
         <div>
         
-          <LeaderBoard player={1} friends={[2, 4, 9]} />
+          <LeaderBoard Players={players}  />
         </div>
       </div>
     </div>

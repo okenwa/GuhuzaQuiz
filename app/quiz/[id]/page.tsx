@@ -3,7 +3,7 @@ import { fetchQuiz } from "@/utils/fQuiz";
 import QuizCard from "@/app/components/quizCard";
 import QuizPageSection from "@/app/components/quizPageSection";
 import fetchLevels from "@/utils/fLevels";
-
+import fetchPlayers from "@/utils/fPlayers";
 type quizeType = {
   question: string;
   comment: string;
@@ -22,11 +22,11 @@ export default async function Page({ params }: { params: { id: string } }) {
     const levels = (await fetchLevels()|| [])
     const levelNumber = params.id
     const levelTitle = levels?.[Number(levelNumber)-1].Level_Title
-    
+    const players = (await fetchPlayers() || {})
     return (
       <div>
         
-        <QuizPageSection Quizes={Quizes} levelNumber = {levelNumber}  levelTitle = {levelTitle} />
+        <QuizPageSection Quizes={Quizes} levelNumber = {levelNumber}  levelTitle = {levelTitle}  players={players} />
       </div>
     );
   } catch (error) {

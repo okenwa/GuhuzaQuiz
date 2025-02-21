@@ -12,7 +12,7 @@ import fetchPlayers from "@/utils/fPlayers";
 
 async function  QuizHomePage() {
   const players = (await fetchPlayers() || {})
-  console.log(players)
+
   return (
     <div className="mt-10">
       {/* Hero Section */}
