@@ -37,7 +37,7 @@ function ProfileHerosection() {
     if ((player?.milestone?.UnlockingLevel - player?.Level_Id) < 0) {
       return <span></span>
     } else {
-      return <span>(player?.milestone.UnlockingLevel - player?.Level_Id).toString</span>
+      return <span>(player?.milestone.?UnlockingLevel - player?.Level_Id).toString</span>
     }
   }
 

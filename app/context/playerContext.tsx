@@ -15,19 +15,30 @@ type typePlayer = {
 
 export const playerContext = createContext<any>(null);
 
+const playerInitialState: typePlayer | null = (() => { 
+  try {
+    const player = localStorage.getItem("player");
+    return player ? JSON.parse(player) : null;
+  } catch (error) {
+    console.error("Failed to parse player data:", error);
+    return null;
+  }
+})();
+
 function PlayerContextProvider({ children }: { children: React.ReactNode }) {
   // Initialize state with localStorage data if available
-  const [player, setPlayer] = useState<typePlayer | null>(() => {
-    if (typeof window !== 'undefined') {
-      const savedPlayer = localStorage.getItem('player');
-      return savedPlayer ? JSON.parse(savedPlayer, (key, value) => {
-        if (key === 'lastLogin') return new Date(value);
-        return value;
-      }) : null;
-    }
-    return null;
-  });
+  // const [player, setPlayer] = useState<typePlayer | null>(() => {
+  //   if (typeof window !== 'undefined') {
+  //     const savedPlayer = localStorage.getItem('player');
+  //     return savedPlayer ? JSON.parse(savedPlayer, (key, value) => {
+  //       if (key === 'lastLogin') return new Date(value);
+  //       return value;
+  //     }) : null;
+  //   }
+  //   return null;
+  // });
 
+  const [player, setPlayer] = useState<typePlayer | null>(playerInitialState)
   const [tempScore, setTempScore] = useState(-1);
 
   // Save to localStorage whenever player changes
