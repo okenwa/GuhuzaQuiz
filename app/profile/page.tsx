@@ -17,7 +17,7 @@ function Profile() {
   
       <ProfileHerosection  />
        <div className="mt-12">
-        <QuizLevelSections currentLevel={20}/>
+        <QuizLevelSections/>
       </div>
       {/* Leaderboard Section */}
 

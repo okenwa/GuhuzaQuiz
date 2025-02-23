@@ -26,7 +26,7 @@ async function  QuizHomePage() {
 
       {/* Quiz Level Section */}
       <div className="QuizSection mt-16">
-        <QuizLevelSections currentLevel={1} />
+        <QuizLevelSections />
       </div>
 
       {/* Leaderboard Section */}

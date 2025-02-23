@@ -1,4 +1,5 @@
-"use client"
+"use client"; // ✅ Ensures this is a client component
+
 import { createContext, useContext, useEffect, useState } from "react";
 
 type typePlayer = {
@@ -11,33 +12,32 @@ type typePlayer = {
   lastLogin: Date;
   streak: number;
   user_Id: number;
-}
+};
 
 export const playerContext = createContext<any>(null);
 
-const playerInitialState: typePlayer | null = (() => { 
-  try {
-    const player = localStorage.getItem("player");
-    return player ? JSON.parse(player) : null;
-  } catch (error) {
-    console.error("Failed to parse player data:", error);
-    return null;
-  }
-})();
-
 function PlayerContextProvider({ children }: { children: React.ReactNode }) {
-
-
-  const [player, setPlayer] = useState<typePlayer | null>(playerInitialState)
+  const [player, setPlayer] = useState<typePlayer | null>(null); 
   const [tempScore, setTempScore] = useState(0);
 
   useEffect(() => {
+    try {
+      const storedPlayer = localStorage.getItem("player");
+      if (storedPlayer) {
+        setPlayer(JSON.parse(storedPlayer));
+      }
+    } catch (error) {
+      console.error("Failed to parse player data:", error);
+    }
+  }, []);
+
+  useEffect(() => {
     if (player !== null) {
-      localStorage.setItem('player', JSON.stringify(player));
+      localStorage.setItem("player", JSON.stringify(player));
     }
   }, [player]);
 
-  const AssignPlayerData = (playerData: typePlayer) => { 
+  const AssignPlayerData = (playerData: typePlayer) => {
     setPlayer(playerData);
   };
 
@@ -46,17 +46,14 @@ function PlayerContextProvider({ children }: { children: React.ReactNode }) {
     AssignPlayerData,
     playerLevel: player?.Level_Id,
     setPlayerLevel: (newLevel: number) => {
-      setPlayer(prev => prev ? {...prev, Level_Id: newLevel} : null);
+      setPlayer((prev) => (prev ? { ...prev, Level_Id: newLevel } : null));
     },
     setTempScore,
-    tempScore
+    tempScore,
   };
-  
 
   return (
-    <playerContext.Provider value={value}>
-      {children}
-    </playerContext.Provider>
+    <playerContext.Provider value={value}>{children}</playerContext.Provider>
   );
 }
 
