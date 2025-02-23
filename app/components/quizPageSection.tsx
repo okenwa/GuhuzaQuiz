@@ -43,10 +43,10 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
       setTempScore(score)
       router.push("/signup")
     } else { 
-      const newlevel = Number(levelNumber) + 1
+      const nextLevel = Number(levelNumber) + 1
       const finalScore = score + player?.Playerpoint
       const playerId = player?.Player_ID
-  
+      const newlevel = Math.max(player.Level_Id, nextLevel)
      
       try {
         const response = await fetch("/api/updateScore", {
