@@ -3,7 +3,7 @@ import React, { use, useState } from "react";
 import QuizCard from "./quizCard";
 import { div } from "framer-motion/client";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import LeaderBoard from "./leaderBoard";
 import { useContext } from "react";
 import { playerContext } from "../context/playerContext";
@@ -18,7 +18,7 @@ import fetchPlayers from "@/utils/fPlayers";
 export default function QuizPageSection({ Quizes, levelNumber, levelTitle, players }: any) {
 
 
-  const { AssignPlayerData, setPlayerLevel, player } = useContext(playerContext)
+  const { AssignPlayerData, setPlayerLevel, player, setTempScore } = useContext(playerContext)
   const len = Quizes.length;
   const router = useRouter()
   const [score, setScore] = useState<number>(0);
@@ -39,42 +39,48 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   };
 
   const handleNextLevel = async () => {
-    const newlevel = Number(levelNumber) + 1
-    const finalScore = score + player.Playerpoint
-    const playerId = player.Player_ID
-
-
-    try {
-      const response = await fetch("/api/updateScore", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ playerId, finalScore, newlevel }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("User updated in successfully!", data);
-        AssignPlayerData(data.player);
-        setPlayerLevel(data.player.Level_Id)
-        router.push(`/quiz/${newlevel}`)
-        console.log(data.newlevel)
-        console.log(player)
-
-
-
-      } else {
-        const errorData = await response.json();
-        console.error("Login failed:", errorData.message);
-
-
+    if( !player) { 
+      setTempScore(score)
+      router.push("/signup")
+    } else { 
+      const newlevel = Number(levelNumber) + 1
+      const finalScore = score + player?.Playerpoint
+      const playerId = player?.Player_ID
+  
+     
+      try {
+        const response = await fetch("/api/updateScore", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ playerId, finalScore, newlevel }),
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          console.log("User updated in successfully!", data);
+          AssignPlayerData(data.player);
+          setPlayerLevel(data.player.Level_Id)
+          router.push(`/quiz/${newlevel}`)
+          console.log(data.newlevel)
+          console.log(player)
+  
+  
+  
+        } else {
+          const errorData = await response.json();
+          console.error("Login failed:", errorData.message);
+  
+  
+        }
+      } catch (error) {
+        console.error("An error occurred during login:", error);
+  
+  
       }
-    } catch (error) {
-      console.error("An error occurred during login:", error);
-
-
     }
+    
   }
 
 const handleGetPlayer = async() => { 
@@ -243,7 +249,7 @@ const handleGetPlayer = async() => {
             <div className="bg-blue-50 rounded border-2 border-blue-100   flex flex-col gap-4 items-center px-6 py-4">
             
               <p className="mt-4 text-xl"> 🏆TOTAL SCORE</p>
-              <h1 className="text-6xl font-bold">{player?.Playerpoint +  score}</h1>
+              <h1 className="text-6xl font-bold">{player ? player?.Playerpoint +  score: score}</h1>
             </div>
           </div>
           <Image src={"/mascot/proudMascot.svg"} className="mt-8" width={250} alt="Guhuza Bird" height={30} />

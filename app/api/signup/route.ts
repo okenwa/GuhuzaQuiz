@@ -3,14 +3,14 @@ import prisma from "@/lib/prisma"
 import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
-    const { username, name, password } = await req.json()
-    if (!username || !name || !password) {
+    const { username, name, password, tempScore } = await req.json()
+    if (!username || !name || !password || !tempScore) {
         return NextResponse.json(
             { message: "All field are required" },
             { status: 400 }
         )
     }
-
+    const levelId:number = tempScore == 0 ?1 : 2
     const hasedPassword = await bcrypt.hash(password, 10)
     try {
 
@@ -21,10 +21,10 @@ export async function POST(req: Request) {
                 player: {
                     create: {
                         Player_name: name,
-                        Playerpoint: 0,
+                        Playerpoint: tempScore,
                         streak: 0,
                         lastLogin: new Date(),
-                        Level_Id: 1,
+                        Level_Id: levelId,
                         Milestone_Id: 1,
                         Temp_Score: -1,
 

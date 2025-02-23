@@ -91,10 +91,10 @@ function ProfileHerosection() {
 
           <div className="">
             <p className="text-gray-600 ">
-              Solve {((player?.milestone?.UnlockingLevel - player?.Level_Id) < 0 ? 0 : player?.milestone.UnlockingLevel - player?.Level_Id).toString()} more level to get your reward
+              Solve {((player?.milestone?.UnlockingLevel - player?.Level_Id) < 0 ? 0 : player?.milestone?.UnlockingLevel - player?.Level_Id).toString()} more level to get your reward
             </p>
             <p className="mb-4 font-semibold ">{player?.milestone?.Milestone_Title}</p>
-            <ProgressBar percentage={(player?.milestone?.UnlockingLevel - player?.Level_Id) < 0 ? 100 :(player?.Level_Id / player?.milestone.UnlockingLevel) * 100} />
+            <ProgressBar percentage={(player?.milestone?.UnlockingLevel - player?.Level_Id) < 0 ? 100 :(player?.Level_Id / player?.milestone?.UnlockingLevel) * 100} />
             <button className="quizPbtn mt-4" disabled={player?.Level_Id < player?.milestone?.UnlockingLevel} onClick={handleClaimReward}>
               Claim Reward
             </button>

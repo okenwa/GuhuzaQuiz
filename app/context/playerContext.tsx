@@ -26,22 +26,11 @@ const playerInitialState: typePlayer | null = (() => {
 })();
 
 function PlayerContextProvider({ children }: { children: React.ReactNode }) {
-  // Initialize state with localStorage data if available
-  // const [player, setPlayer] = useState<typePlayer | null>(() => {
-  //   if (typeof window !== 'undefined') {
-  //     const savedPlayer = localStorage.getItem('player');
-  //     return savedPlayer ? JSON.parse(savedPlayer, (key, value) => {
-  //       if (key === 'lastLogin') return new Date(value);
-  //       return value;
-  //     }) : null;
-  //   }
-  //   return null;
-  // });
+
 
   const [player, setPlayer] = useState<typePlayer | null>(playerInitialState)
-  const [tempScore, setTempScore] = useState(-1);
+  const [tempScore, setTempScore] = useState(0);
 
-  // Save to localStorage whenever player changes
   useEffect(() => {
     if (player !== null) {
       localStorage.setItem('player', JSON.stringify(player));
@@ -58,8 +47,11 @@ function PlayerContextProvider({ children }: { children: React.ReactNode }) {
     playerLevel: player?.Level_Id,
     setPlayerLevel: (newLevel: number) => {
       setPlayer(prev => prev ? {...prev, Level_Id: newLevel} : null);
-    }
+    },
+    setTempScore,
+    tempScore
   };
+  
 
   return (
     <playerContext.Provider value={value}>
@@ -69,11 +61,3 @@ function PlayerContextProvider({ children }: { children: React.ReactNode }) {
 }
 
 export default PlayerContextProvider;
-
-export function usePlayer() { 
-  const context = useContext(playerContext);
-  if (!context) {
-    throw new Error('usePlayer must be used within a PlayerContextProvider');
-  }
-  return context;
-}
