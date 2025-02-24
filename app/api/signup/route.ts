@@ -4,12 +4,13 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
     const { username, name, password, tempScore } = await req.json()
-    if (!username || !name || !password || !tempScore) {
+    if (!username || !name || !password ) {
         return NextResponse.json(
-            { message: "All field are required" },
+            { message: "All field are required" + username + name + password + tempScore },
             { status: 400 }
         )
     }
+    
     const levelId:number = tempScore == 0 ?1 : 2
     const hasedPassword = await bcrypt.hash(password, 10)
     try {

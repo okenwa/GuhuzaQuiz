@@ -29,6 +29,7 @@ function SignUp() {
   // Handle sign-up form submission
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("tiggered")
     setError("");
     setLoading(true);
     try {

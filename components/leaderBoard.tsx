@@ -5,7 +5,7 @@ type leaderBoardType = {
   friends: Array<number>;
 };
 import { useContext } from "react";
-import { playerContext } from "../context/playerContext";
+import { playerContext } from "../app/context/playerContext";
 
 import ShareButton from "./buttons/sharebtn";
 

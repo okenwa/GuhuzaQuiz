@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/app/components/navbar";
-import ObserverProvider from "./components/ObserverPovider";
-import Footer from "./components/footer";
+import Navbar from "@/components/navbar";
+import ObserverProvider from "../components/ObserverPovider";
+import Footer from "../components/footer";
 import NextTopLoader from "nextjs-toploader";
 import PlayerContextProvider from "./context/playerContext";
 

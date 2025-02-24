@@ -1,5 +1,5 @@
 import React from 'react'
-import QuizList from '../components/quizList'
+import QuizList from '../../components/quizList'
 import fetchLevels from '@/utils/fLevels';
 import Link from 'next/link';
 

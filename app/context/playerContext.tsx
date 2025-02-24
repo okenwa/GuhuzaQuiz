@@ -34,6 +34,8 @@ function PlayerContextProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (player !== null) {
       localStorage.setItem("player", JSON.stringify(player));
+
+      
     }
   }, [player]);
 

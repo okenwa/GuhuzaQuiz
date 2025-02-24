@@ -2,7 +2,7 @@
 import React, { Suspense, useContext, useEffect } from "react";
 import QuizLevelCard from "./quizLevelCard";
 import fetchLevels from "@/utils/fLevels";
-import { playerContext } from "../context/playerContext";
+import { playerContext } from "../app/context/playerContext";
 import QuizList from "./quizList";
 import Link from "next/link";
 

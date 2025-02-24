@@ -1,9 +1,9 @@
 
 import React from "react";
-import QuizLevelSections from "../components/quizLevelSections";
-import LeaderBoard from "../components/leaderBoard";
-import ProfileHerosection from "../components/profileHerosection";
-import LeaderBoardSection from "../components/leaderBoardSection";
+import QuizLevelSections from "../../components/quizLevelSections";
+import LeaderBoard from "../../components/leaderBoard";
+import ProfileHerosection from "../../components/profileHerosection";
+import LeaderBoardSection from "../../components/leaderBoardSection";
 
 
 

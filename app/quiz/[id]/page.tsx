@@ -1,7 +1,7 @@
-import Qbtn from "@/app/components/buttons/quizbtn";
+import Qbtn from "@/components/buttons/quizbtn";
 import { fetchQuiz } from "@/utils/fQuiz";
-import QuizCard from "@/app/components/quizCard";
-import QuizPageSection from "@/app/components/quizPageSection";
+import QuizCard from "@/components/quizCard";
+import QuizPageSection from "@/components/quizPageSection";
 import fetchLevels from "@/utils/fLevels";
 import fetchPlayers from "@/utils/fPlayers";
 type quizeType = {

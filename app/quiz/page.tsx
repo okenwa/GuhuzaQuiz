@@ -1,13 +1,13 @@
 
 import React from "react";
-import Pbtn from "../components/buttons/primarybtn";
+import Pbtn from "../../components/buttons/primarybtn";
 import Image from "next/image";
 import WhyplaySection from "./whyplaySection";
-import QuizLevelSections from "../components/quizLevelSections";
-import LeaderBoard from "../components/leaderBoard";
-import ProfileHerosection from "../components/profileHerosection";
-import ShareButton from "../components/buttons/sharebtn";
-import QuizHero from "../components/quizHero";
+import QuizLevelSections from "../../components/quizLevelSections";
+import LeaderBoard from "../../components/leaderBoard";
+import ProfileHerosection from "../../components/profileHerosection";
+import ShareButton from "../../components/buttons/sharebtn";
+import QuizHero from "../../components/quizHero";
 import fetchPlayers from "@/utils/fPlayers";
 
 async function  QuizHomePage() {

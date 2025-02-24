@@ -2,7 +2,7 @@
 
 import React, { useContext, useState } from "react";
 import QuizLevelCard from "./quizLevelCard";
-import { playerContext } from "../context/playerContext";
+import { playerContext } from "../app/context/playerContext";
 
 type levelType = {
   Level_Id: number;
