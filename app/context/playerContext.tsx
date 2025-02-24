@@ -1,6 +1,8 @@
 "use client"; // ✅ Ensures this is a client component
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { cookies } from 'next/headers'
+
 
 type typePlayer = {
   Level_Id: number;
@@ -25,6 +27,8 @@ function PlayerContextProvider({ children }: { children: React.ReactNode }) {
       const storedPlayer = localStorage.getItem("player");
       if (storedPlayer) {
         setPlayer(JSON.parse(storedPlayer));
+        
+
       }
     } catch (error) {
       console.error("Failed to parse player data:", error);
