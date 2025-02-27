@@ -38,10 +38,13 @@ export async function POST(req: Request) {
 
             },
             include: {
-                player: true
+                player: true, 
+                
+                
             }
         })
 
+        
         const cookieStore =  cookies()
             cookieStore.set('LoggedIn', 'true', { secure: true , httpOnly:true,sameSite:"strict", path:"/", })
             cookieStore.set('PlayerLevel', String(levelId), { secure: true , httpOnly:true,sameSite:"strict", path:"/", })

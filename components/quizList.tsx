@@ -30,7 +30,7 @@ function QuizList({ allLevels, cutEnding = true }: { allLevels: levelsType; cutE
   }
 
   return (
-    <div>
+    <div className="">
       {filteredLevels.map(
         (level: levelType) =>
           level.Level_Id > endingPoint && (
@@ -39,7 +39,7 @@ function QuizList({ allLevels, cutEnding = true }: { allLevels: levelsType; cutE
               levelNumber={level.Level_Id}
               levelLink={`quiz/${level.Level_Id}`}
               levelName={level.Level_Title}
-              currentLevel={displayLevel} // ✅ Always defined
+              currentLevel={displayLevel} 
             />
           )
       )}

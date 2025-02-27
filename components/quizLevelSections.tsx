@@ -38,7 +38,7 @@ async function QuizLevelSections() {
           Challenges will appear as you grow
         </p>
       </div>
-      <div className=" container grid lg:gap-16  gap-8  ">
+      <div className=" container grid  lg:gap-16  gap-8  ">
         <Suspense fallback = {<div>Loading....</div>}>
         <QuizList  cutEnding = {true}
   allLevels={levels} 
