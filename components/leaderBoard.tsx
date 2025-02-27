@@ -28,7 +28,7 @@ type playerType = {
   milestone : milestoneType
 }
 
-type PlayersType ={ Players : playerType[]}
+type PlayersType ={ Players : playerType[] | []}
 
 export default  function LeaderBoard({Players}:PlayersType) {
   const {player}= useContext(playerContext)

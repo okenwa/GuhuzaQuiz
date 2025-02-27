@@ -10,7 +10,7 @@ import ShareButton from "../../components/buttons/sharebtn";
 import QuizHero from "../../components/quizHero";
 import fetchPlayers from "@/utils/fPlayers";
 async function  QuizHomePage() {
-  const players = (await fetchPlayers() || {})
+  const players = (await fetchPlayers() || [])
 
   return (
     <div className="mt-10">
