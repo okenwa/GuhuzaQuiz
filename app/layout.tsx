@@ -23,13 +23,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  // const session = await auth()
+  const session = await auth()
 
   return (
     <html lang="en">
       <body className={spacegrotesk.className}>
         <NextTopLoader />
-        {/* <SessionProvider session={session}> */}
+        <SessionProvider session={session}>
         <ObserverProvider>
           <PlayerContextProvider>
             <Navbar />
@@ -37,7 +37,7 @@ export default async function RootLayout({
             <Footer />
           </PlayerContextProvider>
         </ObserverProvider>
-        {/* </SessionProvider> */}
+        </SessionProvider>
       </body>
     </html>
   );

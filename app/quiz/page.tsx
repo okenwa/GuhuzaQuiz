@@ -16,14 +16,19 @@ import { auth } from "@/auth";
 
 async function  QuizHomePage() {
   const players = (await fetchPlayers() || [])
-  
-
+  const session = await auth()
+if ( session ){
+  const user = session.user
   return (
     <div className="mt-10">
+      
+      
+      
       {/* Hero Section */}
-
+   
       <QuizHero />
-
+      
+      <p>Welcome, {user?.name} {'->'} {user?.email}</p>
       {/* Why Play Section */}
       <div className="whyplay">
         <WhyplaySection />
@@ -40,6 +45,13 @@ async function  QuizHomePage() {
       </div>
     </div>
   );
+} 
+return ( 
+  <div> 
+    Session is not working 
+  </div>
+)
+  
 }
 
 export default QuizHomePage;
