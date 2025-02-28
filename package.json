@@ -9,9 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@heroui/skeleton": "^2.2.5",
-    "@heroui/system": "^2.4.6",
-    "@heroui/theme": "^2.4.5",
+   
     "@prisma/client": "^6.3.1",
     "bcryptjs": "^3.0.0",
     "clsx": "^2.1.1",
