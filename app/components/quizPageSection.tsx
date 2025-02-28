@@ -6,7 +6,7 @@ import Image from "next/image";
 import { redirect, useRouter } from "next/navigation";
 import LeaderBoard from "./leaderBoard";
 import { useContext } from "react";
-import { playerContext } from "../app/context/playerContext";
+import { playerContext } from "../context/playerContext";
 type quizeType = {
   question: string;
   comment: string;
