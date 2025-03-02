@@ -29,18 +29,13 @@ if ( session ){
       {/* Hero Section */}
    
       <QuizHero />
-      {/* <div className="container">
-        <p>{JSON.stringify(session)}</p>
-      <p>Username :  {user?.name} userEmail :  {user?.email} userId : {user?.id}</p>
-      <LogoutButton/>
-      </div> */}
      
       {/* Why Play Section */}
       <div className="whyplay">
         <WhyplaySection />
       </div>
       <p>Welcome, {user?.memberId} {user?.firstName} {user?.lastName} {'->'} {user?.email}</p>
-
+      <LogoutButton/>
 
       {/* Quiz Level Section */}
       <div className="QuizSection mt-16">
