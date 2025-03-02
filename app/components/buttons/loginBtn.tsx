@@ -2,11 +2,14 @@
 
 import { useState } from 'react'
 import { setCookie } from 'cookies-next'
+import { useContext } from 'react'
+import { playerContext } from '@/app/context/playerContext'
+import { auth } from '@/auth'
 
 export default function LoginButton() {
   
   const [isLoading, setIsLoading] = useState(false)
-
+  const{player} = useContext(playerContext)
   const handleLogin = async () => {
     setIsLoading(true)
     const state = Math.random().toString(36).substring(2, 15)
@@ -16,6 +19,9 @@ export default function LoginButton() {
     loginUrl.searchParams.append('redirect_uri', `${window.location.origin}/api/auth/callback/guhuza`)
 
     window.location.href = loginUrl.toString()
+ 
+
+   
   }
 
   return (

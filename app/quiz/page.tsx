@@ -12,19 +12,22 @@ import fetchPlayers from "@/utils/fPlayers";
 import { auth } from "@/auth";
 import LogoutButton from "../components/buttons/logoutBtn";
 import LoginButton from "../components/buttons/loginBtn";
-
+import { FectUser } from "@/utils/fUser";
 
 
 
 async function  QuizHomePage() {
   const players = (await fetchPlayers() || [])
   const session = await auth()
+  
 if ( session ){
   const user = session.user
+  
+  const player = await FectUser(Number(user?.memberId),user?.name , user?.email )
   return (
     <div className="mt-10">
       
-      
+      {player?.Player_name}
       
       {/* Hero Section */}
    
@@ -34,8 +37,7 @@ if ( session ){
       <div className="whyplay">
         <WhyplaySection />
       </div>
-      <p>Welcome, {user?.memberId} {user?.firstName} {user?.lastName} {'->'} {user?.email}</p>
-      <LogoutButton/>
+user id : {user?.memberId}
 
       {/* Quiz Level Section */}
       <div className="QuizSection mt-16">

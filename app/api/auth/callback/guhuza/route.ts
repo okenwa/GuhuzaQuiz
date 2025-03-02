@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCookie, deleteCookie } from 'cookies-next'
+import prisma from '@/lib/prisma'
 
 import { signIn } from '@/auth'
 
@@ -26,6 +27,8 @@ export async function GET(req: NextRequest) {
       if (signInResult?.error) {
         return NextResponse.redirect(new URL(`/?error=${signInResult.error}`, req.url))
       }
+     
+
 
       return NextResponse.redirect(new URL(`${process.env.REDIRECT_PATH}`, req.url))
     } catch (error) {
