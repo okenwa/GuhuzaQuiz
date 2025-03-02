@@ -3,8 +3,12 @@ import Link from "next/link";
 import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import { playerContext } from "./context/playerContext";
+import LoginButton from "./components/buttons/loginBtn";
+import LogoutButton from "./components/buttons/logoutBtn";
+import { auth } from "@/auth";
+import { div } from "framer-motion/client";
 
-export default function LoginPage() {
+export default async function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -48,12 +52,40 @@ export default function LoginPage() {
     }
   };
 
+  const session = await auth()
+  if (session){ 
+   const  user = session.user
+   return(
+    <div className="flex h-full">
+    <div className="px-8 my-32 rounded py-8 border-2 mx-auto w-fit bg-white">
+      <form onSubmit={handleLogin} className="">
+        <h1 className="title mb-5 w-32">
+         Welcome
+        </h1>
+        <p>Hello, {user?.name} </p>
+        <p>You are already loged in, if you want to loginto another account please logout</p>
+        <div className="mt-5 w-full">
+        <LogoutButton/>
+        </div>
+        
+        
+
+      
+      </form>
+     
+    </div>
+  </div>
+   )
+  }
   return (
     <div className="flex h-full">
       <div className="px-8 my-32 rounded py-8 border-2 mx-auto w-fit bg-white">
         <form onSubmit={handleLogin} className="">
-          <h1 className="title mb-5">Log In</h1>
-          <div className="">
+          <h1 className="title mb-5 w-32">
+            Log in
+          </h1>
+          <p>Hello, Welcome to Guhuza Quiz App , The authentication is handled by Guhuza</p>
+          {/* <div className="">
             <div>
               <label className="">Username</label>
               <div>
@@ -83,20 +115,24 @@ export default function LoginPage() {
                 <p className="text-red-500">{error} </p>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div>
-            <button className="quizPbtn mt-5 w-full" type="submit">
+            {/* <button className="quizPbtn mt-5 w-full" type="submit">
               Log in
-            </button>
+            </button> */}
+            <div className="mt-5 w-full">
+            <LoginButton/>
+            </div>
+           
           </div>
         </form>
-        <div className="mt-4">
+        {/* <div className="mt-4">
           <p>Don't have an account ?</p>
           <Link href={"/signup"} className="text-blue-600">
             Create New Account
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );

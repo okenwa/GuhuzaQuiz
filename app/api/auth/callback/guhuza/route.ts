@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCookie, deleteCookie } from 'cookies-next'
+
 import { signIn } from '@/auth'
 
 export async function GET(req: NextRequest) {

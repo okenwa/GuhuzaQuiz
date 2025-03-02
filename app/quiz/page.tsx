@@ -10,6 +10,8 @@ import ShareButton from "../components/buttons/sharebtn";
 import QuizHero from "../components/quizHero";
 import fetchPlayers from "@/utils/fPlayers";
 import { auth } from "@/auth";
+import LogoutButton from "../components/buttons/logoutBtn";
+import LoginButton from "../components/buttons/loginBtn";
 
 
 
@@ -27,12 +29,18 @@ if ( session ){
       {/* Hero Section */}
    
       <QuizHero />
-      
-      <p>Welcome, {user?.name} {'->'} {user?.email}</p>
+      {/* <div className="container">
+        <p>{JSON.stringify(session)}</p>
+      <p>Username :  {user?.name} userEmail :  {user?.email} userId : {user?.id}</p>
+      <LogoutButton/>
+      </div> */}
+     
       {/* Why Play Section */}
       <div className="whyplay">
         <WhyplaySection />
       </div>
+      <p>Welcome, {user?.memberId} {user?.firstName} {user?.lastName} {'->'} {user?.email}</p>
+
 
       {/* Quiz Level Section */}
       <div className="QuizSection mt-16">
@@ -47,8 +55,9 @@ if ( session ){
   );
 } 
 return ( 
-  <div> 
-    Session is not working 
+  <div className="container"> 
+    You are logged out 
+    <LoginButton/>
   </div>
 )
   
