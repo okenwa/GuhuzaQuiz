@@ -19,6 +19,7 @@ const user = await prisma.user.findFirst({
 
 
 
+
 if (user) { 
     const player = await prisma.player.update({ 
         where : { 
@@ -32,6 +33,7 @@ if (user) {
             milestone : true
         }
     })
+    
     return player
 }else   { 
         const hasedPassword = await bcrypt.hash("test123", 10)
