@@ -21,35 +21,30 @@ type quizesType = {
 };
 
 export default async function Page({ params }: { params: { id: string } }) {
-  try {
+
+
     const data = await fetchQuiz(params.id);
     const Quizes = data.test.question;
 
     const levels = (await fetchLevels()|| [])
     const levelNumber = params.id
-
     const levelTitle = levels?.[Number(levelNumber)-1].Level_Title
-    const players = (await fetchPlayers() || {})
 
     const session = await auth()
 
-    const user = session?.user;
-    const name = user?.firstName == null ? "Anonymous" :user?.name 
+    const user = session && session?.user;
+    const name =session ? user?.firstName == null ? "Anonymous" :user?.firstName : ""
 
-    const player = await fetchUser(
+    const player = session ? await fetchUser(
       Number(user?.memberId),
       name,
-      user?.email
-    );
+      user?.email || ""
+    ) : {}
 
     return (
       <div>
-        
         <QuizPageSection Quizes={Quizes} levelNumber = {levelNumber}  levelTitle = {levelTitle}  player={player} />
       </div>
     );
-  } catch (error) {
-    console.log(error);
-    return <p>Error Loading Quiz</p>;
-  }
+ 
 }

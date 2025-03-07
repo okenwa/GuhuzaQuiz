@@ -16,12 +16,12 @@ async function  Profile() {
   const session = await auth();
   if(session) { 
     const user = session?.user;
-    const name = user?.firstName == null ? "Anonymous" :user?.name 
+    const name = user?.firstName == null ? "Anonymous" :user?.firstName 
 
     const player = await fetchUser(
       Number(user?.memberId),
       name,
-      user?.email
+      user?.email || ""
     );
     const playerLevel = player?.Level_Id ?? 1;
     return (
