@@ -6,10 +6,8 @@ type typeUser = {
     email  : string 
 
 }
-export const   FectUser = async (userid:number, username:string, email :string ) => { 
-if (!username){
-    username = "User123"
-}
+ const   fetchUser = async (userid:number, username:string, email :string ) => { 
+
 
 
 
@@ -22,10 +20,15 @@ const user = await prisma.user.findFirst({
 
 
 if (user) { 
-    const player = await prisma.player.findUnique({ 
+    const player = await prisma.player.update({ 
         where : { 
             user_Id : userid
-        }, include: { 
+        }, data : { 
+            Player_name : username, 
+            
+
+        }, 
+        include: { 
             milestone : true
         }
     })
@@ -69,3 +72,5 @@ if (user) {
 
 
 }
+
+export default fetchUser

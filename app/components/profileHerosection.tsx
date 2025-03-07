@@ -3,9 +3,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useContext } from "react";
-import { playerContext } from "../context/playerContext";
-
 
 type ProgressBarType = {
   percentage: number;
@@ -28,11 +25,11 @@ const ProgressBar = ({ percentage }: ProgressBarType) => {
 
 
 
-function ProfileHerosection() {
+function ProfileHerosection({player}) {
 
 
 
-  const { player } = useContext(playerContext)
+  
   const mileStoneCounter = () => {
     if ((player?.milestone?.UnlockingLevel - player?.Level_Id) < 0) {
       return <span></span>

@@ -15,10 +15,10 @@ type quizeType = {
 };
 import fetchPlayers from "@/utils/fPlayers";
 
-export default function QuizPageSection({ Quizes, levelNumber, levelTitle, players }: any) {
+export default function QuizPageSection({ Quizes, levelNumber, levelTitle, player }: any) {
 
 
-  const { AssignPlayerData, setPlayerLevel, player, setTempScore } = useContext(playerContext)
+  const { AssignPlayerData, setPlayerLevel, setTempScore } = useContext(playerContext)
   const len = Quizes.length;
   const router = useRouter()
   const [score, setScore] = useState<number>(0);
@@ -275,10 +275,7 @@ const handleGetPlayer = async() => {
           </div>
 
         </div>
-        <div>
-        
-          <LeaderBoard Players={players}  />
-        </div>
+       
       </div>
     </div>
   );
