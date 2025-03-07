@@ -18,12 +18,12 @@ async function QuizHomePage() {
   const session = await auth();
   if (session) {
     const user = session.user;
-    const name = user?.firstName == null ? "Anonymous" :user?.name 
+    const name = user?.firstName == null ? "Anonymous" :user?.firstName 
 
     const player = await fetchUser(
       Number(user?.memberId),
       name,
-      user?.email
+      user?.email || ''
     );
     const playerLevel = player?.Level_Id ?? 1;
     return (
@@ -44,7 +44,7 @@ async function QuizHomePage() {
 
         {/* Leaderboard Section */}
         <div className="leaderboard section container">
-          <LeaderBoard Players={players} />
+          <LeaderBoard  />
         </div>
       </div>
     );
