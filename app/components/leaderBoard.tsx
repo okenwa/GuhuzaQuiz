@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import fetchPlayers from "@/utils/fPlayers";
+import fetchRank from "@/utils/fRanking";
 import fetchUser from "@/utils/fUser";
 
 type leaderBoardType = {
@@ -32,15 +33,15 @@ export default async function LeaderBoard() {
   const Players = (await fetchPlayers()) || [];
   const session = await auth();
  const user = session?.user;
-  const name = user?.firstName == null ? "Anonymous" :user?.name 
+  const name = user?.firstName == null ? "Anonymous" :user?.firstName + " " + user?.lastName
 
   const player = session ? await fetchUser(
     Number(user?.memberId),
     name,
-    user?.email
+    user?.email || ""
   ) : null
   const playerId =session ?  player?.Player_ID : null ;
- 
+ const rank = player ?  await fetchRank(player.Playerpoint) : 100 
   // Sort players by points in descending order
   const sortedPlayers = [...Players]?.sort(
     (a, b) => b?.Playerpoint - a?.Playerpoint
@@ -74,6 +75,7 @@ export default async function LeaderBoard() {
         <table className="intersect:motion-preset-slide-up motion-delay-200 intersect-once min-w-full bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden">
           <thead className="bg-gradient-to-b from-gray-950 to-gray-800 text-white uppercase text-sm font-semibold">
             <tr>
+            <th className="px-6 py-3 text-left tracking-wider">Ranking</th>
               <th className="px-6 py-3 text-left tracking-wider">Name</th>
               <th className="px-6 py-3 text-left tracking-wider">Points</th>
               <th className="px-6 py-3 text-left tracking-wider">Level</th>
@@ -81,8 +83,9 @@ export default async function LeaderBoard() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-300">
-            {topPlayers.map((playerData) => {
+            {topPlayers.map((playerData, index) => {
               const isCurrentPlayer = playerData?.Player_ID === playerId;
+              const leaderBoardRank = isCurrentPlayer ? rank : index +1
               const rowClass =
                 isCurrentPlayer && "bg-blue-100 font-semibold text-gray-900";
 
@@ -91,6 +94,9 @@ export default async function LeaderBoard() {
                   key={playerData?.Player_ID}
                   className={`${rowClass} transition-all`}
                 >
+                  <td className="px-6 py-4 text-sm ">
+                    {leaderBoardRank}
+                  </td>
                   <td className="px-6 py-4 text-sm ">
                     {playerData?.Player_name}
                   </td>

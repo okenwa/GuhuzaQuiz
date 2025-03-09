@@ -20,12 +20,32 @@ const ProgressBar = ({ percentage }: ProgressBarType) => {
     </div>
   );
 };
+type milestoneType = {
+  Milestone_Id: number;
+  Milestone_Title: string;
+  Milestone_description: string;
+  UnlockingLevel: number;
+  UploadRequired: boolean;
+};
+
+type playerType = {
+  Player_ID: number;
+  Player_name: string;
+  Playerpoint: number;
+  streak: number;
+  lastLogin: Date;
+  Level_Id: number;
+  Milestone_Id?: number;
+  milestone: milestoneType;
+};
 
 
+type typePlayerHeroSection = { 
+  player :  playerType, 
+  playerRank : number
+}
 
-
-
-function ProfileHerosection({player, playerRank}) {
+function ProfileHerosection({player, playerRank}: typePlayerHeroSection) {
 
 
 
