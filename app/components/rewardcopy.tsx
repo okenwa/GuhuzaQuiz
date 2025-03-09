@@ -5,29 +5,31 @@ import { playerContext } from "../context/playerContext";
 import { Resend } from 'resend';
 import { useRouter } from "next/navigation";
 
-type typeMilestone = { 
-    Milestone_Id : number;
-    Milestone_Title : string;
-    Milestone_description : string; 
-    Milestone_link : string;
-}
 
+type milestoneType = {
+  Milestone_Id: number;
+  Milestone_Title: string;
+  Milestone_description: string;
+  UnlockingLevel: number;
+  Milestone_reward_message: string;
+  Milestone_Link:string; 
+  Milestone_Button_CTA : string 
+};
 
-type typePlayer = {
-    Level_Id: number;
-    Milestone_Id: number;
-    Player_ID: number;
-    Player_name: string;
-    Playerpoint: number;
-    Temp_Score: number;
-    lastLogin: Date;
-    streak: number;
-    user_Id: number;
-    milestone : typeMilestone
-  };
+type playerType = {
+  Player_ID: number;
+  Player_name: string;
+  Playerpoint: number;
+  streak: number;
+  lastLogin: Date;
+  Level_Id: number;
+  Milestone_Id?: number;
+  milestone: milestoneType;
+};
+
 
   type typeRewardCopy =  { 
-    player : typePlayer | null
+    player : playerType | null
   }
 
 
@@ -52,8 +54,9 @@ function RewardCopy({player}:typeRewardCopy) {
       
     
       const data = await response.json()
-        
-      window.open("https://google.com", "_blank");
+      if (reward?.Milestone_Link) {
+        window.open(String(reward.Milestone_Link), "_blank");
+      }
       router.push("/profile")
       
 
@@ -68,17 +71,14 @@ function RewardCopy({player}:typeRewardCopy) {
     <div className="container">
       <h1 className="title mt-20">{reward?.Milestone_Title}</h1>
       <p className="mt-6">
-      Awesome work! You've completed Level 20! 🚀 Your reward is access to Chapter 1 of Tales from the Recruiter on Spotify. Click below to start listening and enhance your recruitment knowledge! 🎧 [Listen to Chapter 1]
-      </p>
-      <p className="mt-4">{reward?.Milestone_description}</p>
-      <form className="mt-10 mb-20">
-        <div>
-        <a className="underline text-blue-600 font-medium" href="https://tinyurl.com/mpv2vxnt" target="_blank"> Claim Reward</a>
-        </div>
+      {reward?.Milestone_description}      </p>
+      <p className="mt-4">{reward?.Milestone_reward_message}</p>
+      <div className="my-11">        <button className="quizPbtn" onClick={handleSumit}>{reward?.Milestone_Button_CTA}</button>
+
+
+      </div>
      
-        <br></br>
-        <button className="quizPbtn mt-8" onClick={handleSumit}>Submit</button>
-      </form>
+   
     </div>
   );
 }

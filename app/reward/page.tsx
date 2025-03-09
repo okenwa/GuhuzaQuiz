@@ -4,35 +4,33 @@ import { auth } from "@/auth";
 import fetchUser from "@/utils/fUser";
 
 
-type typeMilestone = { 
-  Milestone_Id : number;
-  Milestone_Title : string;
-  Milestone_description : string; 
-  Milestone_link : string;
-}
-
-
-type typePlayer = {
-  Level_Id: number;
+type milestoneType = {
   Milestone_Id: number;
+  Milestone_Title: string;
+  Milestone_description: string;
+  UnlockingLevel: number;
+  Milestone_reward_message: string;
+  Milestone_Link:string; 
+  Milestone_Button_CTA : string 
+};
+
+type playerType = {
   Player_ID: number;
   Player_name: string;
   Playerpoint: number;
-  Temp_Score: number;
-  lastLogin: Date;
   streak: number;
-  user_Id: number;
-  milestone : typeMilestone
+  lastLogin: Date;
+  Level_Id: number;
+  Milestone_Id?: number;
+  milestone: milestoneType;
 };
-
-
 
 
 async function Reward() {
   const session = await auth()
   if(session) { 
     const user = session?.user
-    const player: typePlayer | null  = await fetchUser(Number(user?.memberId), user?.firstName || "Anonymous", user?.email||"noemailavailable") ?? null
+    const player: playerType | null  = await fetchUser(Number(user?.memberId), user?.firstName || "Anonymous", user?.email||"noemailavailable") ?? null
     return (
       <div>
        <RewardCopy player={ player}/>

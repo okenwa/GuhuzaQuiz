@@ -25,7 +25,9 @@ type milestoneType = {
   Milestone_Title: string;
   Milestone_description: string;
   UnlockingLevel: number;
-  UploadRequired: boolean;
+  Milestone_reward_message: string;
+  Milestone_Link:string; 
+  Milestone_Button_CTA : string 
 };
 
 type playerType = {
