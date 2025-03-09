@@ -7,6 +7,7 @@ import LeaderBoardSection from "../components/leaderBoardSection";
 import { auth } from "@/auth";
 import fetchUser from "@/utils/fUser";
 import LoginButton from "../components/buttons/loginBtn";
+import fetchRank from "@/utils/fRanking";
 
 
 
@@ -23,11 +24,13 @@ async function  Profile() {
       name,
       user?.email || ""
     );
+    const playerPoint:number = player ? player.Playerpoint : 0
+    const playerRank = player ? await fetchRank(Number(playerPoint)) : 100
     const playerLevel = player?.Level_Id ?? 1;
     return (
       <div className="p-6 min-h-screen">
     
-        <ProfileHerosection  player = {player} />
+        <ProfileHerosection  player = {player} playerRank = {playerRank}/>
          <div className="mt-12">
           <QuizLevelSections playerLevel={playerLevel}/>
         </div>

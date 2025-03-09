@@ -21,11 +21,31 @@ const playerexist = await prisma.player.findFirst({
 
 
 if (playerexist) { 
+
+  // checking and updating streak 
+  // Get only the date part (no time) from lastLogin and current date
+  const lastLoginDate = new Date(playerexist.lastLogin);
+  lastLoginDate.setHours(0, 0, 0, 0); 
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0); 
+
+  const dayDiff = (currentDate.getTime() - lastLoginDate.getTime()) / (1000 * 60 * 60 * 24); // Convert milliseconds to days
+
+  let updatedStreak = playerexist.streak;
+
+  if (dayDiff === 1) {
+      updatedStreak += 1; // Increment streak if last login was exactly 1 day ago
+  } else if (dayDiff > 1) {
+      updatedStreak = 0; // Reset streak if more than 1 day has passed
+  }
+
     const player = await prisma.player.update({ 
         where : { 
             Player_ID : userid
         }, data : { 
             Player_name : username, 
+            streak : updatedStreak, 
+            lastLogin: currentDate
             
 
         }, 
@@ -47,7 +67,7 @@ if (playerexist) {
         Level_Id : 1,
         Milestone_Id : 1, 
         lastLogin : new Date(), 
-        streak : 0 , 
+        streak : 1 , 
       }
     })
     return player

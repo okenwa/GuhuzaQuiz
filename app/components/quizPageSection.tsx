@@ -39,7 +39,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   };
 
   const handleNextLevel = async () => {
-    if( !player?.Playerpoint) { 
+    if( !player) { 
       setTempScore(score)
       router.push("/signup")
     } else { 

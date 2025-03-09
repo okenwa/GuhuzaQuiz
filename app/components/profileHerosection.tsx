@@ -25,7 +25,7 @@ const ProgressBar = ({ percentage }: ProgressBarType) => {
 
 
 
-function ProfileHerosection({player}) {
+function ProfileHerosection({player, playerRank}) {
 
 
 
@@ -52,7 +52,7 @@ function ProfileHerosection({player}) {
             <div className="grid grid-cols-3 min  py-6">
               <div className="text-center">
                 <p className="text-gray-500 text-sm mb-1">Ranking</p>
-                <p className="text-5xl font-bold text-gray-800">12 </p>
+                <p className="text-5xl font-bold text-gray-800">{playerRank} </p>
               </div>
               <div className="text-center">
                 <p className="text-gray-500 text-sm mb-1">Points Earned</p>
