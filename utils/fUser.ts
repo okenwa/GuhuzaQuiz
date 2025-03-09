@@ -11,19 +11,19 @@ type typeUser = {
 
 
 
-const user = await prisma.user.findFirst({
+const playerexist = await prisma.player.findFirst({
     where: {
-        User_Id: userid,
+        Player_ID: userid,
     },
 });
 
 
 
 
-if (user) { 
+if (playerexist) { 
     const player = await prisma.player.update({ 
         where : { 
-            user_Id : userid
+            Player_ID : userid
         }, data : { 
             Player_name : username, 
             
@@ -36,39 +36,20 @@ if (user) {
     
     return player
 }else   { 
-        const hasedPassword = await bcrypt.hash("test123", 10)
-    
-    const user = await prisma.user.create( { 
-        data: {
-            Username: email,
-            Password: hasedPassword,
-            User_Id : userid, 
-            player: {
-                create: {
-                    Player_name: username,
-                    Playerpoint: 0,
-                    streak: 0,
-                    lastLogin: new Date(),
-                    Level_Id: 1,
-                    Milestone_Id: 1,
-                    Temp_Score: -1,
+       
+ 
 
-
-
-                },
-            }
-
-
-        },
-        include: {
-            player: true, 
-            
-            
-        }
-    }
-    )
-
-    const player = user.player
+    const player = await prisma.player.create ( { 
+      data : { 
+        Player_ID : Number(userid),
+        Player_name : username, 
+        Playerpoint: 0, 
+        Level_Id : 1,
+        Milestone_Id : 1, 
+        lastLogin : new Date(), 
+        streak : 0 , 
+      }
+    })
     return player
 }
 
