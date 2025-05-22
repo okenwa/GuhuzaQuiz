@@ -30,7 +30,7 @@ async function  Profile() {
     return (
       <div className="p-6 min-h-screen">
     
-        <ProfileHerosection  player = {player} playerRank = {playerRank}/>
+        <ProfileHerosection player={player ?? null} playerRank={playerRank}/>
          <div className="mt-12">
           <QuizLevelSections playerLevel={playerLevel}/>
         </div>
