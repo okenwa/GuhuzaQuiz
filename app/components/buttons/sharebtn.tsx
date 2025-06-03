@@ -1,11 +1,27 @@
 import { useState, useRef, useEffect } from "react";
 import { FaShareAlt, FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp } from "react-icons/fa";
 
-const ShareButton = () => {
+interface ShareButtonProps {
+  shareText?: string;
+  shareUrl?: string;
+  buttonClassName?: string;
+}
+
+const ShareButton = ({ shareText, shareUrl, buttonClassName = "quizSbtn" }: ShareButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
-  const websiteUrl = "https://guhuza.com/"; // Replace with your website URL
-  const text = encodeURIComponent("Check out this amazing website! 🚀");
+  
+  // Convert localhost URL to production URL
+  const getShareUrl = (url: string) => {
+    if (url.includes('localhost')) {
+      // Replace localhost URL with production URL
+      return url.replace(/http:\/\/localhost:\d+/, 'https://guhuza.com');
+    }
+    return url;
+  };
+
+  const websiteUrl = getShareUrl(shareUrl || "https://guhuza.com/");
+  const text = encodeURIComponent(shareText || "Check out this amazing website! 🚀");
 
   // Close popup when clicking outside
   useEffect(() => {
@@ -23,7 +39,7 @@ const ShareButton = () => {
       {/* Share Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className=" flex items-center gap-2 quizSbtn"
+        className={`flex items-center gap-2 ${buttonClassName}`}
       >
         <FaShareAlt /> Share
       </button>
@@ -53,7 +69,7 @@ const ShareButton = () => {
               <FaTwitter /> Twitter (X)
             </a>
             <a
-              href={`https://www.linkedin.com/sharing/share-offsite/?url=${websiteUrl}`}
+              href={`https://www.linkedin.com/sharing/share-offsite/?mini=true&url=${websiteUrl}&title=${encodeURIComponent('Guhuza Quiz Progress')}&summary=${text}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-blue-600 hover:underline"
