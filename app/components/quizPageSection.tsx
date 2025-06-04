@@ -8,6 +8,8 @@ import LeaderBoard from "./leaderBoard";
 import { useContext } from "react";
 import { playerContext } from "../context/playerContext";
 import { setCookie } from "cookies-next";
+import ShareButton from "./buttons/sharebtn";
+
 type quizeType = {
   question: string;
   comment: string;
@@ -27,7 +29,8 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   const [ansCorrect, setAnsCorrect] = useState(false);
   const [usedHint, setUsedHint] = useState(false);
   const [retried, setRetried] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(30); // 30 seconds per question
+  const [retryCount, setRetryCount] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(15); // 15 seconds per question
   var quizer: quizeType = Quizes[questionNumber];
 
   // Timer effect
@@ -45,7 +48,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
 
   // Reset timer when moving to next question
   useEffect(() => {
-    setTimeLeft(30);
+    setTimeLeft(15);
   }, [questionNumber]);
 
   const setDefault = () => {
@@ -54,6 +57,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
     setAnsCorrect(false);
     setUsedHint(false);
     setRetried(false);
+    setRetryCount(0);
   };
 
   const handleNextLevel = async () => {
@@ -107,7 +111,11 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
 
     if (selectedAnswer == quizer.test_answer) {
       if (retried) {
-        setScore(score + 10);
+        if (retryCount === 1) {
+          setScore(score + 10);
+        } else if (retryCount === 2) {
+          setScore(score + 5);
+        }
       } else {
         setScore(score + 30);
       }
@@ -115,8 +123,9 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
    
   };
   const handleShareScore = () => {
-    console.log(score,player, levelTitle )
-  }
+    const shareText = `🎮 I just completed Level ${levelNumber}: ${levelTitle} on Guhuza Quiz App! 🎯\n\n🏆 My score: ${score} points\n⭐ Total Score: ${player?.Playerpoint ? player?.Playerpoint + score : score} points\n\nCan you beat my score? Try it now! #GuhuzaQuiz #LearningIsFun`;
+    return shareText;
+  };
 
   const handleNextQuestion = () => {
     if (questionNumber < len) {
@@ -140,6 +149,10 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
           Level {levelNumber} : {levelTitle}
         </h2>
         <div className="flex items-center gap-4">
+          <div className="bg-blue-50 rounded-lg px-4 py-2 border border-blue-200">
+            <p className="text-sm text-blue-600">Current Points</p>
+            <p className="text-2xl font-bold text-blue-700">{score}</p>
+          </div>
           <p className="mb-6">
             Question : {questionNumber + 1}/{len}
           </p>
@@ -188,6 +201,8 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
                 setAnsCorrect={setAnsCorrect}
               />
 
+              
+
               {/* buton section */}
               <div className=" ">
                 <div className="mt-10 ">
@@ -202,6 +217,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
                                 setSelectedAnswer(-1);
                                 setAnswerChecked(false);
                                 setRetried(true);
+                                setRetryCount(prev => prev + 1);
                               }}
                               disabled={usedHint}
                             >
@@ -317,10 +333,11 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
               </svg>
               Retry Same Lesson</button>
-            <button onClick={handleShareScore}  className="flex gap-4">  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
-              <path stroke-linecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
-            </svg>
-              Share Score on social Media</button>
+            <ShareButton 
+              shareText={handleShareScore()}
+              shareUrl={window.location.href}
+              buttonClassName="flex gap-4 items-center bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-md"
+            />
           </div>
 
         </div>
