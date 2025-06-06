@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 async function main() {
   // Create 40 levels
   const levels = [];
-  for (let i = 1; i <= 40; i++) {
+  for (let i = 0; i <= 40; i++) {
     let levelTitle;
     if (i <= 10) {
       levelTitle = `Beginner Level ${i}`;
