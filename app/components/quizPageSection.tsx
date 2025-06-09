@@ -1,5 +1,5 @@
 "use client";
-import React, { use, useState, useEffect } from "react";
+import React, { use, useState, useEffect, useRef } from "react";
 import QuizCard from "./quizCard";
 import { div } from "framer-motion/client";
 import Image from "next/image";
@@ -9,6 +9,8 @@ import { useContext } from "react";
 import { playerContext } from "../context/playerContext";
 import { setCookie } from "cookies-next";
 import ShareButton from "./buttons/sharebtn";
+import { useBadges } from "../context/badgeContext";
+import BadgeSystem from "./badges/BadgeSystem";
 
 type quizeType = {
   question: string;
@@ -31,20 +33,51 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   const [retried, setRetried] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [timeLeft, setTimeLeft] = useState(15); // 15 seconds per question
+  const tickSoundRef = useRef<HTMLAudioElement | null>(null);
+  const timeUpSoundRef = useRef<HTMLAudioElement | null>(null);
   var quizer: quizeType = Quizes[questionNumber];
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [answerTime, setAnswerTime] = useState(0);
+  const { userBadges, checkAndAwardBadges, activePowerUps, activatePowerUp, usePowerUp } = useBadges();
+  const [showBadgeNotification, setShowBadgeNotification] = useState<string | null>(null);
+  const [showRules, setShowRules] = useState(true);
+  const [timerStarted, setTimerStarted] = useState(false);
+  const [allQuestionsUnder5Seconds, setAllQuestionsUnder5Seconds] = useState(true);
+
+  // Initialize audio elements
+  useEffect(() => {
+    tickSoundRef.current = new Audio('/sounds/tick.mp3');
+    timeUpSoundRef.current = new Audio('/sounds/timeup.mp3');
+  }, []);
 
   // Timer effect
   useEffect(() => {
-    if (!answerChecked && timeLeft > 0) {
+    if (!answerChecked && timeLeft > 0 && timerStarted) {
       const timer = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
+        setTimeLeft((prev) => {
+          setAnswerTime(15 - prev); // Track time taken to answer
+          if (prev > 1) {
+            tickSoundRef.current?.play().catch(err => console.log('Error playing tick sound:', err));
+          }
+          return prev - 1;
+        });
       }, 1000);
       return () => clearInterval(timer);
-    } else if (timeLeft === 0 && !answerChecked) {
+    } else if (timeLeft === 0 && !answerChecked && timerStarted) {
+      timeUpSoundRef.current?.play().catch(err => console.log('Error playing time up sound:', err));
       setAnswerChecked(true);
       setAnsCorrect(false);
     }
-  }, [timeLeft, answerChecked]);
+  }, [timeLeft, answerChecked, timerStarted]);
+
+  // Check for power-ups
+  useEffect(() => {
+    const timeFreeze = activePowerUps.find(p => p.name === 'Time Freeze' && p.active);
+    if (timeFreeze) {
+      // Implement time freeze logic here
+      usePowerUp('Time Freeze');
+    }
+  }, [activePowerUps]);
 
   // Reset timer when moving to next question
   useEffect(() => {
@@ -108,8 +141,10 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
 
   const handleScore = () => {
     setAnswerChecked(true);
+    const isCorrect = selectedAnswer == quizer.test_answer;
 
-    if (selectedAnswer == quizer.test_answer) {
+    if (isCorrect) {
+      setCurrentStreak(prev => prev + 1);
       if (retried) {
         if (retryCount === 1) {
           setScore(score + 10);
@@ -117,10 +152,31 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
           setScore(score + 5);
         }
       } else {
-        setScore(score + 30);
+        // Check for double points power-up
+        const doublePoints = activePowerUps.find(p => p.name === 'Double Points' && p.active);
+        setScore(score + (doublePoints ? 60 : 30));
+        if (doublePoints) {
+          usePowerUp('Double Points');
+        }
       }
+    } else {
+      setCurrentStreak(0);
     }
-   
+
+    // Update allQuestionsUnder5Seconds
+    if (answerTime > 5) {
+      setAllQuestionsUnder5Seconds(false);
+    }
+
+    // Check for badges
+    checkAndAwardBadges({
+      answerTime,
+      isCorrect,
+      score,
+      streak: currentStreak,
+      levelCompleted: questionNumber === len - 1,
+      allQuestionsUnder5Seconds
+    });
   };
   const handleShareScore = () => {
     const shareText = `🎮 I just completed Level ${levelNumber}: ${levelTitle} on Guhuza Quiz App! 🎯\n\n🏆 My score: ${score} points\n⭐ Total Score: ${player?.Playerpoint ? player?.Playerpoint + score : score} points\n\nCan you beat my score? Try it now! #GuhuzaQuiz #LearningIsFun`;
@@ -144,6 +200,53 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
 
   return questionNumber < len ? (
     <div className="md:py-16 pt-8 pb-28">
+      {showRules && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-lg max-w-2xl mx-4">
+            <h2 className="text-2xl font-bold mb-4">Quiz Rules</h2>
+            <div className="space-y-4">
+              <p>1. You have 15 seconds to answer each question</p>
+              <p>2. Correct answers earn you 30 points</p>
+              <p>3. If you need to retry:</p>
+              <ul className="list-disc pl-6">
+                <li>First retry: 10 points</li>
+                <li>Second retry: 5 points</li>
+              </ul>
+              <p>4. You can use "Display Answer" to see the correct answer, but you won't earn any points</p>
+              <p>5. Complete all questions to finish the level</p>
+              <p>6. Earn power-ups by completing achievements!</p>
+            </div>
+            <button 
+              className="quizPbtn mt-6"
+              onClick={() => {
+                setShowRules(false);
+                setTimerStarted(true);
+              }}
+            >
+              Start Quiz
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Power-ups display */}
+      {activePowerUps.length > 0 && (
+        <div className="container mb-4">
+          <div className="flex gap-4">
+            {activePowerUps.map(powerUp => (
+              <button
+                key={powerUp.name}
+                className={`px-4 py-2 rounded-lg ${
+                  powerUp.active ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                }`}
+                onClick={() => activatePowerUp(powerUp.name)}
+                disabled={powerUp.active || powerUp.remainingUses === 0}
+              >
+                {powerUp.name} ({powerUp.remainingUses} uses left)
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="container flex justify-between flex-wrap">
         <h2 className="md:mb-16 mb-4 title intersect: motion-preset-slide-up motion-delay-200 intersect-once">
           Level {levelNumber} : {levelTitle}
@@ -325,6 +428,11 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
 
 
          
+          <div className="mt-8 w-full max-w-2xl">
+            <h2 className="text-2xl font-bold mb-4">Your Achievements</h2>
+            <BadgeSystem userBadges={userBadges} />
+          </div>
+
           <button className="quizPbtn mt-20" onClick={handleNextLevel}>Save Score</button>
 
           <div className="flex  flex-wrap justify-center gap-6 mt-8">

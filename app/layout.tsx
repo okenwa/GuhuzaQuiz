@@ -7,10 +7,11 @@ import ObserverProvider from "./components/ObserverPovider";
 import Footer from "./components/footer";
 import NextTopLoader from "nextjs-toploader";
 import PlayerContextProvider from "./context/playerContext";
+import { BadgeProvider } from './context/badgeContext';
 
 export const metadata: Metadata = {
-  title: "Guhuza’s Brain Boost",
-  description: "Level Up Your Job Search with Guhuza’s Brain Boost",
+  title: "Guhuza's Brain Boost",
+  description: "Level Up Your Job Search with Guhuza's Brain Boost",
 };
 
 export default async function RootLayout({
@@ -28,9 +29,11 @@ export default async function RootLayout({
         <SessionProvider session={session}>
         <ObserverProvider>
           <PlayerContextProvider>
-            <Navbar />
-            {children}
-            <Footer />
+            <BadgeProvider>
+              <Navbar />
+              {children}
+              <Footer />
+            </BadgeProvider>
           </PlayerContextProvider>
         </ObserverProvider>
         </SessionProvider>

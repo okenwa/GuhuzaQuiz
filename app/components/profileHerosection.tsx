@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useBadges } from "../context/badgeContext";
+import BadgeSystem from "./badges/BadgeSystem";
 
 type ProgressBarType = {
   percentage: number;
@@ -48,9 +50,7 @@ type typePlayerHeroSection = {
 }
 
 function ProfileHerosection({player, playerRank}: typePlayerHeroSection) {
-
-
-
+  const { userBadges } = useBadges();
   
   const mileStoneCounter = () => {
     if ((player?.milestone?.UnlockingLevel - player?.Level_Id) < 0) {
@@ -70,11 +70,11 @@ function ProfileHerosection({player, playerRank}: typePlayerHeroSection) {
       <div className="flex flex-col flex-wrap md:flex-row gap-8 md:gap-12">
         <div className="flex-1">
           {/* Stats Card */}
-          <div className="  rounded-lg  bg-blue-50   ">
-            <div className="grid grid-cols-3 min  py-6">
+          <div className="rounded-lg bg-blue-50">
+            <div className="grid grid-cols-3 min py-6">
               <div className="text-center">
                 <p className="text-gray-500 text-sm mb-1">Ranking</p>
-                <p className="text-5xl font-bold text-gray-800">{playerRank} </p>
+                <p className="text-5xl font-bold text-gray-800">{playerRank}</p>
               </div>
               <div className="text-center">
                 <p className="text-gray-500 text-sm mb-1">Points Earned</p>
@@ -86,16 +86,34 @@ function ProfileHerosection({player, playerRank}: typePlayerHeroSection) {
               </div>
             </div>
 
+            {/* Question Statistics */}
+            <div className="grid grid-cols-2 gap-4 p-4 border-t border-blue-100">
+              <div className="text-center">
+                <p className="text-gray-500 text-sm mb-1">Correct Answers</p>
+                <p className="text-2xl font-bold text-green-600">{Math.floor(player?.Playerpoint / 30)}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-gray-500 text-sm mb-1">Questions Attempted</p>
+                <p className="text-2xl font-bold text-blue-600">{Math.floor(player?.Playerpoint / 5)}</p>
+              </div>
+            </div>
+
             {/* Streak Section */}
-            <div className="flex items-center justify-center bg-blue-50 rounded-b-lg  py-6 w-full border-t-1">
+            <div className="flex items-center justify-center bg-blue-50 rounded-b-lg py-6 w-full border-t-1">
               <span className="text-blue-300 mr-2 text-xl">🔥</span>
               <p className="text-gray-700 text-xl">{player?.streak} Days Streak</p>
             </div>
           </div>
+
+          {/* Badges Section */}
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold mb-4">Your Badges</h2>
+            <BadgeSystem userBadges={userBadges} />
+          </div>
         </div>
 
         {/* Right Gift Section */}
-        <div className=" flex flex-row items-center  border-1 border-b-3 border-blue-400 gap-8 px-9 rounded-lg">
+        <div className="flex-1">
           <div className="relative overflow-visible mb-4">
             <div className="flex flex-col gap-y-[-3] items-center">
               <Image
@@ -109,10 +127,10 @@ function ProfileHerosection({player, playerRank}: typePlayerHeroSection) {
           </div>
 
           <div className="py-4 mb:py-0">
-            <p className="text-gray-600 ">
+            <p className="text-gray-600">
               Solve {((player?.milestone?.UnlockingLevel - player?.Level_Id) < 0 ? 0 : player?.milestone?.UnlockingLevel - player?.Level_Id).toString()} more level to get your reward
             </p>
-            <p className="mb-4 font-semibold ">{player?.milestone?.Milestone_Title}</p>
+            <p className="mb-4 font-semibold">{player?.milestone?.Milestone_Title}</p>
             <ProgressBar percentage={(player?.milestone?.UnlockingLevel - player?.Level_Id) < 0 ? 100 :(player?.Level_Id / player?.milestone?.UnlockingLevel) * 100} />
             <button className="quizPbtn mt-4" disabled={player?.Level_Id < player?.milestone?.UnlockingLevel} onClick={handleClaimReward}>
               Claim Reward

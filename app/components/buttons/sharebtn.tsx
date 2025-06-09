@@ -69,7 +69,7 @@ const ShareButton = ({ shareText, shareUrl, buttonClassName = "quizSbtn" }: Shar
               <FaTwitter /> Twitter (X)
             </a>
             <a
-              href={`https://www.linkedin.com/sharing/share-offsite/?mini=true&url=${websiteUrl}&title=${encodeURIComponent('Guhuza Quiz Progress')}&summary=${text}`}
+              href={`https://www.linkedin.com/shareArticle?mini=true&url=${websiteUrl}&title=${encodeURIComponent('Guhuza Quiz Progress')}&summary=${text}&source=Guhuza`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-blue-600 hover:underline"

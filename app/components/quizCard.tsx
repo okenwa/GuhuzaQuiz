@@ -23,7 +23,6 @@ export default function QuizCard({
 }: quizCardType) {
   const handleOptionSelected = (key: number) => {
     setSelectedAnswer(key);
-    console.log(key);
   };
 
   const setButtonStyle = (key: number): string => {
@@ -35,27 +34,34 @@ export default function QuizCard({
         }
         return "FquizButton after:content-['❌'] after:absolute md:after:right-10"; //incorrect selection
       }
-
       return "selectedQBtn "; //just the selection
     }
     return "";
   };
+
   return (
-    <div className=" m-0 p-0">
-      <h3 className="text-3xl font-semibold text-gray-800 motion-delay-150  motion-preset-slide-up ">
+    <div className="m-0 p-0" role="region" aria-label="Quiz Question">
+      <h3 className="text-3xl font-semibold text-gray-800 motion-delay-150 motion-preset-slide-up">
         {Question}
       </h3>
-      <div className="grid gap-8 pt-9 w-full">
+      <div 
+        className="grid gap-8 pt-9 w-full"
+        role="radiogroup"
+        aria-label="Answer Options"
+      >
         {Answers.map((answer: string, key: number) => (
-          <div className="w-full group relative">
+          <div key={key} className="w-full group relative">
             <button
               className={
                 setButtonStyle(key) +
-                `quizButton px-6 py-3 rounded-lg  transition-transform transform active:translate-y-1 text-gray-900  text-lg w-full text-left motion-preset-slide-up-md motion-preset-fade`
-              } 
-              
+                `quizButton px-6 py-3 rounded-lg transition-transform transform active:translate-y-1 text-gray-900 text-lg w-full text-left motion-preset-slide-up-md motion-preset-fade`
+              }
               onClick={() => handleOptionSelected(key)}
               disabled={checked}
+              role="radio"
+              aria-checked={selectedAnswer === key}
+              aria-label={`Option ${key + 1}: ${answer}`}
+              tabIndex={0}
             >
               {answer}
             </button>
