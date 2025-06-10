@@ -11,12 +11,20 @@ import { setCookie } from "cookies-next";
 import ShareButton from "./buttons/sharebtn";
 import { useBadges } from "../context/badgeContext";
 import BadgeSystem from "./badges/BadgeSystem";
+import StarRating from './StarRating';
 
 type quizeType = {
   question: string;
   comment: string;
   test_answer: number;
   answers: string[];
+};
+
+type LeaderboardPlayer = {
+  Player_ID: number;
+  Player_name: string;
+  Playerpoint: number;
+  Level_Id: number;
 };
 
 export default function QuizPageSection({ Quizes, levelNumber, levelTitle, player }: any) {
@@ -43,6 +51,12 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   const [showRules, setShowRules] = useState(true);
   const [timerStarted, setTimerStarted] = useState(false);
   const [allQuestionsUnder5Seconds, setAllQuestionsUnder5Seconds] = useState(true);
+  const [showInstructions, setShowInstructions] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardPlayer[]>([]);
+  const [averageTime, setAverageTime] = useState(0);
+  const [totalAnswers, setTotalAnswers] = useState(0);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(false);
 
   // Initialize audio elements
   useEffect(() => {
@@ -139,11 +153,37 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
 
  
 
+  const calculateScores = () => {
+    const timeScore = Math.max(0, 100 - (averageTime * 5)); // Lower time is better
+    const accuracyScore = (correctAnswers / totalAnswers) * 100 || 0;
+    return { timeScore, accuracyScore };
+  };
+
+  const updateLeaderboard = async () => {
+    try {
+      setIsLeaderboardLoading(true);
+      const response = await fetch('/api/leaderboard');
+      const data: LeaderboardPlayer[] = await response.json();
+      setLeaderboardData(data);
+    } catch (error) {
+      console.error('Error updating leaderboard:', error);
+    } finally {
+      setIsLeaderboardLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(updateLeaderboard, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleScore = () => {
     setAnswerChecked(true);
     const isCorrect = selectedAnswer == quizer.test_answer;
-
+    setTotalAnswers(prev => prev + 1);
+    
     if (isCorrect) {
+      setCorrectAnswers(prev => prev + 1);
       setCurrentStreak(prev => prev + 1);
       if (retried) {
         if (retryCount === 1) {
@@ -152,7 +192,6 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
           setScore(score + 5);
         }
       } else {
-        // Check for double points power-up
         const doublePoints = activePowerUps.find(p => p.name === 'Double Points' && p.active);
         setScore(score + (doublePoints ? 60 : 30));
         if (doublePoints) {
@@ -162,6 +201,12 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
     } else {
       setCurrentStreak(0);
     }
+
+    // Update average time
+    setAverageTime(prev => {
+      const newAvg = prev === 0 ? answerTime : (prev + answerTime) / 2;
+      return newAvg;
+    });
 
     // Update allQuestionsUnder5Seconds
     if (answerTime > 5) {
@@ -178,6 +223,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
       allQuestionsUnder5Seconds
     });
   };
+
   const handleShareScore = () => {
     const shareText = `🎮 I just completed Level ${levelNumber}: ${levelTitle} on Guhuza Quiz App! 🎯\n\n🏆 My score: ${score} points\n⭐ Total Score: ${player?.Playerpoint ? player?.Playerpoint + score : score} points\n\nCan you beat my score? Try it now! #GuhuzaQuiz #LearningIsFun`;
     return shareText;
@@ -200,29 +246,130 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
 
   return questionNumber < len ? (
     <div className="md:py-16 pt-8 pb-28">
+      {/* Instructions Popup */}
+      {showInstructions && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div 
+            className="bg-white p-8 rounded-xl max-w-2xl mx-4 relative shadow-2xl transform transition-all duration-300 scale-100 opacity-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setShowInstructions(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 hover:rotate-90 transition-all duration-300"
+              aria-label="Close instructions"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="flex items-center gap-3 mb-6">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h2 className="text-2xl font-bold text-gray-800">Quiz Instructions</h2>
+            </div>
+            <div className="space-y-4 text-gray-600">
+              <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="font-medium">You have 15 seconds to answer each question</p>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="font-medium">Correct answers earn you 30 points</p>
+              </div>
+              <div className="p-4 bg-yellow-50 rounded-lg">
+                <div className="flex items-center gap-3 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <p className="font-medium">Retry Points:</p>
+                </div>
+                <ul className="list-disc pl-12 space-y-1">
+                  <li>First retry: 10 points</li>
+                  <li>Second retry: 5 points</li>
+                </ul>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <p className="font-medium">"Display Answer" shows the correct answer (no points awarded)</p>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-indigo-50 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                <p className="font-medium">Complete all questions to earn achievements and power-ups!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {showRules && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg max-w-2xl mx-4">
-            <h2 className="text-2xl font-bold mb-4">Quiz Rules</h2>
-            <div className="space-y-4">
-              <p>1. You have 15 seconds to answer each question</p>
-              <p>2. Correct answers earn you 30 points</p>
-              <p>3. If you need to retry:</p>
-              <ul className="list-disc pl-6">
-                <li>First retry: 10 points</li>
-                <li>Second retry: 5 points</li>
-              </ul>
-              <p>4. You can use "Display Answer" to see the correct answer, but you won't earn any points</p>
-              <p>5. Complete all questions to finish the level</p>
-              <p>6. Earn power-ups by completing achievements!</p>
+          <div 
+            className="bg-white p-8 rounded-xl max-w-2xl mx-4 relative shadow-2xl transform transition-all duration-300 scale-100 opacity-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h2 className="text-2xl font-bold text-gray-800">Quiz Instructions</h2>
+            </div>
+            <div className="space-y-4 text-gray-600">
+              <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="font-medium">You have 15 seconds to answer each question</p>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="font-medium">Correct answers earn you 30 points</p>
+              </div>
+              <div className="p-4 bg-yellow-50 rounded-lg">
+                <div className="flex items-center gap-3 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <p className="font-medium">Retry Points:</p>
+                </div>
+                <ul className="list-disc pl-12 space-y-1">
+                  <li>First retry: 10 points</li>
+                  <li>Second retry: 5 points</li>
+                </ul>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <p className="font-medium">"Display Answer" shows the correct answer (no points awarded)</p>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-indigo-50 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                <p className="font-medium">Complete all questions to earn achievements and power-ups!</p>
+              </div>
             </div>
             <button 
-              className="quizPbtn mt-6"
+              className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
               onClick={() => {
                 setShowRules(false);
                 setTimerStarted(true);
               }}
             >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               Start Quiz
             </button>
           </div>
@@ -259,34 +406,46 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
           <p className="mb-6">
             Question : {questionNumber + 1}/{len}
           </p>
-          <div className="relative flex items-center justify-center">
-            <div className="relative w-12 h-12">
-              <svg className="w-12 h-12 transform -rotate-90">
-                <circle
-                  cx="24"
-                  cy="24"
-                  r="20"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                  className="text-gray-200"
-                />
-                <circle
-                  cx="24"
-                  cy="24"
-                  r="20"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                  strokeDasharray="125.6"
-                  strokeDashoffset={125.6 - (timeLeft / 30) * 125.6}
-                  className={`transition-all duration-1000 ${timeLeft <= 10 ? 'text-red-500' : 'text-blue-500'}`}
-                />
-              </svg>
-              <div className={`absolute inset-0 flex items-center justify-center text-lg font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-gray-700'}`}>
-                {timeLeft}
+          <div className="flex items-center gap-3">
+            <div className="relative flex items-center justify-center">
+              <div className="relative w-12 h-12">
+                <svg className="w-12 h-12 transform -rotate-90">
+                  <circle
+                    cx="24"
+                    cy="24"
+                    r="20"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                    className="text-gray-200"
+                  />
+                  <circle
+                    cx="24"
+                    cy="24"
+                    r="20"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                    strokeDasharray="125.6"
+                    strokeDashoffset={125.6 - (timeLeft / 30) * 125.6}
+                    className={`transition-all duration-1000 ${timeLeft <= 10 ? 'text-red-500' : 'text-blue-500'}`}
+                  />
+                </svg>
+                <div className={`absolute inset-0 flex items-center justify-center text-lg font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-gray-700'}`}>
+                  {timeLeft}
+                </div>
               </div>
             </div>
+            <button
+              onClick={() => setShowInstructions(true)}
+              className="bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg px-3 py-2 transition-colors duration-200 hover:scale-105 transform flex items-center gap-2"
+              aria-label="Show instructions"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-sm font-medium">Game Rules</span>
+            </button>
           </div>
         </div>
       </div>
@@ -428,6 +587,106 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
 
 
          
+          <div className="mt-8 w-full max-w-2xl">
+            <h2 className="text-2xl font-bold mb-4">Level Performance</h2>
+            <StarRating
+              {...calculateScores()}
+              totalStars={3}
+            />
+          </div>
+
+          <div className="mt-12 w-full max-w-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Live Leaderboard</h2>
+              <button 
+                onClick={updateLeaderboard}
+                className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isLeaderboardLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span className="text-sm font-medium">Refresh</span>
+              </button>
+            </div>
+            <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Player</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {isLeaderboardLoading ? (
+                      <tr>
+                        <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                          <div className="flex items-center justify-center gap-2">
+                            <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span>Loading leaderboard...</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : leaderboardData.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-6 py-4 text-center text-gray-500">
+                          No data available
+                        </td>
+                      </tr>
+                    ) : (
+                      leaderboardData.map((playerData, index) => (
+                        <tr 
+                          key={playerData.Player_ID}
+                          className={`${
+                            playerData.Player_ID === player?.Player_ID 
+                              ? 'bg-blue-50 border-l-4 border-l-blue-500' 
+                              : ''
+                          } hover:bg-gray-50 transition-colors`}
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <span className={`
+                                ${index < 3 ? 'w-8 h-8 flex items-center justify-center rounded-full text-white font-bold' : 'text-gray-500'} 
+                                ${index === 0 ? 'bg-yellow-400' : ''}
+                                ${index === 1 ? 'bg-gray-400' : ''}
+                                ${index === 2 ? 'bg-amber-600' : ''}
+                              `}>
+                                {index + 1}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="text-sm font-medium text-gray-900">
+                                {playerData.Player_name}
+                                {playerData.Player_ID === player?.Player_ID && (
+                                  <span className="ml-2 text-xs text-blue-600">(You)</span>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {playerData.Playerpoint.toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                              Level {playerData.Level_Id}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
           <div className="mt-8 w-full max-w-2xl">
             <h2 className="text-2xl font-bold mb-4">Your Achievements</h2>
             <BadgeSystem userBadges={userBadges} />
