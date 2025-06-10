@@ -31,6 +31,7 @@ const config: Config = {
       },
       animation: {
         shake: 'shake 6s ease-in-out ', // Adjust duration and timing function as needed
+        'bounce-slow': 'bounce 2s infinite',
       },
 
     },
