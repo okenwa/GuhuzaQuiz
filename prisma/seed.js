@@ -3,24 +3,66 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function main() {
-  // Create 40 levels
-  const levels = [];
-  for (let i = 0; i <= 40; i++) {
-    let levelTitle;
-    if (i <= 10) {
-      levelTitle = `Beginner Level ${i}`;
-    } else if (i <= 20) {
-      levelTitle = `Intermediate Level ${i}`;
-    } else if (i <= 30) {
-      levelTitle = `Advanced Level ${i}`;
-    } else {
-      levelTitle = `Expert Level ${i}`;
-    }
+  // Create 50 levels with descriptive titles
+  const levelTitles = [
+    "The First Steps",
+    "Basic Understanding",
+    "Exploring Concepts",
+    "Fundamentals Mastery",
+    "Beginning Challenges",
+    "Intermediate Insights",
+    "Building Knowledge",
+    "Progressive Learning",
+    "Advanced Foundations",
+    "Challenge Mode",
+    "Intermediate Proficiency",
+    "Expertise Development",
+    "Mastering the Basics",
+    "Refined Understanding",
+    "Conceptual Expansion",
+    "Elite Skill Building",
+    "Pro-Level Insights",
+    "Comprehensive Mastery",
+    "Deep Knowledge",
+    "Advanced Challenges",
+    "Sharpening Expertise",
+    "Masterclass Concepts",
+    "High-Level Insights",
+    "Strategic Thinking",
+    "Conceptual Excellence",
+    "Deep Diving Challenges",
+    "Pro-Level Mastery",
+    "Advanced Expertise",
+    "Elite Challenges",
+    "Skill Refinement",
+    "In-Depth Understanding",
+    "Advanced Problem Solving",
+    "Critical Thinking",
+    "Strategic Mastery",
+    "Final Countdown",
+    "Path to Mastery",
+    "Extreme Challenges",
+    "Ultimate Insights",
+    "Top-Tier Strategies",
+    "Proficiency Peak",
+    "Final Mastery",
+    "Challenge Extreme",
+    "Excellence in Practice",
+    "Precision Skills",
+    "Strategic Genius",
+    "Legendary Learning",
+    "Supreme Understanding",
+    "Ultra Mastery",
+    "Top Challenge",
+    "The Ultimate Test"
+  ];
 
+  const levels = [];
+  for (let i = 1; i <= 50; i++) {
     levels.push(
       prisma.level.create({
         data: {
-          Level_Title: levelTitle,
+          Level_Title: levelTitles[i - 1],
           Level_number: i
         }
       })
@@ -57,9 +99,9 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error(e)
-    process.exit(1)
+    console.error(e);
+    process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect()
-  }) 
+    await prisma.$disconnect();
+  }); 

@@ -43,6 +43,8 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   const [timeLeft, setTimeLeft] = useState(15); // 15 seconds per question
   const tickSoundRef = useRef<HTMLAudioElement | null>(null);
   const timeUpSoundRef = useRef<HTMLAudioElement | null>(null);
+  const doublePointsSoundRef = useRef<HTMLAudioElement | null>(null);
+  const timeFreezeSoundRef = useRef<HTMLAudioElement | null>(null);
   var quizer: quizeType = Quizes[questionNumber];
   const [currentStreak, setCurrentStreak] = useState(0);
   const [answerTime, setAnswerTime] = useState(0);
@@ -57,16 +59,20 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   const [totalAnswers, setTotalAnswers] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(false);
+  const [isTimeFrozen, setIsTimeFrozen] = useState(false);
+  const [freezeTimeout, setFreezeTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Initialize audio elements
   useEffect(() => {
     tickSoundRef.current = new Audio('/sounds/tick.mp3');
     timeUpSoundRef.current = new Audio('/sounds/timeup.mp3');
+    doublePointsSoundRef.current = new Audio('/sounds/double-points.mp3');
+    timeFreezeSoundRef.current = new Audio('/sounds/time-freeze.mp3');
   }, []);
 
   // Timer effect
   useEffect(() => {
-    if (!answerChecked && timeLeft > 0 && timerStarted) {
+    if (!answerChecked && timeLeft > 0 && timerStarted && !isTimeFrozen) {
       const timer = setInterval(() => {
         setTimeLeft((prev) => {
           setAnswerTime(15 - prev); // Track time taken to answer
@@ -82,20 +88,33 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
       setAnswerChecked(true);
       setAnsCorrect(false);
     }
-  }, [timeLeft, answerChecked, timerStarted]);
+  }, [timeLeft, answerChecked, timerStarted, isTimeFrozen]);
 
-  // Check for power-ups
+  // Time Freeze logic
   useEffect(() => {
     const timeFreeze = activePowerUps.find(p => p.name === 'Time Freeze' && p.active);
-    if (timeFreeze) {
-      // Implement time freeze logic here
-      usePowerUp('Time Freeze');
+    if (timeFreeze && !isTimeFrozen) {
+      setIsTimeFrozen(true);
+      if (freezeTimeout) clearTimeout(freezeTimeout);
+      // Play time freeze sound
+      timeFreezeSoundRef.current?.play().catch(() => {});
+      const timeout = setTimeout(() => {
+        setIsTimeFrozen(false);
+        usePowerUp('Time Freeze');
+      }, 5000); // freeze for 5 seconds
+      setFreezeTimeout(timeout);
     }
+    // Cleanup on unmount
+    return () => {
+      if (freezeTimeout) clearTimeout(freezeTimeout);
+    };
   }, [activePowerUps]);
 
   // Reset timer when moving to next question
   useEffect(() => {
     setTimeLeft(15);
+    setIsTimeFrozen(false);
+    if (freezeTimeout) clearTimeout(freezeTimeout);
   }, [questionNumber]);
 
   const setDefault = () => {
@@ -181,7 +200,9 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
     setAnswerChecked(true);
     const isCorrect = selectedAnswer == quizer.test_answer;
     setTotalAnswers(prev => prev + 1);
-    
+
+    // Double Points logic: auto-activate and use if available
+    let doublePoints = activePowerUps.find(p => p.name === 'Double Points' && p.remainingUses > 0);
     if (isCorrect) {
       setCorrectAnswers(prev => prev + 1);
       setCurrentStreak(prev => prev + 1);
@@ -192,9 +213,15 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
           setScore(score + 5);
         }
       } else {
-        const doublePoints = activePowerUps.find(p => p.name === 'Double Points' && p.active);
-        setScore(score + (doublePoints ? 60 : 30));
-        if (doublePoints) {
+        if (doublePoints && !doublePoints.active) {
+          activatePowerUp('Double Points');
+          doublePoints = { ...doublePoints, active: true };
+        }
+        if (doublePoints && doublePoints.active) {
+          doublePointsSoundRef.current?.play().catch(() => {});
+        }
+        setScore(score + (doublePoints && doublePoints.active ? 60 : 30));
+        if (doublePoints && doublePoints.active) {
           usePowerUp('Double Points');
         }
       }
@@ -245,7 +272,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   }
 
   return questionNumber < len ? (
-    <div className="md:py-16 pt-8 pb-28">
+    <div className="md:py-4 pt-0 pb-28">
       {/* Instructions Popup */}
       {showInstructions && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -377,75 +404,115 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
       )}
       {/* Power-ups display */}
       {activePowerUps.length > 0 && (
-        <div className="container mb-4">
-          <div className="flex gap-4">
-            {activePowerUps.map(powerUp => (
-              <button
-                key={powerUp.name}
-                className={`px-4 py-2 rounded-lg ${
-                  powerUp.active ? 'bg-blue-500 text-white' : 'bg-gray-200'
-                }`}
-                onClick={() => activatePowerUp(powerUp.name)}
-                disabled={powerUp.active || powerUp.remainingUses === 0}
-              >
-                {powerUp.name} ({powerUp.remainingUses} uses left)
-              </button>
-            ))}
-          </div>
+        <div className="container mb-2 flex gap-4">
+          <style jsx>{`
+            @keyframes flash {
+              0%, 100% { filter: brightness(1); }
+              50% { filter: brightness(1.5); }
+            }
+          `}</style>
+          {activePowerUps.map(powerUp => (
+            <button
+              key={powerUp.name}
+              className={`px-5 py-2 rounded-xl font-semibold text-white shadow-md animate-flash transition-all duration-300
+                ${powerUp.name === 'Double Points' ? 'bg-gradient-to-r from-yellow-400 via-pink-500 to-red-500' : ''}
+                ${powerUp.name === 'Time Freeze' ? 'bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-500' : ''}
+                ${powerUp.active ? 'ring-2 ring-white scale-105' : 'opacity-80'}
+              `}
+              style={{ animation: 'flash 1.2s infinite' }}
+              onClick={() => activatePowerUp(powerUp.name)}
+              disabled={powerUp.active || powerUp.remainingUses === 0}
+            >
+              {powerUp.name} ({powerUp.remainingUses} uses left)
+              {powerUp.name === 'Time Freeze' && powerUp.active && isTimeFrozen && (
+                <span className="ml-2 animate-pulse text-yellow-200 font-bold">⏸ Timer Frozen!</span>
+              )}
+            </button>
+          ))}
         </div>
       )}
-      <div className="container flex justify-between flex-wrap">
-        <h2 className="md:mb-16 mb-4 title intersect: motion-preset-slide-up motion-delay-200 intersect-once">
-          Level {levelNumber} : {levelTitle}
-        </h2>
-        <div className="flex items-center gap-4">
-          <div className="bg-blue-50 rounded-lg px-4 py-2 border border-blue-200">
-            <p className="text-sm text-blue-600">Current Points</p>
-            <p className="text-2xl font-bold text-blue-700">{score}</p>
-          </div>
-          <p className="mb-6">
-            Question : {questionNumber + 1}/{len}
-          </p>
-          <div className="flex items-center gap-3">
-            <div className="relative flex items-center justify-center">
-              <div className="relative w-12 h-12">
-                <svg className="w-12 h-12 transform -rotate-90">
-                  <circle
-                    cx="24"
-                    cy="24"
-                    r="20"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                    className="text-gray-200"
-                  />
-                  <circle
-                    cx="24"
-                    cy="24"
-                    r="20"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                    strokeDasharray="125.6"
-                    strokeDashoffset={125.6 - (timeLeft / 30) * 125.6}
-                    className={`transition-all duration-1000 ${timeLeft <= 10 ? 'text-red-500' : 'text-blue-500'}`}
-                  />
-                </svg>
-                <div className={`absolute inset-0 flex items-center justify-center text-lg font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-gray-700'}`}>
-                  {timeLeft}
+      <div className="container flex flex-row justify-between items-start flex-wrap gap-4 mb-6">
+        {/* Level Card Left */}
+        <div className="flex-1 min-w-[300px] max-w-lg">
+          <div className="relative w-full">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl blur-md"></div>
+            <div className="relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow border border-gray-100">
+              <div className="flex flex-row items-center gap-4">
+                <div className="flex flex-col items-center min-w-[60px]">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold text-lg shadow">
+                    {levelNumber}
+                  </div>
+                  <span className="text-sm font-medium text-gray-500 mt-1">Current Level</span>
+                </div>
+                <div className="flex flex-col justify-center flex-1">
+                  <h1 className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent motion-preset-slide-up motion-delay-100">
+                    {levelTitle || 'Loading...'}
+                  </h1>
+                  <div className="flex items-center gap-2 mt-2">
+                    {levelNumber <= 10 && (
+                      <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full font-medium shadow-sm text-sm">Beginner Level</span>
+                    )}
+                    {levelNumber > 10 && levelNumber <= 20 && (
+                      <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full font-medium shadow-sm text-sm">Intermediate Level</span>
+                    )}
+                    {levelNumber > 20 && levelNumber <= 30 && (
+                      <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full font-medium shadow-sm text-sm">Advanced Level</span>
+                    )}
+                    {levelNumber > 30 && (
+                      <span className="px-3 py-1 bg-red-100 text-red-800 rounded-full font-medium shadow-sm text-sm">Expert Level</span>
+                    )}
+                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full font-medium shadow-sm text-sm">{len} Questions</span>
+                  </div>
                 </div>
               </div>
             </div>
-            <button
-              onClick={() => setShowInstructions(true)}
-              className="bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg px-3 py-2 transition-colors duration-200 hover:scale-105 transform flex items-center gap-2"
-              aria-label="Show instructions"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-sm font-medium">Game Rules</span>
-            </button>
+          </div>
+        </div>
+        {/* Quiz Info/Status Bar Right */}
+        <div className="flex flex-col items-end gap-3 min-w-[200px]">
+          <div className="bg-blue-50 rounded-2xl px-6 py-3 border border-blue-200 w-full text-center">
+            <p className="text-sm text-blue-600">Current Points</p>
+            <p className="text-2xl font-bold text-blue-700">{score}</p>
+          </div>
+          <div className="flex items-center gap-3 w-full justify-end">
+            <p className="text-base font-medium">Question : {questionNumber + 1}/{len}</p>
+            <div className="flex items-center gap-2">
+              {/* Animated Timer Circle */}
+              <div className="relative w-10 h-10 flex items-center justify-center">
+                <svg className="w-10 h-10" viewBox="0 0 40 40">
+                  <circle
+                    cx="20"
+                    cy="20"
+                    r="16"
+                    stroke="#e5e7eb"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <circle
+                    cx="20"
+                    cy="20"
+                    r="16"
+                    stroke={`rgb(${255 - Math.round((timeLeft / 15) * 155)},${100 + Math.round((timeLeft / 15) * 100)},${255 - Math.round((timeLeft / 15) * 255)})`}
+                    strokeWidth="4"
+                    fill="none"
+                    strokeDasharray={2 * Math.PI * 16}
+                    strokeDashoffset={(2 * Math.PI * 16) * (1 - timeLeft / 15)}
+                    style={{ transition: 'stroke 0.3s, stroke-dashoffset 1s linear' }}
+                  />
+                </svg>
+                <span className="absolute inset-0 flex items-center justify-center text-base font-bold" style={{color: timeLeft <= 5 ? '#ef4444' : '#2563eb'}}>{timeLeft}</span>
+              </div>
+              <button
+                onClick={() => setShowInstructions(true)}
+                className="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-200 text-sm"
+                aria-label="Show instructions"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="font-medium">Game Rules</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -461,6 +528,10 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
                 setSelectedAnswer={setSelectedAnswer}
                 checked={answerChecked}
                 setAnsCorrect={setAnsCorrect}
+                level={{
+                  Level_Title: levelTitle,
+                  Level_number: levelNumber
+                }}
               />
 
               
@@ -686,7 +757,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
               </div>
             </div>
           </div>
-
+         
           <div className="mt-8 w-full max-w-2xl">
             <h2 className="text-2xl font-bold mb-4">Your Achievements</h2>
             <BadgeSystem userBadges={userBadges} />

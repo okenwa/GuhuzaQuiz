@@ -10,6 +10,10 @@ type quizCardType = {
   setSelectedAnswer: any;
   checked: boolean;
   setAnsCorrect: any;
+  level: {
+    Level_Title: string;
+    Level_number: number;
+  };
 };
 
 export default function QuizCard({
@@ -20,6 +24,7 @@ export default function QuizCard({
   setSelectedAnswer,
   checked,
   setAnsCorrect,
+  level,
 }: quizCardType) {
   const handleOptionSelected = (key: number) => {
     setSelectedAnswer(key);
@@ -41,9 +46,11 @@ export default function QuizCard({
 
   return (
     <div className="m-0 p-0" role="region" aria-label="Quiz Question">
-      <h3 className="text-3xl font-semibold text-gray-800 motion-delay-150 motion-preset-slide-up">
-        {Question}
-      </h3>
+      <div className="flex flex-col gap-2">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 motion-preset-slide-up motion-delay-100">
+          {Question}
+        </h2>
+      </div>
       <div 
         className="grid gap-8 pt-9 w-full"
         role="radiogroup"
@@ -54,7 +61,7 @@ export default function QuizCard({
             <button
               className={
                 setButtonStyle(key) +
-                `quizButton px-6 py-3 rounded-lg transition-transform transform active:translate-y-1 text-gray-900 text-lg w-full text-left motion-preset-slide-up-md motion-preset-fade`
+                `quizButton px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] text-gray-900 text-lg w-full text-left motion-preset-slide-up motion-delay-${(key + 1) * 100}`
               }
               onClick={() => handleOptionSelected(key)}
               disabled={checked}

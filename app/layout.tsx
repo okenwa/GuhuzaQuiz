@@ -24,6 +24,17 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <meta property="og:title" content="Guhuza Quiz Progress" />
+        <meta property="og:description" content="I just completed a level on Guhuza Quiz App! Can you beat my score?" />
+        <meta property="og:image" content="https://yourdomain.com/og-image.png" />
+        <meta property="og:url" content="https://yourdomain.com" />
+        <meta property="og:type" content="website" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Guhuza Quiz Progress" />
+        <meta name="twitter:description" content="I just completed a level on Guhuza Quiz App! Can you beat my score?" />
+        <meta name="twitter:image" content="https://yourdomain.com/og-image.png" />
+      </head>
       <body>
         <NextTopLoader />
         <SessionProvider session={session}>
