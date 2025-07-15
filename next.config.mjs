@@ -4,12 +4,13 @@ import withPWA from 'next-pwa';
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  pwa: {
-    dest: 'public',
-    register: true,
-    skipWaiting: true,
-    disable: false, // Enable PWA in development for testing
-  }
 };
 
-export default withPWA(nextConfig);
+const withPWAConfig = withPWA({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+});
+
+export default withPWAConfig(nextConfig);
