@@ -37,43 +37,39 @@ export const credentialProvider = CredentialsProvider({
     },
 
 })
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
+    trustHost: true, // ✅ Add this line
     providers: [
-        credentialProvider
+      credentialProvider
     ],
     pages: {
-        signIn: '/login',
-        error: '/login',
+      signIn: '/login',
+      error: '/login',
     },
     callbacks: {
-        session({ session, token }) {
-            if (session.user) {
-                session.user.email = token.email as string;
-                session.user.firstName = token.firstName as string;
-                session.user.lastName = token.lastName as string;
-                session.user.memberId = parseInt(token.id as string);
-            }
-            return session
-        },
-        jwt({ token, user }) {
-            if (user) {
-                token.id = user.id
-                token.email = user.email
-                token.firstName = (user as Member).firstName
-                token.lastName = (user as Member).lastName
-            }
-            return token
-        },
-        redirect({ url, baseUrl }) {
-            // Log for debugging
-            console.log('Redirect callback:', { url, baseUrl });
-            
-            // Always redirect to the base URL (your Railway domain)
-            return baseUrl
-        },
+      session({ session, token }) {
+        if (session.user) {
+          session.user.email = token.email as string;
+          session.user.firstName = token.firstName as string;
+          session.user.lastName = token.lastName as string;
+          session.user.memberId = parseInt(token.id as string);
+        }
+        return session;
+      },
+      jwt({ token, user }) {
+        if (user) {
+          token.id = user.id;
+          token.email = user.email;
+          token.firstName = (user as Member).firstName;
+          token.lastName = (user as Member).lastName;
+        }
+        return token;
+      },
+      redirect({ url, baseUrl }) {
+        console.log('Redirect callback:', { url, baseUrl });
+        return baseUrl;
+      },
     },
-    // Add this to ensure proper callback handling
     secret: process.env.NEXTAUTH_SECRET,
-})
-
+  });
+  
