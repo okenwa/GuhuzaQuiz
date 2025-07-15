@@ -46,6 +46,9 @@ export default function LeaderboardWidget() {
       
       <div className="space-y-2">
         {displayPlayers.slice(0, 5).map((player, index) => {
+          // Skip rendering if player is null or undefined
+          if (!player) return null;
+          
           const isCurrentPlayer = session?.user?.memberId && 
             player.Player_ID === Number(session.user.memberId);
           

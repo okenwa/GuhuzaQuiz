@@ -182,6 +182,9 @@ export default function RealTimeLeaderBoard() {
           </thead>
           <tbody className="divide-y divide-gray-300">
             {displayPlayers.map((playerData, index) => {
+              // Skip rendering if playerData is null or undefined
+              if (!playerData) return null;
+              
               const isCurrentPlayer = session?.user?.memberId && 
                 playerData.Player_ID === Number(session.user.memberId);
               const rank = isCurrentPlayer && !isUserInTop5 ? userRank : index + 1;

@@ -235,6 +235,9 @@ export default function EnhancedLeaderboard() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredPlayers.map((player, index) => {
+                // Skip rendering if player is null or undefined
+                if (!player) return null;
+                
                 const isCurrentPlayer = session?.user?.memberId && 
                   player.Player_ID === Number(session.user.memberId);
                 const globalRank = leaderboardData.findIndex(p => p.Player_ID === player.Player_ID) + 1;
