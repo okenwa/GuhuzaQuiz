@@ -39,6 +39,9 @@ export default function RealTimeLeaderBoard() {
       const newAnimations: {[key: number]: string} = {};
       
       displayPlayers.forEach((player, index) => {
+        // Skip if player is null or undefined
+        if (!player) return;
+        
         const prevPlayer = previousPlayers.find(p => p.Player_ID === player.Player_ID);
         if (prevPlayer) {
           const prevIndex = previousPlayers.findIndex(p => p.Player_ID === player.Player_ID);
@@ -77,7 +80,7 @@ export default function RealTimeLeaderBoard() {
       setTimeout(() => setAnimations({}), 2000);
     }
     
-    setPreviousPlayers(displayPlayers);
+    setPreviousPlayers(displayPlayers.filter((p): p is PlayerType => !!p));
   }, [displayPlayers]);
 
   // Auto-refresh every 15 seconds for more frequent updates
@@ -202,7 +205,7 @@ export default function RealTimeLeaderBoard() {
                 >
                   <td className="px-6 py-4 text-sm">
                     <div className="flex items-center">
-                      {rank <= 3 && (
+                      {rank != null && rank <= 3 && (
                         <span className="mr-2">
                           {rank === 1 && '🥇'}
                           {rank === 2 && '🥈'}

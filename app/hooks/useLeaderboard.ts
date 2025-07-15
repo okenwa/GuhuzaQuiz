@@ -68,8 +68,9 @@ export const useLeaderboard = () => {
     const topPlayers = leaderboardData.slice(0, 5);
     
     // Check if current user is in top 5
-    const currentUser = session?.user?.memberId ? 
-      leaderboardData.find(p => p.Player_ID === Number(session.user.memberId)) : null;
+    const memberId = session?.user?.memberId;
+    const currentUser = memberId ? 
+      leaderboardData.find(p => p.Player_ID === Number(memberId)) : null;
     
     const isUserInTop5 = currentUser && topPlayers.some(p => p.Player_ID === currentUser.Player_ID);
     

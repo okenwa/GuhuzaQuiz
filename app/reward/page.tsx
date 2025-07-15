@@ -30,7 +30,22 @@ async function Reward() {
   const session = await auth()
   if(session) { 
     const user = session?.user
-    const player: playerType | null  = await fetchUser(Number(user?.memberId), user?.firstName || "Anonymous", user?.email||"noemailavailable") ?? null
+    const playerData = await fetchUser(Number(user?.memberId), user?.firstName || "Anonymous", user?.email||"noemailavailable") ?? null
+    // Ensure Level_Id is always a number
+    const player: playerType | null = playerData ? {
+      ...playerData,
+      Level_Id: playerData.Level_Id ?? 1,
+      Milestone_Id: playerData.Milestone_Id === null ? undefined : playerData.Milestone_Id,
+      milestone: playerData.milestone || {
+        Milestone_Id: 0,
+        Milestone_Title: "Default",
+        Milestone_description: "Default milestone",
+        UnlockingLevel: 1,
+        Milestone_reward_message: "Default reward",
+        Milestone_Link: "",
+        Milestone_Button_CTA: "Continue"
+      }
+    } : null
     return (
       <div>
        <RewardCopy player={ player}/>
