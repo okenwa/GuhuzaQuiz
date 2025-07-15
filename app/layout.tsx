@@ -9,6 +9,8 @@ import NextTopLoader from "nextjs-toploader";
 import PlayerContextProvider from "./context/playerContext";
 import { BadgeProvider } from './context/badgeContext';
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
+import AnalyticsProvider from "./components/AnalyticsProvider";
+import PerformanceMonitor from "./components/PerformanceMonitor";
 
 export const metadata: Metadata = {
   title: "Guhuza's Brain Boost",
@@ -37,14 +39,14 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta property="og:title" content="Guhuza Quiz Progress" />
-        <meta property="og:description" content="I just completed a level on Guhuza Quiz App! Can you beat my score?" />
+        <meta property="og:title" content="Join me on Guhuza Quiz! Try to beat my score!" />
+        <meta property="og:description" content="Join me on Guhuza Quiz! Try to beat my score!" />
         <meta property="og:image" content="https://yourdomain.com/og-image.png" />
         <meta property="og:url" content="https://yourdomain.com" />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Guhuza Quiz Progress" />
-        <meta name="twitter:description" content="I just completed a level on Guhuza Quiz App! Can you beat my score?" />
+        <meta name="twitter:title" content="Join me on Guhuza Quiz! Try to beat my score!" />
+        <meta name="twitter:description" content="Join me on Guhuza Quiz! Try to beat my score!" />
         <meta name="twitter:image" content="https://yourdomain.com/og-image.png" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -54,16 +56,19 @@ export default async function RootLayout({
       <body>
         <NextTopLoader />
         <SessionProvider session={session}>
-        <ObserverProvider>
-          <PlayerContextProvider>
-            <BadgeProvider>
-              <Navbar />
-              {children}
-              <Footer />
-              <PWAInstallPrompt />
-            </BadgeProvider>
-          </PlayerContextProvider>
-        </ObserverProvider>
+          <AnalyticsProvider>
+            <ObserverProvider>
+              <PlayerContextProvider>
+                <BadgeProvider>
+                  <Navbar />
+                  {children}
+                  <Footer />
+                  <PWAInstallPrompt />
+                  <PerformanceMonitor />
+                </BadgeProvider>
+              </PlayerContextProvider>
+            </ObserverProvider>
+          </AnalyticsProvider>
         </SessionProvider>
       </body>
     </html>

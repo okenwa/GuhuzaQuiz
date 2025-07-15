@@ -4,17 +4,17 @@ import React from "react";
 interface PopupProps {
   isOpen: boolean;
   closePopup: () => void;
-  points : number
+  children?: React.ReactNode;
 }
 
-const Popup: React.FC<PopupProps> = ({ isOpen, closePopup, points }) => {
+const Popup: React.FC<PopupProps> = ({ isOpen, closePopup, children }) => {
   if (!isOpen) return null; 
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-500 bg-opacity-50">
       <div className="bg-white p-6 rounded-lg shadow-lg relative w-96">
-        <h2 className="text-lg font-semibold mb-4">Popup Title</h2>
-        <p className="text-sm mb-4">{points}</p>
+        {/* Render children content here */}
+        {children}
 
         <button
           className=" absolute top-2 right-2 p-2 bg-gray-200 rounded-full"

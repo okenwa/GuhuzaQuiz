@@ -14,6 +14,7 @@ import BadgeSystem from "./badges/BadgeSystem";
 import StarRating from './StarRating';
 import LightweightLeaderboardWidget from './LightweightLeaderboardWidget';
 import { FaVolumeUp, FaVolumeMute } from "react-icons/fa";
+import { useAnalytics } from "./AnalyticsProvider";
 
 type quizeType = {
   question: string;
@@ -30,8 +31,7 @@ type LeaderboardPlayer = {
 };
 
 export default function QuizPageSection({ Quizes, levelNumber, levelTitle, player, quizSession, sessionId }: any) {
-
-
+  const analytics = useAnalytics();
   const len = Quizes.length;
   const router = useRouter()
   const [score, setScore] = useState<number>(quizSession?.Score || 0);
@@ -69,6 +69,13 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(quizSession?.Session_ID || null);
   const [isSaving, setIsSaving] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [quizStartTime, setQuizStartTime] = useState<number>(Date.now());
+
+  // Track quiz start when component mounts
+  useEffect(() => {
+    analytics.trackQuizStart(levelNumber, levelTitle || 'Unknown Level');
+    setQuizStartTime(Date.now());
+  }, [levelNumber, levelTitle, analytics]);
 
   // Initialize audio elements
   useEffect(() => {
