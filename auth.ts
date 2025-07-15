@@ -42,6 +42,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     providers: [
         credentialProvider
     ],
+    pages: {
+        signIn: '/login',
+        error: '/login',
+    },
     callbacks: {
         session({ session, token }) {
             if (session.user) {
@@ -60,6 +64,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 token.lastName = (user as Member).lastName
             }
             return token
+        },
+        redirect({ url, baseUrl }) {
+            // Allows relative callback URLs
+            if (url.startsWith("/")) return `${baseUrl}${url}`
+            // Allows callback URLs on the same origin
+            else if (new URL(url).origin === baseUrl) return url
+            return baseUrl
         },
     },
 })
