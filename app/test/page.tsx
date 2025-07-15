@@ -2,8 +2,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
-export default function SharePopup({ score, player, levelTitle }) {
+export default function TestPage() {
   const [isOpen, setIsOpen] = useState(false);
+  const score = 100;
+  const player = "Player";
+  const levelTitle = "Level 1";
   const shareText = `I just scored ${score} in ${levelTitle}! Can you beat me? #Gaming`;
   const shareUrl = encodeURIComponent("https://yourgame.com");
   const shareMessage = encodeURIComponent(shareText);

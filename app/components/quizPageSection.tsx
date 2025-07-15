@@ -13,6 +13,7 @@ import { useBadges } from "../context/badgeContext";
 import BadgeSystem from "./badges/BadgeSystem";
 import StarRating from './StarRating';
 import LightweightLeaderboardWidget from './LightweightLeaderboardWidget';
+import { FaVolumeUp, FaVolumeMute } from "react-icons/fa";
 
 type quizeType = {
   question: string;
@@ -67,13 +68,14 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   const [scoreUpdateMessage, setScoreUpdateMessage] = useState('');
   const [currentSessionId, setCurrentSessionId] = useState<number | null>(quizSession?.Session_ID || null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
 
   // Initialize audio elements
   useEffect(() => {
     tickSoundRef.current = new Audio('/sounds/tick.mp3');
     timeUpSoundRef.current = new Audio('/sounds/timeup.mp3');
-    doublePointsSoundRef.current = new Audio('/sounds/double-points.mp3');
-    timeFreezeSoundRef.current = new Audio('/sounds/time-freeze.mp3');
+    doublePointsSoundRef.current = new Audio('/sounds/powerup.mp3');
+    timeFreezeSoundRef.current = new Audio('/sounds/powerup.mp3');
   }, []);
 
   // Initialize session if provided
@@ -99,6 +101,23 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
     }
   }, [quizSession, currentSessionId]);
 
+  // Helper to stop and reset the tick sound
+  const stopTickSound = () => {
+    if (tickSoundRef.current) {
+      tickSoundRef.current.pause();
+      tickSoundRef.current.currentTime = 0;
+    }
+  };
+  // Helper to stop and reset all sounds
+  const stopAllSounds = () => {
+    [tickSoundRef, timeUpSoundRef, doublePointsSoundRef, timeFreezeSoundRef].forEach(ref => {
+      if (ref.current) {
+        ref.current.pause();
+        ref.current.currentTime = 0;
+      }
+    });
+  };
+
   // Timer effect
   useEffect(() => {
     if (!answerChecked && timeLeft > 0 && timerStarted && !isTimeFrozen) {
@@ -106,18 +125,23 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
         setTimeLeft((prev) => {
           setAnswerTime(15 - prev); // Track time taken to answer
           if (prev > 1) {
-            tickSoundRef.current?.play().catch(err => console.log('Error playing tick sound:', err));
+            if (!isMuted) {
+              tickSoundRef.current?.play().catch(err => console.log('Error playing tick sound:', err));
+            }
           }
           return prev - 1;
         });
       }, 1000);
       return () => clearInterval(timer);
     } else if (timeLeft === 0 && !answerChecked && timerStarted) {
-      timeUpSoundRef.current?.play().catch(err => console.log('Error playing time up sound:', err));
+      stopTickSound();
+      if (!isMuted) {
+        timeUpSoundRef.current?.play().catch(err => console.log('Error playing time up sound:', err));
+      }
       setAnswerChecked(true);
       setAnsCorrect(false);
     }
-  }, [timeLeft, answerChecked, timerStarted, isTimeFrozen]);
+  }, [timeLeft, answerChecked, timerStarted, isTimeFrozen, isMuted]);
 
   // Time Freeze logic
   useEffect(() => {
@@ -126,7 +150,9 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
       setIsTimeFrozen(true);
       if (freezeTimeout) clearTimeout(freezeTimeout);
       // Play time freeze sound
-      timeFreezeSoundRef.current?.play().catch(() => {});
+      if (!isMuted) {
+        timeFreezeSoundRef.current?.play().catch(() => {});
+      }
       const timeout = setTimeout(() => {
         setIsTimeFrozen(false);
         usePowerUp('Time Freeze');
@@ -137,7 +163,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
     return () => {
       if (freezeTimeout) clearTimeout(freezeTimeout);
     };
-  }, [activePowerUps]);
+  }, [activePowerUps, isMuted]);
 
   // Reset timer when moving to next question
   useEffect(() => {
@@ -307,6 +333,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   }, []);
 
   const handleScore = () => {
+    stopTickSound();
     setAnswerChecked(true);
     const isCorrect = selectedAnswer == quizer.test_answer;
     setTotalAnswers(prev => prev + 1);
@@ -328,7 +355,9 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
           doublePoints = { ...doublePoints, active: true };
         }
         if (doublePoints && doublePoints.active) {
-          doublePointsSoundRef.current?.play().catch(() => {});
+          if (!isMuted) {
+            doublePointsSoundRef.current?.play().catch(() => {});
+          }
         }
         setScore(score + (doublePoints && doublePoints.active ? 60 : 30));
         if (doublePoints && doublePoints.active) {
@@ -389,8 +418,31 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
 
   }
 
+  // Mute toggle handler
+  const handleMuteToggle = () => {
+    setIsMuted(m => {
+      const newMuted = !m;
+      if (newMuted) {
+        stopAllSounds();
+      }
+      return newMuted;
+    });
+  };
+
   return questionNumber < len ? (
     <>
+      {/* Mute Button */}
+      <button
+        onClick={handleMuteToggle}
+        className="fixed top-4 right-4 z-50 bg-white/80 rounded-full p-2 shadow hover:bg-gray-200 transition"
+        aria-label={isMuted ? "Unmute sounds" : "Mute sounds"}
+      >
+        {isMuted ? (
+          <FaVolumeMute className="w-6 h-6 text-gray-700" />
+        ) : (
+          <FaVolumeUp className="w-6 h-6 text-gray-700" />
+        )}
+      </button>
       {/* Session Progress Indicator */}
       {currentSessionId && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2 rounded-full shadow bg-white/90 border border-blue-200 text-blue-700 text-sm font-medium">

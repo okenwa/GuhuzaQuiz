@@ -8,10 +8,22 @@ import Footer from "./components/footer";
 import NextTopLoader from "nextjs-toploader";
 import PlayerContextProvider from "./context/playerContext";
 import { BadgeProvider } from './context/badgeContext';
+import PWAInstallPrompt from "./components/PWAInstallPrompt";
 
 export const metadata: Metadata = {
   title: "Guhuza's Brain Boost",
   description: "Level Up Your Job Search with Guhuza's Brain Boost",
+  manifest: '/manifest.json',
+  themeColor: '#3b82f6',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Guhuza Quiz',
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export default async function RootLayout({
@@ -34,6 +46,10 @@ export default async function RootLayout({
         <meta name="twitter:title" content="Guhuza Quiz Progress" />
         <meta name="twitter:description" content="I just completed a level on Guhuza Quiz App! Can you beat my score?" />
         <meta name="twitter:image" content="https://yourdomain.com/og-image.png" />
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Guhuza Quiz" />
       </head>
       <body>
         <NextTopLoader />
@@ -44,6 +60,7 @@ export default async function RootLayout({
               <Navbar />
               {children}
               <Footer />
+              <PWAInstallPrompt />
             </BadgeProvider>
           </PlayerContextProvider>
         </ObserverProvider>
