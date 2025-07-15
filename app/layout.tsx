@@ -9,6 +9,8 @@ import NextTopLoader from "nextjs-toploader";
 import PlayerContextProvider from "./context/playerContext";
 import { BadgeProvider } from './context/badgeContext';
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
+import AnalyticsProvider from "./components/AnalyticsProvider";
+import PerformanceMonitor from "./components/PerformanceMonitor";
 
 export const metadata: Metadata = {
   title: "Guhuza's Brain Boost",
@@ -54,16 +56,19 @@ export default async function RootLayout({
       <body>
         <NextTopLoader />
         <SessionProvider session={session}>
-        <ObserverProvider>
-          <PlayerContextProvider>
-            <BadgeProvider>
-              <Navbar />
-              {children}
-              <Footer />
-              <PWAInstallPrompt />
-            </BadgeProvider>
-          </PlayerContextProvider>
-        </ObserverProvider>
+          <AnalyticsProvider>
+            <ObserverProvider>
+              <PlayerContextProvider>
+                <BadgeProvider>
+                  <Navbar />
+                  {children}
+                  <Footer />
+                  <PWAInstallPrompt />
+                  <PerformanceMonitor />
+                </BadgeProvider>
+              </PlayerContextProvider>
+            </ObserverProvider>
+          </AnalyticsProvider>
         </SessionProvider>
       </body>
     </html>
