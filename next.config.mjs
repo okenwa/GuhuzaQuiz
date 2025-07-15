@@ -1,16 +1,15 @@
 import withPWA from 'next-pwa';
 
 /** @type {import('next').NextConfig} */
-const nextConfig = withPWA({
+const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  // add your other Next.js config here
   pwa: {
     dest: 'public',
     register: true,
     skipWaiting: true,
-    disable: false, // Enable PWA in development
+    disable: false, // Enable PWA in development for testing
   }
-});
+};
 
-export default nextConfig;
+export default withPWA(nextConfig);
