@@ -2,10 +2,15 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { FaSignInAlt, FaSignOutAlt, FaUser, FaTrophy, FaQuestionCircle, FaHome } from "react-icons/fa";
+import LoginButton from "./buttons/loginBtn";
+import LogoutButton from "./buttons/logoutBtn";
 
 function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data: session } = useSession();
 
   return (
     <header className="sticky top-0 z-50 bg-black py-6 shadow-lg">
@@ -19,25 +24,45 @@ function Navbar() {
 
 
         {/* Navigation Links (Desktop) */}
-        <div className="hidden md:flex space-x-4">
+        <div className="hidden md:flex space-x-4 items-center">
+          <a href="https://guhuza.com/" target="_blank" rel="noopener noreferrer">
+            <span className="text-white hover:underline flex items-center gap-1 group">
+              <FaHome /> Guhuza
+              <Image
+                src="/icons/AnotherWebsite.svg"
+                className="transition-transform duration-300 group-hover:rotate-12"
+                alt=""
+                width={20}
+                height={20}
+              />
+            </span>
+          </a>
           <Link href="/quiz">
-            <span className="text-white hover:underline">Quiz</span>
+            <span className="text-white hover:underline flex items-center gap-1">
+              <FaQuestionCircle /> Quiz
+            </span>
           </Link>
-          <Link href="/">
-            <span className="text-white hover:underline">Login</span>
+          <Link href="/leaderboard">
+            <span className="text-white hover:underline flex items-center gap-1">
+              <FaTrophy /> Leaderboard
+            </span>
           </Link>
           <Link href="/profile">
-            <span className="text-white hover:underline">Profile</span>
+            <span className="text-white hover:underline flex items-center gap-1">
+              <FaUser /> Profile
+            </span>
           </Link>
-          <a href="https://guhuza.com/" target="_blank" >
-            <p className="text-white hover:underline flex justify-center gap-1 group">Guhuza <Image
-                              src="/icons/AnotherWebsite.svg"
-                              className="transition-transform duration-300  group-hover:rotate-12"
-                              alt=""
-                              width={20}
-                              height={20}
-                            /></p>
-          </a>
+          {session && session.user ? (
+            <span className="flex items-center gap-1">
+              <FaSignOutAlt />
+              <LogoutButton />
+            </span>
+          ) : (
+            <span className="flex items-center gap-1">
+              <FaSignInAlt />
+              <LoginButton />
+            </span>
+          )}
         </div>
 
         {/* Mobile Menu Icon */}
@@ -90,25 +115,44 @@ function Navbar() {
 
           {/* Navigation Links (Mobile) */}
           <div className="flex flex-col space-y-4 p-4 gap-8">
+            <a href="https://guhuza.com/" target="_blank" rel="noopener noreferrer" className="w-full text-center">
+              <span className="text-white hover:underline flex items-center justify-center gap-1 group">
+                <FaHome /> Guhuza
+                <Image
+                  src="/icons/AnotherWebsite.svg"
+                  className="transition-transform duration-300 group-hover:rotate-12"
+                  alt=""
+                  width={20}
+                  height={20}
+                />
+              </span>
+            </a>
             <Link href="/quiz" className="w-full text-center">
-              <span className="text-white hover:underline">Quiz</span>
+              <span className="text-white hover:underline flex items-center justify-center gap-1">
+                <FaQuestionCircle /> Quiz
+              </span>
             </Link>
-            <Link href="/" className="w-full text-center">
-              <span className="text-white hover:underline">Login</span>
+            <Link href="/leaderboard" className="w-full text-center">
+              <span className="text-white hover:underline flex items-center justify-center gap-1">
+                <FaTrophy /> Leaderboard
+              </span>
             </Link>
-            
             <Link href="/profile" className="w-full text-center">
-            <span className="text-white hover:underline">Profile</span>
-          </Link>
-          <a href="https://guhuza.com/" target="_blank" >
-            <p className="text-white hover:underline flex justify-center gap-1 group">Guhuza <Image
-                              src="/icons/AnotherWebsite.svg"
-                              className="transition-transform duration-300  group-hover:rotate-12"
-                              alt=""
-                              width={20}
-                              height={20}
-                            /></p>
-          </a>
+              <span className="text-white hover:underline flex items-center justify-center gap-1">
+                <FaUser /> Profile
+              </span>
+            </Link>
+            {session && session.user ? (
+              <span className="flex items-center justify-center gap-1">
+                <FaSignOutAlt />
+                <LogoutButton />
+              </span>
+            ) : (
+              <span className="flex items-center justify-center gap-1">
+                <FaSignInAlt />
+                <LoginButton />
+              </span>
+            )}
           </div>
         </div>
 

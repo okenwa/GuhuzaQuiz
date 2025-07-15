@@ -61,7 +61,7 @@ export default function QuizCard({
             <button
               className={
                 setButtonStyle(key) +
-                `quizButton px-6 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] text-gray-900 text-lg w-full text-left motion-preset-slide-up motion-delay-${(key + 1) * 100}`
+                ` quizButton min-h-[3rem] px-4 py-3 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] text-gray-900 text-lg text-left break-words whitespace-pre-line flex items-center justify-start w-full motion-preset-slide-up motion-delay-${(key + 1) * 100}`
               }
               onClick={() => handleOptionSelected(key)}
               disabled={checked}

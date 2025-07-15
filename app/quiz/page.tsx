@@ -3,7 +3,8 @@ import Pbtn from "../components/buttons/primarybtn";
 import Image from "next/image";
 import WhyplaySection from "./whyplaySection";
 import QuizLevelSections from "../components/quizLevelSections";
-import LeaderBoard from "../components/leaderBoard";
+import RealTimeLeaderBoard from "../components/RealTimeLeaderBoard";
+import DynamicLeaderBoard from "../components/DynamicLeaderBoard";
 import ProfileHerosection from "../components/profileHerosection";
 import ShareButton from "../components/buttons/sharebtn";
 import QuizHero from "../components/quizHero";
@@ -49,7 +50,7 @@ async function QuizHomePage() {
 
         {/* Leaderboard Section */}
         <div className="leaderboard section container">
-          <LeaderBoard  />
+          <RealTimeLeaderBoard />
         </div>
       </div>
     );
@@ -74,7 +75,7 @@ async function QuizHomePage() {
 
     {/* Leaderboard Section */}
     <div className="leaderboard section container">
-      <LeaderBoard/>
+      <DynamicLeaderBoard />
     </div>
   </div>
   );

@@ -1,5 +1,5 @@
 
-import React, { Suspense, useContext, useEffect } from "react";
+import React, { Suspense } from "react";
 import QuizLevelCard from "./quizLevelCard";
 import fetchLevels from "@/utils/fLevels";
 import { playerContext } from "../context/playerContext";

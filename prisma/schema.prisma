@@ -13,6 +13,7 @@ model level {
   Level_Title  String
   Level_number Int
   player       player[]
+  quizSessions quizSession[]
 }
 
 model milestone {
@@ -29,6 +30,7 @@ model milestone {
 model player {
   Player_ID    Int        @id @default(autoincrement())
   Player_name  String
+  nickname     String?   // New field for user nickname
   Playerpoint  Int
   streak       Int
   lastLogin    DateTime
@@ -36,8 +38,50 @@ model player {
   Milestone_Id Int?
   level        level?     @relation(fields: [Level_Id], references: [Level_Id], map: "Player_Level_Id_fkey")
   milestone    milestone? @relation(fields: [Milestone_Id], references: [Milestone_Id], map: "Player_Milestone_Id_fkey")
+  quizSessions quizSession[]
   
   @@index([Level_Id], map: "Player_Level_Id_fkey")
   @@index([Milestone_Id], map: "Player_Milestone_Id_fkey")
+}
+
+model quizSession {
+  Session_ID        Int       @id @default(autoincrement())
+  Player_ID         Int
+  Level_Id          Int
+  Current_Question  Int       @default(0)
+  Score             Int       @default(0)
+  Total_Questions   Int
+  Completed         Boolean   @default(false)
+  Started_At        DateTime  @default(now())
+  Last_Activity     DateTime  @default(now())
+  Time_Spent        Int       @default(0) // in seconds
+  Correct_Answers   Int       @default(0)
+  Wrong_Answers     Int       @default(0)
+  Streak            Int       @default(0)
+  Used_Hints        Int       @default(0)
+  Retry_Count       Int       @default(0)
+  player            player    @relation(fields: [Player_ID], references: [Player_ID], onDelete: Cascade)
+  level             level     @relation(fields: [Level_Id], references: [Level_Id])
+  questionProgress  QuestionProgress[]
+  
+  @@unique([Player_ID, Level_Id])
+  @@index([Player_ID])
+  @@index([Level_Id])
+}
+
+model QuestionProgress {
+  Progress_ID       Int         @id @default(autoincrement())
+  Session_ID        Int
+  Question_Index    Int
+  Selected_Answer   Int?        // -1 if not answered
+  Is_Correct        Boolean?
+  Time_Taken        Int?        // in seconds
+  Used_Hint         Boolean     @default(false)
+  Retry_Count       Int         @default(0)
+  Answer_Checked    Boolean     @default(false)
+  quizSession       quizSession @relation(fields: [Session_ID], references: [Session_ID], onDelete: Cascade)
+  
+  @@unique([Session_ID, Question_Index])
+  @@index([Session_ID])
 }
 

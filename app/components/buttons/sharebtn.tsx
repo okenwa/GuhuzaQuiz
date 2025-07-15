@@ -23,6 +23,8 @@ const ShareButton = ({ shareText, shareUrl, buttonClassName = "quizSbtn" }: Shar
   const websiteUrl = getShareUrl(shareUrl || "https://guhuza.com/");
   const text = encodeURIComponent(shareText || "Check out this amazing website! 🚀");
 
+  console.log('LinkedIn share websiteUrl:', websiteUrl);
+
   // Close popup when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -69,12 +71,21 @@ const ShareButton = ({ shareText, shareUrl, buttonClassName = "quizSbtn" }: Shar
               <FaTwitter /> Twitter (X)
             </a>
             <a
-              href={`https://www.linkedin.com/shareArticle?mini=true&url=${websiteUrl}&title=${encodeURIComponent('Guhuza Quiz Progress')}&summary=${text}&source=Guhuza`}
+              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(websiteUrl)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-blue-600 hover:underline"
             >
               <FaLinkedin /> LinkedIn
+            </a>
+            {/* Debug: Hardcoded LinkedIn share link */}
+            <a
+              href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fguhuza.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-red-600 hover:underline"
+            >
+              <FaLinkedin /> LinkedIn (Test)
             </a>
             <a
               href={`https://api.whatsapp.com/send?text=${text} ${websiteUrl}`}

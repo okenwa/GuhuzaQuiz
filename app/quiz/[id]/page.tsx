@@ -8,6 +8,7 @@ import fetchPlayers from "@/utils/fPlayers";
 import { auth } from "@/auth";
 import fetchUser from "@/utils/fUser";
 import { getCookie, setCookie } from "cookies-next";
+import { getOrCreateQuizSession } from "@/utils/quizSessionUtils";
 
 type quizeType = {
   question: string;
@@ -20,9 +21,13 @@ type quizesType = {
   question: quizeType[];
 };
 
-export default async function Page({ params }: { params: { id: string } }) {
-
-
+export default async function Page({ 
+  params, 
+  searchParams 
+}: { 
+  params: { id: string };
+  searchParams: { sessionId?: string };
+}) {
     const data = await fetchQuiz(params.id);
     const Quizes = data.test.question;
 
@@ -33,7 +38,13 @@ export default async function Page({ params }: { params: { id: string } }) {
     const session = await auth()
 
     const user = session && session?.user;
-    const name =session ? user?.firstName == null ? "Anonymous" :user?.firstName : ""
+    const name = session
+      ? user?.nickname
+        ? user.nickname
+        : user?.firstName
+          ? user.firstName
+          : "Anonymous"
+      : "";
     
     const player = session ? await fetchUser(
       Number(user?.memberId),
@@ -41,11 +52,30 @@ export default async function Page({ params }: { params: { id: string } }) {
       user?.email || ""
     ) : {}
 
+    // Get or create quiz session for authenticated users
+    let quizSession = null;
+    if (session?.user?.memberId) {
+      try {
+        quizSession = await getOrCreateQuizSession(
+          Number(session.user.memberId),
+          Number(levelNumber),
+          Quizes.length
+        );
+      } catch (error) {
+        console.error('Error getting quiz session:', error);
+      }
+    }
+
     return (
       <div>
-     
-        <QuizPageSection Quizes={Quizes} levelNumber = {levelNumber}  levelTitle = {levelTitle}  player={player} />
+        <QuizPageSection 
+          Quizes={Quizes} 
+          levelNumber={levelNumber}  
+          levelTitle={levelTitle}  
+          player={player}
+          quizSession={quizSession}
+          sessionId={searchParams.sessionId}
+        />
       </div>
     );
- 
 }

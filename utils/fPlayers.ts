@@ -17,6 +17,7 @@ type playerType = {
     lastLogin: Date,
     Level_Id?: number,
     Milestone_Id?: number,
+    nickname?: string,
 }
 
 type Players = playerType[]

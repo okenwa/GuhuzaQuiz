@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
+    // Add caching headers to reduce database load
     const players = await prisma.player.findMany({
       orderBy: {
         Playerpoint: 'desc'
@@ -16,7 +17,12 @@ export async function GET() {
       }
     });
 
-    return NextResponse.json(players, { status: 200 });
+    const response = NextResponse.json(players, { status: 200 });
+    
+    // Add cache headers to reduce API calls
+    response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
+    
+    return response;
   } catch (error) {
     console.error("Error fetching leaderboard:", error);
     return NextResponse.json(

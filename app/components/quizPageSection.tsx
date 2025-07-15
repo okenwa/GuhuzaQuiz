@@ -12,6 +12,7 @@ import ShareButton from "./buttons/sharebtn";
 import { useBadges } from "../context/badgeContext";
 import BadgeSystem from "./badges/BadgeSystem";
 import StarRating from './StarRating';
+import LightweightLeaderboardWidget from './LightweightLeaderboardWidget';
 
 type quizeType = {
   question: string;
@@ -27,13 +28,13 @@ type LeaderboardPlayer = {
   Level_Id: number;
 };
 
-export default function QuizPageSection({ Quizes, levelNumber, levelTitle, player }: any) {
+export default function QuizPageSection({ Quizes, levelNumber, levelTitle, player, quizSession, sessionId }: any) {
 
 
   const len = Quizes.length;
   const router = useRouter()
-  const [score, setScore] = useState<number>(0);
-  const [questionNumber, setQuestionNumber] = useState(0);
+  const [score, setScore] = useState<number>(quizSession?.Score || 0);
+  const [questionNumber, setQuestionNumber] = useState<number>(quizSession?.Current_Question || 0);
   const [selectedAnswer, setSelectedAnswer] = useState(-1);
   const [answerChecked, setAnswerChecked] = useState(false);
   const [ansCorrect, setAnsCorrect] = useState(false);
@@ -61,6 +62,11 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(false);
   const [isTimeFrozen, setIsTimeFrozen] = useState(false);
   const [freezeTimeout, setFreezeTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [showMobileLeaderboard, setShowMobileLeaderboard] = useState(false);
+  const [showScoreUpdate, setShowScoreUpdate] = useState(false);
+  const [scoreUpdateMessage, setScoreUpdateMessage] = useState('');
+  const [currentSessionId, setCurrentSessionId] = useState<number | null>(quizSession?.Session_ID || null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Initialize audio elements
   useEffect(() => {
@@ -69,6 +75,29 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
     doublePointsSoundRef.current = new Audio('/sounds/double-points.mp3');
     timeFreezeSoundRef.current = new Audio('/sounds/time-freeze.mp3');
   }, []);
+
+  // Initialize session if provided
+  useEffect(() => {
+    if (quizSession && !currentSessionId) {
+      setCurrentSessionId(quizSession.Session_ID);
+      setScore(quizSession.Score);
+      setQuestionNumber(quizSession.Current_Question);
+      
+      // Restore question progress if available
+      if (quizSession.questionProgress && quizSession.questionProgress.length > 0) {
+        const currentProgress = quizSession.questionProgress.find(
+          (p: any) => p.Question_Index === quizSession.Current_Question
+        );
+        if (currentProgress) {
+          setSelectedAnswer(currentProgress.Selected_Answer || -1);
+          setAnswerChecked(currentProgress.Answer_Checked);
+          setAnsCorrect(currentProgress.Is_Correct || false);
+          setUsedHint(currentProgress.Used_Hint);
+          setRetryCount(currentProgress.Retry_Count);
+        }
+      }
+    }
+  }, [quizSession, currentSessionId]);
 
   // Timer effect
   useEffect(() => {
@@ -126,7 +155,85 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
     setRetryCount(0);
   };
 
+  // Save session progress
+  const saveSessionProgress = async () => {
+    if (!currentSessionId) return;
+
+    try {
+      setIsSaving(true);
+      
+      // Save question progress
+      await fetch('/api/quiz/question-progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sessionId: currentSessionId,
+          questionIndex: questionNumber,
+          selectedAnswer: selectedAnswer,
+          isCorrect: ansCorrect,
+          timeTaken: answerTime,
+          usedHint: usedHint,
+          retryCount: retryCount,
+          answerChecked: answerChecked,
+        }),
+      });
+
+      // Update session progress
+      await fetch('/api/quiz/session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sessionId: currentSessionId,
+          progressData: {
+            Current_Question: questionNumber,
+            Score: score,
+            Time_Spent: averageTime * totalAnswers,
+            Correct_Answers: correctAnswers,
+            Wrong_Answers: totalAnswers - correctAnswers,
+            Streak: currentStreak,
+            Used_Hints: usedHint ? 1 : 0,
+            Retry_Count: retryCount,
+          },
+        }),
+      });
+    } catch (error) {
+      console.error('Error saving session progress:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Auto-save progress when state changes
+  useEffect(() => {
+    if (currentSessionId && (answerChecked || questionNumber > 0)) {
+      const timeoutId = setTimeout(saveSessionProgress, 1000); // Debounce saves
+      return () => clearTimeout(timeoutId);
+    }
+  }, [currentSessionId, questionNumber, score, answerChecked, selectedAnswer]);
+
   const handleNextLevel = async () => {
+    // Complete current session if exists
+    if (currentSessionId) {
+      try {
+        await fetch('/api/quiz/session', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionId: currentSessionId,
+            finalScore: score,
+          }),
+        });
+      } catch (error) {
+        console.error('Error completing session:', error);
+      }
+    }
+
     if( !player.Playerpoint ) { 
       setCookie("tempScore", score)
       router.push("/")
@@ -180,10 +287,13 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
 
   const updateLeaderboard = async () => {
     try {
+      // Only update if not already loading
+      if (!isLeaderboardLoading) {
       setIsLeaderboardLoading(true);
       const response = await fetch('/api/leaderboard');
       const data: LeaderboardPlayer[] = await response.json();
       setLeaderboardData(data);
+      }
     } catch (error) {
       console.error('Error updating leaderboard:', error);
     } finally {
@@ -192,7 +302,7 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   };
 
   useEffect(() => {
-    const interval = setInterval(updateLeaderboard, 5000);
+    const interval = setInterval(updateLeaderboard, 30000); // Reduced from 5s to 30s
     return () => clearInterval(interval);
   }, []);
 
@@ -249,6 +359,14 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
       levelCompleted: questionNumber === len - 1,
       allQuestionsUnder5Seconds
     });
+
+    // Show score update notification
+    if (isCorrect) {
+      const pointsEarned = doublePoints && doublePoints.active ? 60 : 30;
+      setScoreUpdateMessage(`+${pointsEarned} points!`);
+      setShowScoreUpdate(true);
+      setTimeout(() => setShowScoreUpdate(false), 2000);
+    }
   };
 
   const handleShareScore = () => {
@@ -272,7 +390,28 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
   }
 
   return questionNumber < len ? (
-    <div className="md:py-4 pt-0 pb-28">
+    <>
+      {/* Session Progress Indicator */}
+      {currentSessionId && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-2 rounded-full shadow bg-white/90 border border-blue-200 text-blue-700 text-sm font-medium">
+          {isSaving ? (
+            <>
+              <svg className="animate-spin h-4 w-4 mr-2 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+              </svg>
+              Saving progress...
+            </>
+          ) : (
+            <>
+              <svg className="h-4 w-4 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Progress saved
+            </>
+          )}
+        </div>
+      )}
       {/* Instructions Popup */}
       {showInstructions && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -402,6 +541,28 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
           </div>
         </div>
       )}
+      
+      {/* Mobile Leaderboard Overlay */}
+      {showMobileLeaderboard && (
+        <div className="md:hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div 
+            className="bg-white p-6 rounded-xl max-w-sm mx-4 relative shadow-2xl transform transition-all duration-300 scale-100 opacity-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button 
+              onClick={() => setShowMobileLeaderboard(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 hover:rotate-90 transition-all duration-300"
+              aria-label="Close leaderboard"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <LightweightLeaderboardWidget />
+          </div>
+        </div>
+      )}
+      
       {/* Power-ups display */}
       {activePowerUps.length > 0 && (
         <div className="container mb-2 flex gap-4">
@@ -512,6 +673,18 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
                 </svg>
                 <span className="font-medium">Game Rules</span>
               </button>
+              
+              {/* Mobile Leaderboard Toggle */}
+              <button
+                onClick={() => setShowMobileLeaderboard(!showMobileLeaderboard)}
+                className="md:hidden flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors duration-200 text-sm"
+                aria-label="Toggle leaderboard"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span className="font-medium">Leaderboard</span>
+              </button>
             </div>
           </div>
         </div>
@@ -597,9 +770,14 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
               </div>
             </div>
           }
-          <div className=" hidden md:block flex-1/2 w-100">
+          <div className="hidden md:block flex-1/2 w-100">
+            <div className="flex flex-col gap-6">
+              {/* Live Leaderboard Widget */}
+              <LightweightLeaderboardWidget />
+              
+              {/* Mascot */}
             {answerChecked ? (
-              <div className="w-full ">
+                <div className="w-full">
                 {!ansCorrect ? (
                   <Image
                     src="/mascot/sadMascot.svg"
@@ -631,6 +809,34 @@ export default function QuizPageSection({ Quizes, levelNumber, levelTitle, playe
         </div>
       </div>
     </div>
+      
+      {/* Floating Leaderboard Button for Mobile */}
+      <div className="md:hidden fixed bottom-20 right-4 z-40">
+        <button
+          onClick={() => setShowMobileLeaderboard(true)}
+          className="bg-green-600 hover:bg-green-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+          aria-label="Show leaderboard"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Score Update Notification */}
+      {showScoreUpdate && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-bounce">
+            <div className="flex items-center space-x-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+              <span className="font-bold">{scoreUpdateMessage}</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   ) : (
  
     <div className="md:py-16 py-8">
