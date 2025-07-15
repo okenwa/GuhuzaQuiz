@@ -66,9 +66,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return token
         },
         redirect({ url, baseUrl }) {
+            // Log for debugging
+            console.log('Redirect callback:', { url, baseUrl });
+            
             // Always redirect to the base URL (your Railway domain)
             return baseUrl
         },
     },
+    // Add this to ensure proper callback handling
+    secret: process.env.NEXTAUTH_SECRET,
 })
 
