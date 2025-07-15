@@ -7,7 +7,16 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:seed": "prisma db seed",
+    "db:mysql": "node scripts/switch-db.js mysql",
+    "db:postgresql": "node scripts/switch-db.js postgresql",
+    "db:status": "node scripts/switch-db.js status",
+    "setup": "node scripts/setup-database.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

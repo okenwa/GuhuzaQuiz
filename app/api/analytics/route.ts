@@ -21,13 +21,13 @@ export async function GET(request: NextRequest) {
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     }
 
-    // Get total users
-    const totalUsers = await db.user.count();
+    // Get total players (users)
+    const totalUsers = await db.player.count();
 
-    // Get active users (users who have taken quizzes in the time range)
+    // Get active players (players who have taken quizzes in the time range)
     const activeUsers = await db.player.count({
       where: {
-        updatedAt: {
+        lastLogin: {
           gte: startDate,
         },
       },
@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
     // Get quiz completions
     const quizCompletions = await db.quizSession.count({
       where: {
-        Status: 'completed',
-        updatedAt: {
+        Completed: true,
+        Last_Activity: {
           gte: startDate,
         },
       },
@@ -46,8 +46,8 @@ export async function GET(request: NextRequest) {
     // Get average score
     const scoreData = await db.quizSession.aggregate({
       where: {
-        Status: 'completed',
-        updatedAt: {
+        Completed: true,
+        Last_Activity: {
           gte: startDate,
         },
       },
@@ -60,8 +60,8 @@ export async function GET(request: NextRequest) {
     const levelPerformance = await db.quizSession.groupBy({
       by: ['Level_Id'],
       where: {
-        Status: 'completed',
-        updatedAt: {
+        Completed: true,
+        Last_Activity: {
           gte: startDate,
         },
       },
@@ -75,9 +75,9 @@ export async function GET(request: NextRequest) {
 
     // Get daily activity
     const dailyActivity = await db.quizSession.groupBy({
-      by: ['createdAt'],
+      by: ['Started_At'],
       where: {
-        createdAt: {
+        Started_At: {
           gte: startDate,
         },
       },
@@ -86,18 +86,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Get achievement stats
-    const achievementStats = await db.userBadge.groupBy({
-      by: ['Badge_ID'],
-      _count: {
-        User_ID: true,
-      },
-    });
-
     // Calculate completion rate
     const totalSessions = await db.quizSession.count({
       where: {
-        createdAt: {
+        Started_At: {
           gte: startDate,
         },
       },
@@ -123,15 +115,11 @@ export async function GET(request: NextRequest) {
         averageTime: 12.3, // Mock data
       })),
       dailyActivity: dailyActivity.map(day => ({
-        date: day.createdAt.toISOString().split('T')[0],
+        date: day.Started_At.toISOString().split('T')[0],
         users: day._count.Session_ID, // This is sessions, not unique users
         completions: day._count.Session_ID,
       })),
-      achievementStats: achievementStats.map(achievement => ({
-        achievementId: achievement.Badge_ID.toString(),
-        achievementName: `Achievement ${achievement.Badge_ID}`,
-        earnedCount: achievement._count.User_ID,
-      })),
+      achievementStats: [], // No achievement model in current schema
     };
 
     return NextResponse.json(analyticsData);
