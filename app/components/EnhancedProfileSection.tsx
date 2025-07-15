@@ -261,99 +261,96 @@ function EnhancedProfileSection({ player, playerRank, session }: typePlayerHeroS
 
           {/* Profile Info */}
           <div className="flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-4xl font-bold">
-                {isEditing ? 'Edit Profile' : `Hello, ${player?.Player_name}`}
-              </h1>
+            {/* Group Edit Profile and Invite Friends buttons together */}
+            <div className="flex gap-4 mb-4">
               <button
                 onClick={handleEditToggle}
-                className="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors duration-200 mb-2"
+                className="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors duration-200"
               >
                 {isEditing ? 'Close Edit' : 'Edit Profile'}
               </button>
-              {/* Invite Friends Button */}
               <button
                 onClick={() => setShowInviteModal(true)}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200 mb-4"
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors duration-200"
               >
                 Invite Friends
               </button>
-              {/* Invite Modal */}
-              {showInviteModal && (
-                <Popup isOpen={showInviteModal} closePopup={() => setShowInviteModal(false)} points={0}>
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-bold mb-2 text-gray-800">Invite Friends</h2>
-                    {/* Email Invite */}
-                    <form onSubmit={handleSendInvite} className="flex flex-col gap-2 mb-2">
-                      <label className="text-sm font-medium text-gray-700">Invite by Email:</label>
-                      <div className="flex gap-2">
-                        <input
-                          type="email"
-                          value={inviteEmail}
-                          onChange={e => setInviteEmail(e.target.value)}
-                          placeholder="Enter email address"
-                          className="border rounded px-2 py-1 flex-1"
-                          required
-                        />
-                        <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">Send</button>
-                      </div>
-                      {emailSent && <span className="text-green-600 text-xs">Invite sent!</span>}
-                      {emailError && <span className="text-red-600 text-xs">{emailError}</span>}
-                    </form>
-                    {/* Shareable Link */}
-                    <div className="mb-2">
-                      <label className="text-sm font-medium text-gray-700">Shareable Link:</label>
-                      <div className="flex gap-2 items-center mt-1">
-                        <input
-                          type="text"
-                          value={shareLink} readOnly
-                          className="border rounded px-2 py-1 flex-1 bg-gray-100 text-gray-700"
-                        />
-                        <button
-                          type="button"
-                          className="bg-gray-300 px-2 py-1 rounded text-xs"
-                          onClick={() => {navigator.clipboard.writeText(shareLink)}}
-                        >Copy</button>
-                      </div>
+            </div>
+            {/* Invite Modal */}
+            {showInviteModal && (
+              <Popup isOpen={showInviteModal} closePopup={() => setShowInviteModal(false)} points={0}>
+                <div className="space-y-4">
+                  <h2 className="text-xl font-bold mb-2 text-gray-800">Invite Friends</h2>
+                  {/* Email Invite */}
+                  <form onSubmit={handleSendInvite} className="flex flex-col gap-2 mb-2">
+                    <label className="text-sm font-medium text-gray-700">Invite by Email:</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="email"
+                        value={inviteEmail}
+                        onChange={e => setInviteEmail(e.target.value)}
+                        placeholder="Enter email address"
+                        className="border rounded px-2 py-1 flex-1"
+                        required
+                      />
+                      <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">Send</button>
                     </div>
-                    {/* Social Sharing */}
-                    <div className="mb-2">
-                      <label className="text-sm font-medium text-gray-700">Share on Social:</label>
-                      <div className="flex gap-2 mt-1">
-                        <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareLink)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook" title="Facebook" className="bg-blue-600 hover:bg-blue-700 p-2 rounded">
-                          <Image src="/icons/facebook.svg" alt="Facebook" width={24} height={24} />
-                        </a>
-                        <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareLink)}&text=${shareText}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter" title="Twitter" className="bg-blue-400 hover:bg-blue-500 p-2 rounded">
-                          <Image src="/icons/twitter.svg" alt="Twitter" width={24} height={24} />
-                        </a>
-                        <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareLink)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" title="LinkedIn" className="bg-blue-700 hover:bg-blue-800 p-2 rounded">
-                          <Image src="/icons/linkedin.svg" alt="LinkedIn" width={24} height={24} />
-                        </a>
-                        <a href={`https://wa.me/?text=${shareText}%20${encodeURIComponent(shareLink)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" title="WhatsApp" className="bg-green-500 hover:bg-green-600 p-2 rounded">
-                          <WhatsAppIcon />
-                        </a>
-                      </div>
-                    </div>
-                    {/* Referral Code */}
-                    <div className="mb-2">
-                      <label className="text-sm font-medium text-gray-700">Your Referral Code:</label>
-                      <div className="flex gap-2 items-center mt-1">
-                        <input
-                          type="text"
-                          value={referralCode} readOnly
-                          className="border rounded px-2 py-1 flex-1 bg-gray-100 text-gray-700"
-                        />
-                        <button
-                          type="button"
-                          className="bg-gray-300 px-2 py-1 rounded text-xs"
-                          onClick={() => {navigator.clipboard.writeText(referralCode)}}
-                        >Copy</button>
-                      </div>
+                    {emailSent && <span className="text-green-600 text-xs">Invite sent!</span>}
+                    {emailError && <span className="text-red-600 text-xs">{emailError}</span>}
+                  </form>
+                  {/* Shareable Link */}
+                  <div className="mb-2">
+                    <label className="text-sm font-medium text-gray-700">Shareable Link:</label>
+                    <div className="flex gap-2 items-center mt-1">
+                      <input
+                        type="text"
+                        value={shareLink} readOnly
+                        className="border rounded px-2 py-1 flex-1 bg-gray-100 text-gray-700"
+                      />
+                      <button
+                        type="button"
+                        className="bg-gray-300 px-2 py-1 rounded text-xs"
+                        onClick={() => {navigator.clipboard.writeText(shareLink)}}
+                      >Copy</button>
                     </div>
                   </div>
-                </Popup>
-              )}
-            </div>
+                  {/* Social Sharing */}
+                  <div className="mb-2">
+                    <label className="text-sm font-medium text-gray-700">Share on Social:</label>
+                    <div className="flex gap-2 mt-1">
+                      <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareLink)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook" title="Facebook" className="bg-blue-600 hover:bg-blue-700 p-2 rounded">
+                        <Image src="/icons/facebook.svg" alt="Facebook" width={24} height={24} />
+                      </a>
+                      <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareLink)}&text=${shareText}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter" title="Twitter" className="bg-blue-400 hover:bg-blue-500 p-2 rounded">
+                        <Image src="/icons/twitter.svg" alt="Twitter" width={24} height={24} />
+                      </a>
+                      <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareLink)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" title="LinkedIn" className="bg-blue-700 hover:bg-blue-800 p-2 rounded">
+                        <Image src="/icons/linkedin.svg" alt="LinkedIn" width={24} height={24} />
+                      </a>
+                      <a href={`https://wa.me/?text=${shareText}%20${encodeURIComponent(shareLink)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" title="WhatsApp" className="bg-green-500 hover:bg-green-600 p-2 rounded">
+                        <WhatsAppIcon />
+                      </a>
+                    </div>
+                  </div>
+                  {/* Referral Code */}
+                  <div className="mb-2">
+                    <label className="text-sm font-medium text-gray-700">Your Referral Code:</label>
+                    <div className="flex gap-2 items-center mt-1">
+                      <input
+                        type="text"
+                        value={referralCode} readOnly
+                        className="border rounded px-2 py-1 flex-1 bg-gray-100 text-gray-700"
+                      />
+                      <button
+                        type="button"
+                        className="bg-gray-300 px-2 py-1 rounded text-xs"
+                        onClick={() => {navigator.clipboard.writeText(referralCode)}}
+                      >Copy</button>
+                    </div>
+                  </div>
+                </div>
+              </Popup>
+            )}
 
             {isEditing ? (
               /* Edit Form */
