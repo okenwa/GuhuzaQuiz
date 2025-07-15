@@ -46,8 +46,9 @@ export default async function Page({
           : "Anonymous"
       : "";
     
-    const player = session ? await fetchUser(
-      Number(user?.memberId),
+    const memberId = session?.user?.memberId;
+    const player = session && memberId ? await fetchUser(
+      Number(memberId),
       name,
       user?.email || ""
     ) : {}
@@ -56,8 +57,9 @@ export default async function Page({
     let quizSession = null;
     if (session?.user?.memberId) {
       try {
+        const memberId = session.user.memberId;
         quizSession = await getOrCreateQuizSession(
-          Number(session.user.memberId),
+          Number(memberId),
           Number(levelNumber),
           Quizes.length
         );

@@ -49,8 +49,9 @@ export default function LeaderboardWidget() {
           // Skip rendering if player is null or undefined
           if (!player) return null;
           
-          const isCurrentPlayer = session?.user?.memberId && 
-            player.Player_ID === Number(session.user.memberId);
+          const memberId = session?.user?.memberId;
+          const isCurrentPlayer = memberId && 
+            player.Player_ID === Number(memberId);
           
           return (
             <div 

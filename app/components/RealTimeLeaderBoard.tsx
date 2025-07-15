@@ -59,8 +59,9 @@ export default function RealTimeLeaderBoard() {
             setTimeout(() => setShowNewScore(false), 2000);
             
             // Show toast notification for score updates
-            const isCurrentPlayer = session?.user?.memberId && 
-              player.Player_ID === Number(session.user.memberId);
+            const memberId = session?.user?.memberId;
+            const isCurrentPlayer = memberId && 
+              player.Player_ID === Number(memberId);
             if (isCurrentPlayer) {
               addToast(`Your score updated to ${player.Playerpoint.toLocaleString()}!`, 'success');
             } else {
@@ -185,8 +186,9 @@ export default function RealTimeLeaderBoard() {
               // Skip rendering if playerData is null or undefined
               if (!playerData) return null;
               
-              const isCurrentPlayer = session?.user?.memberId && 
-                playerData.Player_ID === Number(session.user.memberId);
+              const memberId = session?.user?.memberId;
+              const isCurrentPlayer = memberId && 
+                playerData.Player_ID === Number(memberId);
               const rank = isCurrentPlayer && !isUserInTop5 ? userRank : index + 1;
               const animationClass = animations[playerData.Player_ID] || '';
               const baseRowClass = isCurrentPlayer ? 

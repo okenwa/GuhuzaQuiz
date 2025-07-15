@@ -35,7 +35,8 @@ export default function LightweightLeaderboardWidget() {
       
       // If user is logged in, fetch their rank
       if (session?.user?.memberId) {
-        const rankResponse = await fetch(`/api/leaderboard/rank?playerId=${session.user.memberId}`);
+        const memberId = session.user.memberId;
+        const rankResponse = await fetch(`/api/leaderboard/rank?playerId=${memberId}`);
         if (rankResponse.ok) {
           const rankData = await rankResponse.json();
           setUserRank(rankData.rank);
@@ -94,8 +95,9 @@ export default function LightweightLeaderboardWidget() {
   const topPlayers = leaderboardData.slice(0, 5);
   
   // Check if current user is in top 5
-  const currentUser = session?.user?.memberId ? 
-    leaderboardData.find(p => p.Player_ID === Number(session.user.memberId)) : null;
+  const memberId = session?.user?.memberId;
+  const currentUser = memberId ? 
+    leaderboardData.find(p => p.Player_ID === Number(memberId)) : null;
   
   const isUserInTop5 = currentUser && topPlayers.some(p => p.Player_ID === currentUser.Player_ID);
 
@@ -164,8 +166,9 @@ export default function LightweightLeaderboardWidget() {
           // Skip rendering if player is null or undefined
           if (!player) return null;
           
-          const isCurrentPlayer = session?.user?.memberId && 
-            player.Player_ID === Number(session.user.memberId);
+          const memberId = session?.user?.memberId;
+          const isCurrentPlayer = memberId && 
+            player.Player_ID === Number(memberId);
           
           return (
             <div 

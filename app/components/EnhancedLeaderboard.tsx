@@ -238,8 +238,9 @@ export default function EnhancedLeaderboard() {
                 // Skip rendering if player is null or undefined
                 if (!player) return null;
                 
-                const isCurrentPlayer = session?.user?.memberId && 
-                  player.Player_ID === Number(session.user.memberId);
+                const memberId = session?.user?.memberId;
+                const isCurrentPlayer = memberId && 
+                  player.Player_ID === Number(memberId);
                 const globalRank = leaderboardData.findIndex(p => p.Player_ID === player.Player_ID) + 1;
                 
                 return (
