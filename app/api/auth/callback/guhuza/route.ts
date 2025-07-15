@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCookie, deleteCookie } from 'cookies-next'
-import prisma from '@/lib/prisma'
+import db from "@/lib/db";
 
 import { signIn } from '@/auth'
 

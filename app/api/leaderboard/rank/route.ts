@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import db from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get the player's points
-    const player = await prisma.player.findUnique({
+    const player = await db.player.findUnique({
       where: {
         Player_ID: Number(playerId)
       },
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Count how many players have more points than this player
-    const rank = await prisma.player.count({
+    const rank = await db.player.count({
       where: {
         Playerpoint: {
           gt: player.Playerpoint

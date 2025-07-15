@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma"
+import db from "@/lib/db";
 
 export async function POST(req: Request) {
 
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
             )
         }
 
-       const updatePlayer = await prisma.player.update({
+       const updatePlayer = await db.player.update({
         where: { 
             Player_ID: playerId
         }, 

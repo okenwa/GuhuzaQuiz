@@ -11,7 +11,7 @@ import fetchRank from "@/utils/fRanking";
 import QuizList from "../components/quizList";
 import fetchLevels from "@/utils/fLevels";
 import { generateRandomNickname } from "@/utils/profileUtils";
-import prisma from "@/lib/prisma";
+import db from "@/lib/db";
 
 async function Profile() {
   const session = await auth();
@@ -27,7 +27,7 @@ async function Profile() {
     // Assign random nickname if missing
     if (player && !player.nickname) {
       const randomNickname = generateRandomNickname();
-      await prisma.player.update({
+      await db.player.update({
         where: { Player_ID: Number(user?.memberId) },
         data: { nickname: randomNickname }
       });

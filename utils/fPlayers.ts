@@ -1,5 +1,5 @@
 
-import prisma from "@/lib/prisma"
+import db from "@/lib/db";
 
 type milestoneType = {
     Milestone_Id: number,
@@ -25,7 +25,7 @@ type Players = playerType[]
 
 async function fetchPlayers() {
     try {
-        const players = await prisma.player.findMany(
+        const players = await db.player.findMany(
             {
                 include: {
                     milestone: true

@@ -1,8 +1,8 @@
-import prisma from "@/lib/prisma"
+import db from "@/lib/db";
 
 async function fetchLevels() {
     try {
-        const levels = await prisma.level.findMany({ 
+        const levels = await db.level.findMany({ 
             orderBy : { 
                 Level_Id : 'desc'
             }

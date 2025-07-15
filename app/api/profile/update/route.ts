@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import db from "@/lib/db";
 import { auth } from "@/auth";
 
 export async function PUT(request: NextRequest) {
@@ -24,7 +24,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update user profile
-    const updatedUser = await prisma.player.update({
+    const updatedUser = await db.player.update({
       where: {
         Player_ID: Number(session.user.memberId)
       },

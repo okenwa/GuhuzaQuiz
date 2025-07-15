@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma"
+import db from "@/lib/db";
 type fetchRankType = { 
    
     playerpoint : number
@@ -6,7 +6,7 @@ type fetchRankType = {
 
 
 const fetchRank = async( playerpoint: number)=> { 
-const rank = await prisma.player.count({ 
+const rank = await db.player.count({ 
 where : { 
     Playerpoint : { gt:playerpoint}
 }

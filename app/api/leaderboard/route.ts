@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import db from "@/lib/db";
 
 export async function GET() {
   try {
     // Add caching headers to reduce database load
-    const players = await prisma.player.findMany({
+    const players = await db.player.findMany({
       orderBy: {
         Playerpoint: 'desc'
       },
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const updatedPlayer = await prisma.player.update({
+    const updatedPlayer = await db.player.update({
       where: {
         Player_ID: playerId
       },

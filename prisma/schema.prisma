@@ -36,12 +36,12 @@ model player {
   lastLogin    DateTime
   Level_Id     Int?
   Milestone_Id Int?
-  level        level?     @relation(fields: [Level_Id], references: [Level_Id], map: "Player_Level_Id_fkey")
-  milestone    milestone? @relation(fields: [Milestone_Id], references: [Milestone_Id], map: "Player_Milestone_Id_fkey")
+  level        level?     @relation(fields: [Level_Id], references: [Level_Id])
+  milestone    milestone? @relation(fields: [Milestone_Id], references: [Milestone_Id])
   quizSessions quizSession[]
   
-  @@index([Level_Id], map: "Player_Level_Id_fkey")
-  @@index([Milestone_Id], map: "Player_Milestone_Id_fkey")
+  @@index([Level_Id])
+  @@index([Milestone_Id])
 }
 
 model quizSession {

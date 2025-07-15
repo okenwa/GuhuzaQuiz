@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import db from "@/lib/db";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Username and password are required" }, { status: 400 });
         }
 
-        const user = await prisma.user.findFirst({
+        const user = await db.user.findFirst({
             where: {
                 Username: username,
             },
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
         }
 
 
-        const player = await prisma.player.findFirst({
+        const player = await db.player.findFirst({
             where: {
                 user_Id: user.User_Id,
             },

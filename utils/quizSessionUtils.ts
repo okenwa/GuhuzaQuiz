@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import db from "@/lib/db";
 
 export interface QuizSessionData {
   Player_ID: number;
@@ -33,7 +33,7 @@ export const getOrCreateQuizSession = async (
 ) => {
   try {
     // Check if session exists
-    let session = await prisma.quizSession.findUnique({
+    let session = await db.quizSession.findUnique({
       where: {
         Player_ID_Level_Id: {
           Player_ID,
@@ -51,7 +51,7 @@ export const getOrCreateQuizSession = async (
 
     if (!session) {
       // Create new session
-      session = await prisma.quizSession.create({
+      session = await db.quizSession.create({
         data: {
           Player_ID,
           Level_Id,
@@ -75,7 +75,7 @@ export const getOrCreateQuizSession = async (
       });
     } else {
       // Update last activity
-      await prisma.quizSession.update({
+      await db.quizSession.update({
         where: { Session_ID: session.Session_ID },
         data: { Last_Activity: new Date() },
       });
@@ -91,7 +91,7 @@ export const getOrCreateQuizSession = async (
 // Save question progress
 export const saveQuestionProgress = async (progressData: QuestionProgressData) => {
   try {
-    const progress = await prisma.questionProgress.upsert({
+    const progress = await db.questionProgress.upsert({
       where: {
         Session_ID_Question_Index: {
           Session_ID: progressData.Session_ID,
@@ -122,7 +122,7 @@ export const updateSessionProgress = async (
   updateData: Partial<QuizSessionData>
 ) => {
   try {
-    const session = await prisma.quizSession.update({
+    const session = await db.quizSession.update({
       where: { Session_ID },
       data: {
         ...updateData,
@@ -150,7 +150,7 @@ export const completeQuizSession = async (
   finalScore: number
 ) => {
   try {
-    const session = await prisma.quizSession.update({
+    const session = await db.quizSession.update({
       where: { Session_ID },
       data: {
         Completed: true,
@@ -169,7 +169,7 @@ export const completeQuizSession = async (
 // Get user's active sessions
 export const getUserActiveSessions = async (Player_ID: number) => {
   try {
-    const sessions = await prisma.quizSession.findMany({
+    const sessions = await db.quizSession.findMany({
       where: {
         Player_ID,
         Completed: false,
@@ -200,7 +200,7 @@ export const cleanupOldSessions = async (daysOld: number = 7) => {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - daysOld);
 
-    const deletedSessions = await prisma.quizSession.deleteMany({
+    const deletedSessions = await db.quizSession.deleteMany({
       where: {
         Last_Activity: {
           lt: cutoffDate,
@@ -219,7 +219,7 @@ export const cleanupOldSessions = async (daysOld: number = 7) => {
 // Get session statistics
 export const getSessionStats = async (Player_ID: number) => {
   try {
-    const stats = await prisma.quizSession.groupBy({
+    const stats = await db.quizSession.groupBy({
       by: ['Level_Id'],
       where: {
         Player_ID,

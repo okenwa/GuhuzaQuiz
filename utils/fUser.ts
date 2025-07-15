@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import db from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { getCookie, setCookie } from "cookies-next";
 import { cookies } from "next/headers";
@@ -8,7 +8,7 @@ type typeUser = {
   email: string;
 };
 const fetchUser = async (userid: number, username: string, email: string) => {
-  const playerexist = await prisma.player.findFirst({
+  const playerexist = await db.player.findFirst({
     where: {
       Player_ID: userid,
     },
@@ -36,7 +36,7 @@ const fetchUser = async (userid: number, username: string, email: string) => {
     const cookieStore = await cookies()
     const tempScore = cookieStore.get('tempScore')?.value || 0
     const totalScore =Number(playerexist.Playerpoint) + Number(tempScore)
-    const player = await prisma.player.update({
+    const player = await db.player.update({
       where: {
         Player_ID: userid,
       },
@@ -54,7 +54,7 @@ const fetchUser = async (userid: number, username: string, email: string) => {
 setCookie("tempScore", "0")
     return player;
   } else {
-    const player = await prisma.player.create({
+    const player = await db.player.create({
       data: {
         Player_ID: Number(userid),
         Player_name: username,

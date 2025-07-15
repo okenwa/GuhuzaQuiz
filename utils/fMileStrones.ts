@@ -1,9 +1,9 @@
 
-import prisma from "@/lib/prisma"
+import db from "@/lib/db";
 
 async function fetchMilestone() {
     try {
-        const milestone = await prisma.milestone.findMany();
+        const milestone = await db.milestone.findMany();
         return milestone
 
     } catch (e) {

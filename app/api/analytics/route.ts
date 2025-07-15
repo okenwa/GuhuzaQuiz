@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import db from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,10 +22,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Get total users
-    const totalUsers = await prisma.user.count();
+    const totalUsers = await db.user.count();
 
     // Get active users (users who have taken quizzes in the time range)
-    const activeUsers = await prisma.player.count({
+    const activeUsers = await db.player.count({
       where: {
         updatedAt: {
           gte: startDate,
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Get quiz completions
-    const quizCompletions = await prisma.quizSession.count({
+    const quizCompletions = await db.quizSession.count({
       where: {
         Status: 'completed',
         updatedAt: {
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Get average score
-    const scoreData = await prisma.quizSession.aggregate({
+    const scoreData = await db.quizSession.aggregate({
       where: {
         Status: 'completed',
         updatedAt: {
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Get level performance
-    const levelPerformance = await prisma.quizSession.groupBy({
+    const levelPerformance = await db.quizSession.groupBy({
       by: ['Level_Id'],
       where: {
         Status: 'completed',
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Get daily activity
-    const dailyActivity = await prisma.quizSession.groupBy({
+    const dailyActivity = await db.quizSession.groupBy({
       by: ['createdAt'],
       where: {
         createdAt: {
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Get achievement stats
-    const achievementStats = await prisma.userBadge.groupBy({
+    const achievementStats = await db.userBadge.groupBy({
       by: ['Badge_ID'],
       _count: {
         User_ID: true,
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Calculate completion rate
-    const totalSessions = await prisma.quizSession.count({
+    const totalSessions = await db.quizSession.count({
       where: {
         createdAt: {
           gte: startDate,
