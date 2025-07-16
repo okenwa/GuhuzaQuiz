@@ -9,6 +9,8 @@ type PlayerType = {
   streak?: number;
   lastLogin?: Date;
   nickname?: string;
+  averageCompletionTime?: number; // Average time to complete levels (in seconds)
+  completedSessions?: number; // Number of completed quiz sessions
 };
 
 type LeaderboardData = PlayerType[];

@@ -172,9 +172,23 @@ export default function EnhancedLeaderboard() {
                   <p className="text-2xl font-bold text-blue-600">#{currentUserPosition}</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">Total Players</p>
-                <p className="text-lg font-semibold text-gray-800">{leaderboardData.length}</p>
+              <div className="text-right space-y-1">
+                <div>
+                  <p className="text-sm text-gray-600">Level</p>
+                  <p className="text-lg font-semibold text-green-600">
+                    {leaderboardData.find(p => p.Player_ID === Number(session?.user?.memberId))?.Level_Id || 1}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Avg Speed</p>
+                  <p className="text-sm font-semibold text-purple-600">
+                    {(() => {
+                      const player = leaderboardData.find(p => p.Player_ID === Number(session?.user?.memberId));
+                      const avgTime = player?.averageCompletionTime;
+                      return avgTime ? `${Math.floor(avgTime / 60)}m ${avgTime % 60}s` : 'No data';
+                    })()}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -187,17 +201,20 @@ export default function EnhancedLeaderboard() {
             <p className="text-2xl font-bold text-blue-600">{leaderboardData.length}</p>
           </div>
           <div className="bg-white rounded-lg p-4 text-center border">
-            <p className="text-sm text-gray-600">Highest Score</p>
+            <p className="text-sm text-gray-600">Highest Level</p>
             <p className="text-2xl font-bold text-green-600">
-              {leaderboardData.length > 0 ? leaderboardData[0].Playerpoint.toLocaleString() : '0'}
+              {leaderboardData.length > 0 ? `Level ${leaderboardData[0].Level_Id || 1}` : 'Level 1'}
             </p>
           </div>
           <div className="bg-white rounded-lg p-4 text-center border">
-            <p className="text-sm text-gray-600">Average Score</p>
+            <p className="text-sm text-gray-600">Avg Speed</p>
             <p className="text-2xl font-bold text-purple-600">
               {leaderboardData.length > 0 
-                ? Math.round(leaderboardData.reduce((sum, p) => sum + p.Playerpoint, 0) / leaderboardData.length).toLocaleString()
-                : '0'
+                ? (() => {
+                    const avgTime = leaderboardData.reduce((sum, p) => sum + (p.averageCompletionTime || 0), 0) / leaderboardData.length;
+                    return avgTime > 0 ? `${Math.floor(avgTime / 60)}m ${Math.round(avgTime % 60)}s` : 'No data';
+                  })()
+                : 'No data'
               }
             </p>
           </div>
@@ -223,10 +240,13 @@ export default function EnhancedLeaderboard() {
                   Player
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
-                  Points
+                  Level
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
-                  Level
+                  Speed
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                  Points
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                   Status
@@ -281,13 +301,21 @@ export default function EnhancedLeaderboard() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-bold text-gray-900">
-                        {player.Playerpoint.toLocaleString()}
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Level {player.Level_Id || 1}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        Level {player.Level_Id || 1}
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {player.averageCompletionTime ? 
+                          `${Math.floor(player.averageCompletionTime / 60)}m ${player.averageCompletionTime % 60}s` : 
+                          'No data'
+                        }
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="text-sm font-bold text-gray-900">
+                        {player.Playerpoint.toLocaleString()}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
