@@ -261,7 +261,7 @@ function EnhancedProfileSection({ player, playerRank, session }: typePlayerHeroS
 
           {/* Profile Info */}
           <div className="flex-1">
-            {/* Group Edit Profile and Invite Friends buttons together */}
+            {/* Edit Profile and Invite Friends Buttons */}
             <div className="flex gap-4 mb-4">
               <button
                 onClick={handleEditToggle}
