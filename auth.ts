@@ -66,7 +66,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return token;
       },
       redirect({ url, baseUrl }) {
-        console.log('Redirect callback:', { url, baseUrl });
+        // If the url is relative, prefix it with the baseUrl
+        if (url.startsWith('/')) {
+          return `${baseUrl}${url}`;
+        }
+        // If the url is on the same origin, allow it
+        else if (new URL(url).origin === new URL(baseUrl).origin) {
+          return url;
+        }
+        // Otherwise, redirect to the baseUrl
         return baseUrl;
       },
     },

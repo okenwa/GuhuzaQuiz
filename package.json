@@ -16,7 +16,8 @@
     "db:mysql": "node scripts/switch-db.js mysql",
     "db:postgresql": "node scripts/switch-db.js postgresql",
     "db:status": "node scripts/switch-db.js status",
-    "setup": "node scripts/setup-database.js"
+    "setup": "node scripts/setup-database.js",
+    "install-prod": "npm install --omit=dev"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
@@ -40,6 +41,7 @@
     "react-icons": "^5.4.0",
     "react-share-social": "^0.1.60",
     "resend": "^4.1.2",
+    "sharp": "^0.34.3",
     "tailwind-merge": "^3.0.1",
     "workbox-expiration": "^7.3.0",
     "workbox-precaching": "^7.3.0",
