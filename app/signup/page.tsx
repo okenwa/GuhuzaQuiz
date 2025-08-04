@@ -12,7 +12,8 @@ function SignUp() {
   // Form state variables
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   // Show/hide password toggle
   const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +42,8 @@ function SignUp() {
         },
         body: JSON.stringify({
           username,
-          name,
+          firstName,
+          lastName,
           password,
           tempScore,
         }),
@@ -60,7 +62,8 @@ function SignUp() {
 
       setUsername("");
       setPassword("");
-      setName("");
+      setFirstName("");
+      setLastName("");
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -113,16 +116,31 @@ function SignUp() {
             </div>
           </div>
 
-          {/* Name Field */}
+          {/* First Name Field */}
           <div className="mt-3">
-            <label>Name</label>
+            <label>First Name</label>
             <div>
               <input
-                placeholder="Enter Your Name Here"
+                placeholder="Enter Your First Name"
                 type="text"
                 className="border-2 rounded px-2 py-4 w-96"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Last Name Field */}
+          <div className="mt-3">
+            <label>Last Name</label>
+            <div>
+              <input
+                placeholder="Enter Your Last Name"
+                type="text"
+                className="border-2 rounded px-2 py-4 w-96"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
                 required
               />
             </div>

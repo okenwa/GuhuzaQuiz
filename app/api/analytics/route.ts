@@ -21,13 +21,13 @@ export async function GET(request: NextRequest) {
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     }
 
-    // Get total users
-    const totalUsers = await prisma.user.count();
+    // Get total players (users)
+    const totalUsers = await prisma.player.count();
 
-    // Get active users (users who have taken quizzes in the time range)
+    // Get active users (players who have taken quizzes in the time range)
     const activeUsers = await prisma.player.count({
       where: {
-        updatedAt: {
+        lastLogin: {
           gte: startDate,
         },
       },
@@ -36,8 +36,8 @@ export async function GET(request: NextRequest) {
     // Get quiz completions
     const quizCompletions = await prisma.quizSession.count({
       where: {
-        Status: 'completed',
-        updatedAt: {
+        Completed: true,
+        Started_At: {
           gte: startDate,
         },
       },
@@ -46,8 +46,8 @@ export async function GET(request: NextRequest) {
     // Get average score
     const scoreData = await prisma.quizSession.aggregate({
       where: {
-        Status: 'completed',
-        updatedAt: {
+        Completed: true,
+        Started_At: {
           gte: startDate,
         },
       },
@@ -60,8 +60,8 @@ export async function GET(request: NextRequest) {
     const levelPerformance = await prisma.quizSession.groupBy({
       by: ['Level_Id'],
       where: {
-        Status: 'completed',
-        updatedAt: {
+        Completed: true,
+        Started_At: {
           gte: startDate,
         },
       },
@@ -75,9 +75,9 @@ export async function GET(request: NextRequest) {
 
     // Get daily activity
     const dailyActivity = await prisma.quizSession.groupBy({
-      by: ['createdAt'],
+      by: ['Started_At'],
       where: {
-        createdAt: {
+        Started_At: {
           gte: startDate,
         },
       },
@@ -86,18 +86,10 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Get achievement stats
-    const achievementStats = await prisma.userBadge.groupBy({
-      by: ['Badge_ID'],
-      _count: {
-        User_ID: true,
-      },
-    });
-
     // Calculate completion rate
     const totalSessions = await prisma.quizSession.count({
       where: {
-        createdAt: {
+        Started_At: {
           gte: startDate,
         },
       },
@@ -123,14 +115,9 @@ export async function GET(request: NextRequest) {
         averageTime: 12.3, // Mock data
       })),
       dailyActivity: dailyActivity.map(day => ({
-        date: day.createdAt.toISOString().split('T')[0],
+        date: day.Started_At.toISOString().split('T')[0],
         users: day._count.Session_ID, // This is sessions, not unique users
         completions: day._count.Session_ID,
-      })),
-      achievementStats: achievementStats.map(achievement => ({
-        achievementId: achievement.Badge_ID.toString(),
-        achievementName: `Achievement ${achievement.Badge_ID}`,
-        earnedCount: achievement._count.User_ID,
       })),
     };
 

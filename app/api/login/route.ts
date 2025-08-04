@@ -2,8 +2,6 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
-import { useContext } from "react";
-import PlayerContextProvider from "@/app/context/playerContext";
 
 export async function POST(req: Request) {
     try {
@@ -14,42 +12,29 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "Username and password are required" }, { status: 400 });
         }
 
-        const user = await prisma.user.findFirst({
+        const player = await prisma.player.findFirst({
             where: {
-                Username: username,
+                Player_name: username,
             },
+            include: {
+                milestone: true
+            }
         });
 
-        if (!user) {
+        if (!player) {
             return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
         }
 
-        const passwordMatch = await bcrypt.compare(password, user.Password);
+        const passwordMatch = await bcrypt.compare(password, player.Password);
 
         if (!passwordMatch) {
             return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
         }
 
+        const cookieStore = cookies()
+        cookieStore.set('LoggedIn', 'true', { secure: true, httpOnly: true, sameSite: "strict", path: "/" })
+        cookieStore.set('PlayerLevel', String(player.Level_Id), { secure: true, httpOnly: true, sameSite: "strict", path: "/" })
 
-        const player = await prisma.player.findFirst({
-            where: {
-                user_Id: user.User_Id,
-            },
-            include: {
-                milestone: true
-
-            }
-        });
-
-        if (!player) {
-            return NextResponse.json({ message: "Player data not found for this user" }, { status: 404 });
-        }
-        if (player) { 
-            const cookieStore =  cookies()
-            cookieStore.set('LoggedIn', 'true', { secure: true , httpOnly:true,sameSite:"strict", path:"/", })
-            cookieStore.set('PlayerLevel', String(player.Level_Id), { secure: true , httpOnly:true,sameSite:"strict", path:"/", })
-
-        }
         return NextResponse.json({ message: "Login successful", player: player }, { status: 200 });
 
     } catch (error) {
