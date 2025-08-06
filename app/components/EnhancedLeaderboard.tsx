@@ -248,9 +248,7 @@ export default function EnhancedLeaderboard() {
                 <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
                   Points
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
-                  Status
-                </th>
+               
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -318,13 +316,7 @@ export default function EnhancedLeaderboard() {
                         {player.Playerpoint.toLocaleString()}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {isCurrentPlayer && (
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          Current Player
-                        </span>
-                      )}
-                    </td>
+                   
                   </tr>
                 );
               })}
