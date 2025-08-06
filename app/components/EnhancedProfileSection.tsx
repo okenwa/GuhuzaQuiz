@@ -7,7 +7,7 @@ import { useBadges } from "../context/badgeContext";
 import BadgeSystem from "./badges/BadgeSystem";
 import Toast from "./Toast";
 import { updateProfile, uploadAvatar, validateImageFile } from "@/utils/profileUtils";
-import Popup from "./Popup"; // Added import for Popup
+import Popup from "./popUp"; // Added import for Popup
 
 type ProgressBarType = {
   percentage: number;
@@ -90,35 +90,199 @@ function EnhancedProfileSection({ player, playerRank, session }: typePlayerHeroS
   const [inviteEmail, setInviteEmail] = useState('');
   const [emailSent, setEmailSent] = useState(false);
   const [emailError, setEmailError] = useState("");
+  const [socialStats, setSocialStats] = useState<any>(null);
+  const [isLoadingStats, setIsLoadingStats] = useState(false);
+  
   // Social share text
-  const shareText = encodeURIComponent('Join me on Guhuza Quiz! Try to beat my score!');
+  const shareText = encodeURIComponent(`🎮 I just completed Level ${player.Level_Id}: The Ultimate Test on Guhuza Quiz App! 🎯
 
-  // Email invite handler (placeholder)
-  const handleSendInvite = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setEmailSent(false);
-    setEmailError("");
+🏆 My score: ${player.Playerpoint} points
+⭐ Total Score: ${player.Playerpoint} points
 
+Can you beat my score? Try it now! #GuhuzaQuiz #LearningIsFun`);
+
+  // Fetch social stats
+  const fetchSocialStats = async () => {
+    if (!player?.Player_ID) return;
+    
+    setIsLoadingStats(true);
     try {
-      const res = await fetch("/api/invite", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: inviteEmail, inviteLink: shareLink }),
-      });
-      if (res.ok) {
-        setEmailSent(true);
-        setInviteEmail("");
-      } else {
-        const data = await res.json();
-        setEmailError(data.message || "Failed to send invite.");
+      const response = await fetch(`/api/social-rewards?playerId=${player.Player_ID}`);
+      const data = await response.json();
+      if (data.success) {
+        setSocialStats(data.data);
       }
-    } catch (err) {
-      setEmailError("Failed to send invite.");
+    } catch (error) {
+      console.error('Failed to fetch social stats:', error);
+    } finally {
+      setIsLoadingStats(false);
     }
   };
 
-  const handleClaimReward = () => {
-    router.push("/reward");
+  // Load social stats on component mount
+  React.useEffect(() => {
+    fetchSocialStats();
+  }, [player?.Player_ID]);
+
+  // Handle social share with rewards
+  const handleSocialShare = async (platform: string) => {
+    if (!player?.Player_ID) return;
+
+    const shareContent = `🎮 I just completed Level ${player.Level_Id}: The Ultimate Test on Guhuza Quiz App! 🎯\n\n🏆 My score: ${player.Playerpoint} points\n⭐ Total Score: ${player.Playerpoint} points\n\nCan you beat my score? Try it now! #GuhuzaQuiz #LearningIsFun`;
+    
+    try {
+      const response = await fetch("/api/social-rewards", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          playerId: player.Player_ID,
+          action: "share",
+          platform,
+          content: shareContent,
+          url: shareLink
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setToast({ 
+          message: `🎉 Shared on ${platform}! +${data.pointsEarned} points earned!`, 
+          type: 'success' 
+        });
+        // Refresh social stats
+        fetchSocialStats();
+      } else {
+        setToast({ 
+          message: data.message || `Failed to record ${platform} share`, 
+          type: 'error' 
+        });
+      }
+    } catch (error) {
+      setToast({ 
+        message: "Network error. Please try again.", 
+        type: 'error' 
+      });
+    }
+  };
+
+  // Email invite handler with rewards
+  const handleSendInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail.trim()) {
+      setEmailError("Please enter an email address");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inviteEmail)) {
+      setEmailError("Please enter a valid email address");
+      return;
+    }
+
+    setEmailError("");
+    setEmailSent(true);
+    
+    try {
+      const response = await fetch("/api/social-rewards", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          playerId: player.Player_ID,
+          action: "invite",
+          inviteeEmail: inviteEmail.trim(),
+          inviteeName: inviteEmail.split('@')[0] // Use email prefix as name
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setToast({ 
+          message: `🎉 Invite sent! +${data.pointsEarned} points earned!`, 
+          type: 'success' 
+        });
+        setInviteEmail("");
+        setShowInviteModal(false);
+        // Refresh social stats
+        fetchSocialStats();
+      } else {
+        setToast({ 
+          message: data.message || "Failed to send invite", 
+          type: 'error' 
+        });
+      }
+    } catch (error) {
+      setToast({ 
+        message: "Network error. Please try again.", 
+        type: 'error' 
+      });
+    } finally {
+      setEmailSent(false);
+    }
+  };
+
+  const handleClaimReward = async () => {
+    if (!player?.Player_ID || !player?.milestone) return;
+
+    // Check if player can claim the reward
+    if (player.Level_Id < player.milestone.UnlockingLevel) {
+      setToast({ 
+        message: `You need to reach level ${player.milestone.UnlockingLevel} to claim this reward`, 
+        type: 'error' 
+      });
+      return;
+    }
+
+    // Check if already claimed
+    if ((player.Milestone_Id || 0) >= player.milestone.Milestone_Id) {
+      setToast({ 
+        message: "This reward has already been claimed!", 
+        type: 'info' 
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/reward", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          playerId: player.Player_ID, 
+          nextMilestone: player.milestone.Milestone_Id 
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setToast({ 
+          message: `🎉 Reward claimed! +${data.rewardPoints} points!`, 
+          type: 'success' 
+        });
+        
+        // Refresh the page to update player data
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } else {
+        setToast({ 
+          message: data.message || "Failed to claim reward", 
+          type: 'error' 
+        });
+      }
+    } catch (error) {
+      setToast({ 
+        message: "Network error. Please try again.", 
+        type: 'error' 
+      });
+    }
   };
 
   const handleEditToggle = () => {
@@ -277,8 +441,8 @@ function EnhancedProfileSection({ player, playerRank, session }: typePlayerHeroS
               </button>
             </div>
             {/* Invite Modal */}
-            {showInviteModal && (
-              <Popup isOpen={showInviteModal} closePopup={() => setShowInviteModal(false)} points={0}>
+                         {showInviteModal && (
+               <Popup isOpen={showInviteModal} closePopup={() => setShowInviteModal(false)}>
                 <div className="space-y-4">
                   <h2 className="text-xl font-bold mb-2 text-gray-800">Invite Friends</h2>
                   {/* Email Invite */}
@@ -290,7 +454,7 @@ function EnhancedProfileSection({ player, playerRank, session }: typePlayerHeroS
                         value={inviteEmail}
                         onChange={e => setInviteEmail(e.target.value)}
                         placeholder="Enter email address"
-                        className="border rounded px-2 py-1 flex-1"
+                        className="border rounded px-2 py-1 flex-1 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         required
                       />
                       <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">Send</button>
@@ -318,19 +482,92 @@ function EnhancedProfileSection({ player, playerRank, session }: typePlayerHeroS
                   <div className="mb-2">
                     <label className="text-sm font-medium text-gray-700">Share on Social:</label>
                     <div className="flex gap-2 mt-1">
-                      <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareLink)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook" title="Facebook" className="bg-blue-600 hover:bg-blue-700 p-2 rounded">
+                      <button 
+                        onClick={() => {
+                          handleSocialShare('facebook');
+                          // Open Facebook share dialog
+                          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareLink)}`, '_blank');
+                          // Copy text to clipboard
+                          navigator.clipboard.writeText(`🎮 I just completed Level ${player.Level_Id}: The Ultimate Test on Guhuza Quiz App! 🎯\n\n🏆 My score: ${player.Playerpoint} points\n⭐ Total Score: ${player.Playerpoint} points\n\nCan you beat my score? Try it now! #GuhuzaQuiz #LearningIsFun`);
+                          alert("Share text copied to clipboard! Please paste it in Facebook.");
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 p-2 rounded transition-colors"
+                        title="Facebook"
+                      >
                         <Image src="/icons/facebook.svg" alt="Facebook" width={24} height={24} />
-                      </a>
-                      <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareLink)}&text=${shareText}`} target="_blank" rel="noopener noreferrer" aria-label="Share on Twitter" title="Twitter" className="bg-blue-400 hover:bg-blue-500 p-2 rounded">
+                      </button>
+                      
+                      <button 
+                        onClick={() => {
+                          handleSocialShare('twitter');
+                          window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareLink)}&text=${shareText}`, '_blank');
+                        }}
+                        className="bg-blue-400 hover:bg-blue-500 p-2 rounded transition-colors"
+                        title="Twitter"
+                      >
                         <Image src="/icons/twitter.svg" alt="Twitter" width={24} height={24} />
-                      </a>
-                      <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareLink)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn" title="LinkedIn" className="bg-blue-700 hover:bg-blue-800 p-2 rounded">
+                      </button>
+                      
+                      <button 
+                        onClick={() => {
+                          handleSocialShare('linkedin');
+                          window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareLink)}`, '_blank');
+                          navigator.clipboard.writeText(`🎮 I just completed Level ${player.Level_Id}: The Ultimate Test on Guhuza Quiz App! 🎯\n\n🏆 My score: ${player.Playerpoint} points\n⭐ Total Score: ${player.Playerpoint} points\n\nCan you beat my score? Try it now! #GuhuzaQuiz #LearningIsFun`);
+                          alert("Share text copied to clipboard! Please paste it in LinkedIn.");
+                        }}
+                        className="bg-blue-700 hover:bg-blue-800 p-2 rounded transition-colors"
+                        title="LinkedIn"
+                      >
                         <Image src="/icons/linkedin.svg" alt="LinkedIn" width={24} height={24} />
-                      </a>
-                      <a href={`https://wa.me/?text=${shareText}%20${encodeURIComponent(shareLink)}`} target="_blank" rel="noopener noreferrer" aria-label="Share on WhatsApp" title="WhatsApp" className="bg-green-500 hover:bg-green-600 p-2 rounded">
+                      </button>
+                      
+                      <button 
+                        onClick={() => {
+                          handleSocialShare('whatsapp');
+                          window.open(`https://wa.me/?text=${shareText}%20${encodeURIComponent(shareLink)}`, '_blank');
+                        }}
+                        className="bg-green-500 hover:bg-green-600 p-2 rounded transition-colors"
+                        title="WhatsApp"
+                      >
                         <WhatsAppIcon />
-                      </a>
+                      </button>
+                      
+                      <button 
+                        onClick={() => {
+                          handleSocialShare('tiktok');
+                          window.open(`https://www.tiktok.com/share?url=${encodeURIComponent(shareLink)}&text=${shareText}`, '_blank');
+                          navigator.clipboard.writeText(`🎮 I just completed Level ${player.Level_Id}: The Ultimate Test on Guhuza Quiz App! 🎯\n\n🏆 My score: ${player.Playerpoint} points\n⭐ Total Score: ${player.Playerpoint} points\n\nCan you beat my score? Try it now! #GuhuzaQuiz #LearningIsFun`);
+                          alert("Share text copied to clipboard! Please paste it in TikTok.");
+                        }}
+                        className="bg-black hover:bg-gray-800 p-2 rounded transition-colors"
+                        title="TikTok"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                        </svg>
+                      </button>
                     </div>
+                    
+                    {/* Social Stats Display */}
+                    {socialStats && (
+                      <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Today's Shares:</h4>
+                        <div className="flex flex-wrap gap-2 text-xs">
+                          {Object.entries(socialStats.todayShares || {}).map(([platform, count]) => (
+                            <span key={platform} className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                              {platform}: {count as number}/{socialStats.limits?.share || 5}
+                            </span>
+                          ))}
+                          {Object.keys(socialStats.todayShares || {}).length === 0 && (
+                            <span className="text-gray-500">No shares today</span>
+                          )}
+                        </div>
+                        <div className="mt-2 text-xs text-gray-600">
+                          Total shares: {socialStats.player?.sharesCount || 0} | 
+                          Total invites: {socialStats.player?.invitesCount || 0}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   {/* Referral Code */}
                   <div className="mb-2">
@@ -535,6 +772,78 @@ function EnhancedProfileSection({ player, playerRank, session }: typePlayerHeroS
               Claim Reward
             </button>
           </div>
+        </div>
+
+        {/* Social Rewards Section */}
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-8">
+          <h3 className="text-lg font-semibold mb-4">Social Rewards</h3>
+          {isLoadingStats ? (
+            <div className="flex justify-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
+          ) : socialStats ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Social Activity Stats */}
+              <div className="space-y-4">
+                <h4 className="text-md font-medium text-white/90">Activity Summary</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-white/5 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-400">{socialStats.player?.sharesCount || 0}</div>
+                    <div className="text-sm text-white/70">Total Shares</div>
+                  </div>
+                  <div className="text-center p-3 bg-white/5 rounded-lg">
+                    <div className="text-2xl font-bold text-green-400">{socialStats.player?.invitesCount || 0}</div>
+                    <div className="text-sm text-white/70">Total Invites</div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white/80">Pending Invites:</span>
+                    <span className="font-semibold">{socialStats.pendingInvites || 0}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white/80">Accepted Invites:</span>
+                    <span className="font-semibold">{socialStats.acceptedInvites || 0}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Today's Activity */}
+              <div className="space-y-4">
+                <h4 className="text-md font-medium text-white/90">Today's Activity</h4>
+                <div className="space-y-2">
+                  {Object.entries(socialStats.todayShares || {}).map(([platform, count]) => (
+                    <div key={platform} className="flex justify-between items-center p-2 bg-white/5 rounded">
+                      <span className="text-white/80 capitalize">{platform}</span>
+                      <span className="font-semibold">{count as number}/{socialStats.limits?.share || 5}</span>
+                    </div>
+                  ))}
+                  {Object.keys(socialStats.todayShares || {}).length === 0 && (
+                    <div className="text-center py-4 text-white/60">
+                      No shares today
+                    </div>
+                  )}
+                </div>
+                
+                <div className="mt-4 p-3 bg-yellow-500/20 rounded-lg">
+                  <h5 className="text-sm font-medium text-yellow-300 mb-2">Reward Info</h5>
+                  <div className="text-xs space-y-1 text-white/80">
+                    <div>• Share on Facebook/Twitter: +50 points</div>
+                    <div>• Share on LinkedIn: +60 points</div>
+                    <div>• Share on TikTok: +75 points</div>
+                    <div>• Share on WhatsApp: +40 points</div>
+                    <div>• Invite friends: +200 points</div>
+                    <div>• Daily limit: 5 shares per platform</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-white/60">
+              Failed to load social stats
+            </div>
+          )}
         </div>
 
         {/* Badges Section */}

@@ -1,16 +1,42 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
-import { FaSignInAlt, FaSignOutAlt, FaUser, FaTrophy, FaQuestionCircle, FaHome } from "react-icons/fa";
+import { FaSignInAlt, FaSignOutAlt, FaUser, FaTrophy, FaQuestionCircle, FaHome, FaGift } from "react-icons/fa";
 import LoginButton from "./buttons/loginBtn";
 import LogoutButton from "./buttons/logoutBtn";
 
 function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [hasRewards, setHasRewards] = useState(false);
   const { data: session } = useSession();
+
+  // Check for available rewards
+  useEffect(() => {
+    const checkRewards = async () => {
+      if (session?.user?.memberId) {
+        try {
+          // Check for social rewards
+          const socialResponse = await fetch(`/api/social-rewards?playerId=${session.user.memberId}`);
+          if (socialResponse.ok) {
+            const socialData = await socialResponse.json();
+            if (socialData.success) {
+              // Check if there are any pending invites or recent activity
+              const hasSocialActivity = socialData.data.pendingInvites > 0 || 
+                                      Object.values(socialData.data.todayShares || {}).some((count: any) => count > 0);
+              setHasRewards(hasSocialActivity);
+            }
+          }
+        } catch (error) {
+          console.error('Error checking rewards:', error);
+        }
+      }
+    };
+
+    checkRewards();
+  }, [session?.user?.memberId]);
 
   return (
     <header className="sticky top-0 z-50 bg-black py-6 shadow-lg">
@@ -50,6 +76,16 @@ function Navbar() {
           <Link href="/profile">
             <span className="text-white hover:underline flex items-center gap-1">
               <FaUser /> Profile
+            </span>
+          </Link>
+          <Link href="/reward">
+            <span className="text-white hover:underline flex items-center gap-1 relative">
+              <FaGift /> Rewards
+              {hasRewards && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center animate-pulse">
+                  !
+                </span>
+              )}
             </span>
           </Link>
           {session && session.user ? (
@@ -140,6 +176,16 @@ function Navbar() {
             <Link href="/profile" className="w-full text-center">
               <span className="text-white hover:underline flex items-center justify-center gap-1">
                 <FaUser /> Profile
+              </span>
+            </Link>
+            <Link href="/reward" className="w-full text-center">
+              <span className="text-white hover:underline flex items-center justify-center gap-1 relative">
+                <FaGift /> Rewards
+                {hasRewards && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center animate-pulse">
+                    !
+                  </span>
+                )}
               </span>
             </Link>
             {session && session.user ? (

@@ -38,7 +38,9 @@ export default function RealTimeLeaderBoard() {
     if (previousPlayers.length > 0 && displayPlayers.length > 0) {
       const newAnimations: {[key: number]: string} = {};
       
-      displayPlayers.forEach((player, index) => {
+      displayPlayers.filter(Boolean).forEach((player, index) => {
+        if (!player) return;
+        
         const prevPlayer = previousPlayers.find(p => p.Player_ID === player.Player_ID);
         if (prevPlayer) {
           const prevIndex = previousPlayers.findIndex(p => p.Player_ID === player.Player_ID);
@@ -76,7 +78,7 @@ export default function RealTimeLeaderBoard() {
       setTimeout(() => setAnimations({}), 2000);
     }
     
-    setPreviousPlayers(displayPlayers);
+    setPreviousPlayers(displayPlayers.filter(Boolean) as PlayerType[]);
   }, [displayPlayers]);
 
   // Auto-refresh every 15 seconds for more frequent updates
@@ -181,9 +183,11 @@ export default function RealTimeLeaderBoard() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-300">
-            {displayPlayers.map((playerData, index) => {
+            {displayPlayers.filter(Boolean).map((playerData, index) => {
+              if (!playerData) return null;
+              
               const isCurrentPlayer = session?.user?.memberId && 
-                playerData.Player_ID === Number(session.user.memberId);
+                playerData.Player_ID === Number(session.user?.memberId);
               const rank = isCurrentPlayer && !isUserInTop5 ? userRank : index + 1;
               const animationClass = animations[playerData.Player_ID] || '';
               const baseRowClass = isCurrentPlayer ? 
@@ -197,7 +201,7 @@ export default function RealTimeLeaderBoard() {
                 >
                   <td className="px-6 py-4 text-sm">
                     <div className="flex items-center">
-                      {rank <= 3 && (
+                      {rank && rank <= 3 && (
                         <span className="mr-2">
                           {rank === 1 && '🥇'}
                           {rank === 2 && '🥈'}

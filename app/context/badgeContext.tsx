@@ -54,10 +54,10 @@ export function BadgeProvider({ children }: { children: React.ReactNode }) {
       setUserBadges(prev => [...prev, badgeId]);
       // Add power-up if the badge has one
       const badge = BADGES.find(b => b.id === badgeId);
-      if (badge?.powerUp && badge.powerUp.name && badge.powerUp.duration) {
+      if (badge?.powerUp?.name && badge.powerUp?.duration) {
         setActivePowerUps(prev => [...prev, {
-          name: badge.powerUp.name,
-          duration: badge.powerUp.duration,
+          name: badge.powerUp!.name,
+          duration: badge.powerUp!.duration,
           active: false,
           remainingUses: 1
         }]);

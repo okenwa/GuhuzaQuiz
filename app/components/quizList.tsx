@@ -2,7 +2,6 @@
 
 import React from "react";
 import QuizLevelCard from "./quizLevelCard";
-import fetchPlayers from "@/utils/fPlayers";
 
 type levelType = {
   Level_Id: number;
@@ -11,7 +10,7 @@ type levelType = {
 };
 type levelsType = levelType[];
 
-async function QuizList({ allLevels, cutEnding = true, playerLevel }: { allLevels: levelsType; cutEnding: boolean , playerLevel : number}) {
+function QuizList({ allLevels, cutEnding = true, playerLevel }: { allLevels: levelsType; cutEnding: boolean , playerLevel : number}) {
   // Show all levels, but lock those above playerLevel
   const displayLevel = playerLevel;
   const sortedLevels = allLevels.sort((a, b) => a.Level_Id - b.Level_Id);

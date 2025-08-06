@@ -87,7 +87,9 @@ export default function DynamicLeaderBoard() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-300">
-            {displayPlayers.map((playerData, index) => {
+            {displayPlayers.filter(Boolean).map((playerData, index) => {
+              if (!playerData) return null;
+              
               const isCurrentPlayer = session?.user?.memberId && 
                 playerData.Player_ID === Number(session.user.memberId);
               const rank = isCurrentPlayer && !isUserInTop5 ? userRank : index + 1;

@@ -45,7 +45,9 @@ export default function LeaderboardWidget() {
       )}
       
       <div className="space-y-2">
-        {displayPlayers.slice(0, 5).map((player, index) => {
+        {displayPlayers.slice(0, 5).filter(Boolean).map((player, index) => {
+          if (!player) return null;
+          
           const isCurrentPlayer = session?.user?.memberId && 
             player.Player_ID === Number(session.user.memberId);
           

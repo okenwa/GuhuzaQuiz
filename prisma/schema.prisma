@@ -25,6 +25,7 @@ model milestone {
   Milestone_Link String
   Milestone_Button_CTA String
   player                player[]
+  rewardClaims          RewardClaim[]
 }
 
 model player {
@@ -36,9 +37,17 @@ model player {
   lastLogin    DateTime
   Level_Id     Int?
   Milestone_Id Int?
+  // Social activity tracking
+  sharesCount  Int        @default(0)
+  invitesCount Int        @default(0)
+  lastShareAt  DateTime?
+  lastInviteAt DateTime?
   level        level?     @relation(fields: [Level_Id], references: [Level_Id], map: "Player_Level_Id_fkey")
   milestone    milestone? @relation(fields: [Milestone_Id], references: [Milestone_Id], map: "Player_Milestone_Id_fkey")
   quizSessions quizSession[]
+  rewardClaims RewardClaim[]
+  socialShares SocialShare[]
+  friendInvites FriendInvite[]
   
   @@index([Level_Id], map: "Player_Level_Id_fkey")
   @@index([Milestone_Id], map: "Player_Milestone_Id_fkey")
@@ -83,5 +92,56 @@ model QuestionProgress {
   
   @@unique([Session_ID, Question_Index])
   @@index([Session_ID])
+}
+
+model RewardClaim {
+  Claim_ID        Int       @id @default(autoincrement())
+  Player_ID       Int
+  Milestone_Id    Int?
+  Points_Awarded  Int
+  Claimed_At      DateTime  @default(now())
+  Reward_Type     String    @default("milestone") // milestone, share, invite, streak, special, etc.
+  Reward_Data     String?   // JSON string for additional reward data
+  player          player    @relation(fields: [Player_ID], references: [Player_ID], onDelete: Cascade)
+  milestone       milestone? @relation(fields: [Milestone_Id], references: [Milestone_Id])
+  
+  @@index([Player_ID])
+  @@index([Milestone_Id])
+  @@index([Claimed_At])
+}
+
+model SocialShare {
+  Share_ID        Int       @id @default(autoincrement())
+  Player_ID       Int
+  Platform        String    // facebook, twitter, linkedin, tiktok, whatsapp
+  Share_Content   String    // The content that was shared
+  Share_Url       String?   // URL that was shared
+  Shared_At       DateTime  @default(now())
+  Points_Earned   Int       @default(0)
+  player          player    @relation(fields: [Player_ID], references: [Player_ID], onDelete: Cascade)
+  
+  @@index([Player_ID])
+  @@index([Platform])
+  @@index([Shared_At])
+}
+
+model FriendInvite {
+  Invite_ID       Int       @id @default(autoincrement())
+  Player_ID       Int       // The player who sent the invite
+  Invitee_Email   String
+  Invitee_Name    String?
+  Referral_Code   String
+  Invited_At      DateTime  @default(now())
+  Accepted_At     DateTime?
+  Accepted_By     Int?      // Player_ID of the person who accepted the invite
+  Points_Earned   Int       @default(0)
+  Status          String    @default("pending") // pending, accepted, expired
+  player          player    @relation(fields: [Player_ID], references: [Player_ID], onDelete: Cascade)
+  
+  @@index([Player_ID])
+  @@index([Invitee_Email])
+  @@index([Referral_Code])
+  @@index([Status])
+  @@index([Invited_At])
 }
 

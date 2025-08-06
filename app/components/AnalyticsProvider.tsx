@@ -85,7 +85,7 @@ export default function AnalyticsProvider({ children }: { children: React.ReactN
     // Track session end when user leaves
     const trackSessionEnd = () => {
       const sessionDuration = (Date.now() - performance.timing.navigationStart) / 1000;
-      sessionAnalytics.trackSessionEnd(session?.user?.id, sessionDuration);
+      sessionAnalytics.trackSessionEnd(sessionDuration, session?.user?.id);
     };
 
     window.addEventListener('beforeunload', trackSessionEnd);

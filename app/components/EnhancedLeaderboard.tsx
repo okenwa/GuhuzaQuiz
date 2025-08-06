@@ -43,9 +43,9 @@ export default function EnhancedLeaderboard() {
         break;
       case 'myRank':
         if (session?.user?.memberId) {
-          const currentUser = filtered.find(p => p.Player_ID === Number(session.user.memberId));
+          const currentUser = filtered.find(p => p.Player_ID === Number(session.user?.memberId));
           if (currentUser) {
-            const userIndex = filtered.findIndex(p => p.Player_ID === Number(session.user.memberId));
+            const userIndex = filtered.findIndex(p => p.Player_ID === Number(session.user?.memberId));
             const start = Math.max(0, userIndex - 2);
             const end = Math.min(filtered.length, userIndex + 3);
             filtered = filtered.slice(start, end);
@@ -62,7 +62,7 @@ export default function EnhancedLeaderboard() {
   // Get current user's position
   const currentUserPosition = useMemo(() => {
     if (!session?.user?.memberId) return null;
-    return leaderboardData.findIndex(p => p.Player_ID === Number(session.user.memberId)) + 1;
+    return leaderboardData.findIndex(p => p.Player_ID === Number(session.user?.memberId)) + 1;
   }, [leaderboardData, session]);
 
   if (loading && leaderboardData.length === 0) {

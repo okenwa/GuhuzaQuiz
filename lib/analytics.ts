@@ -154,7 +154,7 @@ export const sessionAnalytics = {
     });
   },
 
-  trackSessionEnd: (userId?: string, sessionDuration: number) => {
+  trackSessionEnd: (sessionDuration: number, userId?: string) => {
     trackEvent('session_end', {
       user_id: userId || 'anonymous',
       session_duration_seconds: sessionDuration,
