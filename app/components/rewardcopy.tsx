@@ -298,21 +298,7 @@ function RewardCopy({ player }: typeRewardCopy) {
            />
          </div>
 
-         {/* Navigation */}
-         <div className="text-center mt-8">
-           <button 
-             onClick={() => router.push("/quiz")}
-             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 mr-4"
-           >
-             🎮 Back to Quiz
-           </button>
-           <button 
-             onClick={() => router.push("/profile")}
-             className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200"
-           >
-             👤 View Profile
-           </button>
-         </div>
+
       </div>
     </div>
   );

@@ -4,18 +4,18 @@ import React from "react";
 type RewardHistoryType = {
   Claim_ID: number;
   Player_ID: number;
-  Milestone_Id: number;
+  Milestone_Id: number | null;
   Points_Awarded: number;
   Claimed_At: string;
   Reward_Type: string;
   Reward_Data?: string;
-  milestone: {
+  milestone?: {
     Milestone_Id: number;
     Milestone_Title: string;
     Milestone_description: string;
     UnlockingLevel: number;
     Milestone_reward_message: string;
-  };
+  } | null;
 };
 
 interface RewardHistoryProps {
@@ -42,9 +42,60 @@ const RewardHistory: React.FC<RewardHistoryProps> = ({ rewardHistory, totalPoint
         return '🔥';
       case 'special':
         return '⭐';
+      case 'share':
+        return '📤';
+      case 'invite':
+        return '👥';
       default:
         return '🎁';
     }
+  };
+
+  const getRewardTitle = (reward: RewardHistoryType) => {
+    if (reward.milestone) {
+      return reward.milestone.Milestone_Title;
+    }
+    
+    // Fallback titles for non-milestone rewards
+    switch (reward.Reward_Type) {
+      case 'streak':
+        return 'Streak Bonus';
+      case 'share':
+        return 'Social Share Reward';
+      case 'invite':
+        return 'Friend Invite Reward';
+      case 'special':
+        return 'Special Reward';
+      default:
+        return 'Reward';
+    }
+  };
+
+  const getRewardDescription = (reward: RewardHistoryType) => {
+    if (reward.milestone) {
+      return reward.milestone.Milestone_description;
+    }
+    
+    // Fallback descriptions for non-milestone rewards
+    switch (reward.Reward_Type) {
+      case 'streak':
+        return 'Daily login streak bonus';
+      case 'share':
+        return 'Sharing your progress';
+      case 'invite':
+        return 'Inviting friends to play';
+      case 'special':
+        return 'Special achievement reward';
+      default:
+        return 'Earned through gameplay';
+    }
+  };
+
+  const getRewardLevel = (reward: RewardHistoryType) => {
+    if (reward.milestone) {
+      return `Level ${reward.milestone.UnlockingLevel}`;
+    }
+    return '';
   };
 
   return (
@@ -73,8 +124,8 @@ const RewardHistory: React.FC<RewardHistoryProps> = ({ rewardHistory, totalPoint
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{getRewardIcon(reward.Reward_Type)}</span>
                   <div>
-                    <h4 className="font-semibold text-white">{reward.milestone.Milestone_Title}</h4>
-                    <p className="text-sm text-blue-200">{reward.milestone.Milestone_description}</p>
+                    <h4 className="font-semibold text-white">{getRewardTitle(reward)}</h4>
+                    <p className="text-sm text-blue-200">{getRewardDescription(reward)}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -84,7 +135,9 @@ const RewardHistory: React.FC<RewardHistoryProps> = ({ rewardHistory, totalPoint
               </div>
               
               <div className="flex items-center justify-between text-sm">
-                <span className="text-yellow-200">Level {reward.milestone.UnlockingLevel}</span>
+                {getRewardLevel(reward) && (
+                  <span className="text-yellow-200">{getRewardLevel(reward)}</span>
+                )}
                 <span className="text-blue-200">{reward.Reward_Type}</span>
               </div>
             </div>
