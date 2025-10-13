@@ -4,6 +4,7 @@ import LeaderBoard from "../components/leaderBoard";
 import EnhancedProfileSection from "../components/EnhancedProfileSection";
 import LeaderBoardSection from "../components/leaderBoardSection";
 import ActiveSessionsWidget from "../components/ActiveSessionsWidget";
+import JobMatchPromo from "../components/JobMatchPromo";
 import { auth } from "@/auth";
 import fetchUser from "@/utils/fUser";
 import LoginButton from "../components/buttons/loginBtn";
@@ -69,6 +70,9 @@ async function Profile() {
         
         {/* Quiz Levels Section */}
         <div className="container mx-auto px-4 py-8">
+          {/* Job Matching Promo */}
+          <JobMatchPromo />
+          
           {/* Active Sessions Section */}
           <div className="mb-12">
             <ActiveSessionsWidget />

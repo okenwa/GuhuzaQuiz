@@ -13,10 +13,26 @@ async function LoginPage() {
           <div className="">
             <h1 className="title mb-5 w-32">Welcome</h1>
             <p>Hello, {name} </p>
-            <p>
-              You are already loged in, if you want to loginto another account
-              please logout
+            <p className="mb-4">
+              You are already logged in! Explore your personalized dashboard and career tools.
             </p>
+            
+            <div className="space-y-3 mb-6">
+              <a 
+                href="/profile" 
+                className="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+              >
+                Go to Profile & Quiz
+              </a>
+            
+              <a 
+                href="/resume-report" 
+                className="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+              >
+                Analyze Resume 📄
+              </a>
+            </div>
+            
             <div className="mt-5 w-full">
               <LogoutButton />
             </div>

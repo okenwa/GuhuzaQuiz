@@ -78,6 +78,12 @@ function Navbar() {
               <FaUser /> Profile
             </span>
           </Link>
+         
+          <Link href="/resume-report">
+            <span className="text-white hover:underline flex items-center gap-1">
+              📄 Resume Analysis
+            </span>
+          </Link>
           <Link href="/reward">
             <span className="text-white hover:underline flex items-center gap-1 relative">
               <FaGift /> Rewards
@@ -176,6 +182,16 @@ function Navbar() {
             <Link href="/profile" className="w-full text-center">
               <span className="text-white hover:underline flex items-center justify-center gap-1">
                 <FaUser /> Profile
+              </span>
+            </Link>
+            <Link href="/job-match" className="w-full text-center">
+              <span className="text-white hover:underline flex items-center justify-center gap-1">
+                💼 Job Match
+              </span>
+            </Link>
+            <Link href="/resume-report" className="w-full text-center">
+              <span className="text-white hover:underline flex items-center justify-center gap-1">
+                📄 Resume Analysis
               </span>
             </Link>
             <Link href="/reward" className="w-full text-center">

@@ -48,6 +48,8 @@ model player {
   rewardClaims RewardClaim[]
   socialShares SocialShare[]
   friendInvites FriendInvite[]
+  jobMatchSessions JobMatchSession[]
+  resumeReports ResumeReport[]
   
   @@index([Level_Id], map: "Player_Level_Id_fkey")
   @@index([Milestone_Id], map: "Player_Milestone_Id_fkey")
@@ -143,5 +145,34 @@ model FriendInvite {
   @@index([Referral_Code])
   @@index([Status])
   @@index([Invited_At])
+}
+
+model JobMatchSession {
+  Session_ID      Int       @id @default(autoincrement())
+  Player_ID       Int
+  Resume_Text     String    @db.Text
+  Preferences     String?   @db.Text // JSON string for user preferences
+  Match_Results   String    @db.Text // JSON string for job matches
+  Created_At      DateTime  @default(now())
+  Updated_At      DateTime  @updatedAt
+  player          player    @relation(fields: [Player_ID], references: [Player_ID], onDelete: Cascade)
+  
+  @@index([Player_ID])
+  @@index([Created_At])
+}
+
+model ResumeReport {
+  Report_ID       Int       @id @default(autoincrement())
+  Player_ID       Int
+  Resume_Text     String    @db.Text
+  Report_Data     String    @db.Text // JSON string for report data
+  File_Name       String?
+  Mime_Type       String?
+  Created_At      DateTime  @default(now())
+  Updated_At      DateTime  @updatedAt
+  player          player    @relation(fields: [Player_ID], references: [Player_ID], onDelete: Cascade)
+  
+  @@index([Player_ID])
+  @@index([Created_At])
 }
 
