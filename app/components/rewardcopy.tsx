@@ -110,9 +110,9 @@ function RewardCopy({ player }: typeRewardCopy) {
           }, 1500);
         }
 
-        // Navigate back to quiz after a delay
+        // Navigate back to resume-report after a delay
         setTimeout(() => {
-          router.push("/quiz");
+          router.push("/resume-report");
         }, 2000);
 
       } else {

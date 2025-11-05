@@ -43,7 +43,7 @@ function Navbar() {
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <div>
-          <Link href="/quiz">
+          <Link href="/resume-report">
             <img src="/logo/logo_white_large.png" alt="Logo" className="h-10" />
           </Link>
         </div>
@@ -63,14 +63,13 @@ function Navbar() {
               />
             </span>
           </a>
-          <Link href="/quiz">
+        
+        
+        
+       
+          <Link href="/resume-report">
             <span className="text-white hover:underline flex items-center gap-1">
-              <FaQuestionCircle /> Quiz
-            </span>
-          </Link>
-          <Link href="/leaderboard">
-            <span className="text-white hover:underline flex items-center gap-1">
-              <FaTrophy /> Leaderboard
+              📄 Resume Analysis
             </span>
           </Link>
           <Link href="/profile">
@@ -78,22 +77,7 @@ function Navbar() {
               <FaUser /> Profile
             </span>
           </Link>
-         
-          <Link href="/resume-report">
-            <span className="text-white hover:underline flex items-center gap-1">
-              📄 Resume Analysis
-            </span>
-          </Link>
-          <Link href="/reward">
-            <span className="text-white hover:underline flex items-center gap-1 relative">
-              <FaGift /> Rewards
-              {hasRewards && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center animate-pulse">
-                  !
-                </span>
-              )}
-            </span>
-          </Link>
+          
           {session && session.user ? (
             <span className="flex items-center gap-1">
               <FaSignOutAlt />
@@ -169,11 +153,7 @@ function Navbar() {
                 />
               </span>
             </a>
-            <Link href="/quiz" className="w-full text-center">
-              <span className="text-white hover:underline flex items-center justify-center gap-1">
-                <FaQuestionCircle /> Quiz
-              </span>
-            </Link>
+
             <Link href="/leaderboard" className="w-full text-center">
               <span className="text-white hover:underline flex items-center justify-center gap-1">
                 <FaTrophy /> Leaderboard

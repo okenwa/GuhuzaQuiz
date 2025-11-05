@@ -96,18 +96,24 @@ export async function POST(request: NextRequest) {
       resumeTone: aiReport.resumeTone,
       webPresence: aiReport.webPresence || { links: [], suggestions: [] },
       formattingAudit: aiReport.formattingAudit || { suggestions: [] },
+      overusedActionVerbs: aiReport.overusedActionVerbs,
     };
 
-    // Save the report to the database
-    await prisma.resumeReport.create({
-      data: {
-        Player_ID: parseInt(session.user.memberId.toString()),
-        Resume_Text: resumeText,
-        Report_Data: JSON.stringify(report),
-        File_Name: fileName || null,
-        Mime_Type: mimeType || null,
-      },
-    });
+    // Save report to database
+    try {
+      await prisma.resumeReport.create({
+        data: {
+          Player_ID: Number(session.user.memberId),
+          Resume_Text: resumeText,
+          Report_Data: JSON.stringify(report),
+          File_Name: fileName,
+          Mime_Type: mimeType,
+        },
+      });
+    } catch (dbError) {
+      console.error("Error saving resume report to database:", dbError);
+      // Continue even if database save fails - we still return the report
+    }
 
     // Return the transformed report
     return NextResponse.json({ report, resumeText, fileName, success: true });
@@ -129,10 +135,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch the latest resume report from the database
+    // Fetch the latest resume report from database
     const latestReport = await prisma.resumeReport.findFirst({
       where: {
-        Player_ID: parseInt(session.user.memberId.toString()),
+        Player_ID: Number(session.user.memberId),
       },
       orderBy: {
         Created_At: 'desc',
@@ -152,8 +158,9 @@ export async function GET(request: NextRequest) {
       report, 
       resumeText: latestReport.Resume_Text,
       fileName: latestReport.File_Name,
-      createdAt: latestReport.Created_At
+      createdAt: latestReport.Created_At.toISOString()
     });
+    
   } catch (error) {
     console.error("Error fetching resume report:", error);
     return NextResponse.json(

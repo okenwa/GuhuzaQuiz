@@ -51,7 +51,7 @@ function SignUp() {
         const data = await reponse.json()
         AssignPlayerData(data.player)
         setTempScore(0)
-        router.push("/quiz");
+        router.push("/resume-report");
         console.log("User created successfully!");
       } else {
         const errorData = await reponse.json();

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useBadges } from "../context/badgeContext";
@@ -92,6 +92,7 @@ function EnhancedProfileSection({ player, playerRank, session }: typePlayerHeroS
   const [emailError, setEmailError] = useState("");
   const [socialStats, setSocialStats] = useState<any>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(false);
+  const [resumeStats, setResumeStats] = useState<any>(null);
   
   // Social share text
   const shareText = encodeURIComponent(`🎮 I just completed Level ${player.Level_Id}: The Ultimate Test on Guhuza Quiz App! 🎯
@@ -100,6 +101,23 @@ function EnhancedProfileSection({ player, playerRank, session }: typePlayerHeroS
 ⭐ Total Score: ${player.Playerpoint} points
 
 Can you beat my score? Try it now! #GuhuzaQuiz #LearningIsFun`);
+
+  // Fetch resume statistics
+  useEffect(() => {
+    const fetchResumeStats = async () => {
+      try {
+        const response = await fetch('/api/resume/stats');
+        if (response.ok) {
+          const data = await response.json();
+          setResumeStats(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch resume stats:', error);
+      }
+    };
+
+    fetchResumeStats();
+  }, []);
 
   // Fetch social stats
   const fetchSocialStats = async () => {
@@ -717,139 +735,28 @@ Can you beat my score? Try it now! #GuhuzaQuiz #LearningIsFun`);
           </div>
         </div>
 
-        {/* Stats Cards */}
+        {/* Resume Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold mb-2">#{playerRank}</div>
-            <div className="text-white/80">Global Rank</div>
+            <div className="text-3xl font-bold mb-2">📄</div>
+            <div className="text-2xl font-bold mb-2">{resumeStats?.totalReports || 0}</div>
+            <div className="text-white/80">Total Reports</div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold mb-2">{player?.Playerpoint.toLocaleString()}</div>
-            <div className="text-white/80">Total Points</div>
+            <div className="text-3xl font-bold mb-2">⭐</div>
+            <div className="text-2xl font-bold mb-2">{resumeStats?.avgScore ? Math.round(resumeStats.avgScore) : 0}%</div>
+            <div className="text-white/80">Avg Score</div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold mb-2">{player?.Level_Id}</div>
-            <div className="text-white/80">Current Level</div>
+            <div className="text-3xl font-bold mb-2">🔧</div>
+            <div className="text-2xl font-bold mb-2">{resumeStats?.totalSkills || 0}</div>
+            <div className="text-white/80">Skills Found</div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-            <div className="text-3xl font-bold mb-2">🔥 {player?.streak}</div>
-            <div className="text-white/80">Day Streak</div>
+            <div className="text-3xl font-bold mb-2">📅</div>
+            <div className="text-2xl font-bold mb-2">{resumeStats?.lastUpdated ? new Date(resumeStats.lastUpdated).toLocaleDateString() : 'Never'}</div>
+            <div className="text-white/80">Last Updated</div>
           </div>
-        </div>
-
-        {/* Additional Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-            <h3 className="text-lg font-semibold mb-4">Performance Stats</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-white/80">Correct Answers</span>
-                <span className="font-semibold">{Math.floor(player?.Playerpoint / 30)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/80">Questions Attempted</span>
-                <span className="font-semibold">{Math.floor(player?.Playerpoint / 5)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/80">Accuracy Rate</span>
-                <span className="font-semibold">85%</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-            <h3 className="text-lg font-semibold mb-4">Next Milestone</h3>
-            <p className="text-white/80 mb-2">{player?.milestone?.Milestone_Title}</p>
-            <ProgressBar percentage={(player?.milestone?.UnlockingLevel - player?.Level_Id) < 0 ? 100 : (player?.Level_Id / player?.milestone?.UnlockingLevel) * 100} />
-            <p className="text-sm text-white/60 mt-2">
-              {((player?.milestone?.UnlockingLevel - player?.Level_Id) < 0 ? 0 : player?.milestone?.UnlockingLevel - player?.Level_Id)} more levels to unlock
-            </p>
-            <button 
-              className="mt-3 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={player?.Level_Id < player?.milestone?.UnlockingLevel}
-              onClick={handleClaimReward}
-            >
-              Claim Reward
-            </button>
-          </div>
-        </div>
-
-        {/* Social Rewards Section */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-8">
-          <h3 className="text-lg font-semibold mb-4">Social Rewards</h3>
-          {isLoadingStats ? (
-            <div className="flex justify-center py-4">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-            </div>
-          ) : socialStats ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Social Activity Stats */}
-              <div className="space-y-4">
-                <h4 className="text-md font-medium text-white/90">Activity Summary</h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-white/5 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-400">{socialStats.player?.sharesCount || 0}</div>
-                    <div className="text-sm text-white/70">Total Shares</div>
-                  </div>
-                  <div className="text-center p-3 bg-white/5 rounded-lg">
-                    <div className="text-2xl font-bold text-green-400">{socialStats.player?.invitesCount || 0}</div>
-                    <div className="text-sm text-white/70">Total Invites</div>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/80">Pending Invites:</span>
-                    <span className="font-semibold">{socialStats.pendingInvites || 0}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/80">Accepted Invites:</span>
-                    <span className="font-semibold">{socialStats.acceptedInvites || 0}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Today's Activity */}
-              <div className="space-y-4">
-                <h4 className="text-md font-medium text-white/90">Today's Activity</h4>
-                <div className="space-y-2">
-                  {Object.entries(socialStats.todayShares || {}).map(([platform, count]) => (
-                    <div key={platform} className="flex justify-between items-center p-2 bg-white/5 rounded">
-                      <span className="text-white/80 capitalize">{platform}</span>
-                      <span className="font-semibold">{count as number}/{socialStats.limits?.share || 5}</span>
-                    </div>
-                  ))}
-                  {Object.keys(socialStats.todayShares || {}).length === 0 && (
-                    <div className="text-center py-4 text-white/60">
-                      No shares today
-                    </div>
-                  )}
-                </div>
-                
-                <div className="mt-4 p-3 bg-yellow-500/20 rounded-lg">
-                  <h5 className="text-sm font-medium text-yellow-300 mb-2">Reward Info</h5>
-                  <div className="text-xs space-y-1 text-white/80">
-                    <div>• Share on Facebook/Twitter: +50 points</div>
-                    <div>• Share on LinkedIn: +60 points</div>
-                    <div>• Share on TikTok: +75 points</div>
-                    <div>• Share on WhatsApp: +40 points</div>
-                    <div>• Invite friends: +200 points</div>
-                    <div>• Daily limit: 5 shares per platform</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-white/60">
-              Failed to load social stats
-            </div>
-          )}
-        </div>
-
-        {/* Badges Section */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
-          <h3 className="text-lg font-semibold mb-4">Your Achievements</h3>
-          <BadgeSystem userBadges={userBadges} />
         </div>
 
         {/* Settings Section */}

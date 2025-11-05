@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
      
 
 
-      return NextResponse.redirect(new URL(`${process.env.REDIRECT_PATH}`, req.url))
+      return NextResponse.redirect(new URL('/resume-report', req.url))
     } catch (error) {
       console.error('Error during sign in:', error)
       return NextResponse.redirect(new URL('/?error=signin_failed', req.url))

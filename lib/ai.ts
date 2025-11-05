@@ -34,6 +34,7 @@ export type ResumeInsightReport = {
     pageSetup?: string;
     suggestions: string[];
   };
+  overusedActionVerbs?: Array<{ verb: string; count: number }>;
 };
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
@@ -104,20 +105,114 @@ const parseJsonSafe = (text: string, fallback: ResumeInsightReport): ResumeInsig
   return fallback;
 };
 
+// Helper function to extract email from text
+const extractEmail = (text: string): string | undefined => {
+  const emailRegex = /[\w.-]+@[\w.-]+\.\w+/;
+  const match = text.match(emailRegex);
+  return match ? match[0] : undefined;
+};
+
+// Helper function to extract phone from text
+const extractPhone = (text: string): string | undefined => {
+  const phoneRegex = /[\d\s\(\)\-\+]{10,}/;
+  const match = text.match(phoneRegex);
+  return match ? match[0].trim() : undefined;
+};
+
+// Helper function to count quantified achievements
+const countQuantifiedResults = (text: string): { count: number; examples: string[] } => {
+  // Look for patterns like "X%", "X users", "$X", etc.
+  const quantifiedPatterns = [
+    /[\d]+%/g,  // percentages
+    /[\d]+ (users|employees|customers|clients|projects|years|months)/gi,  // counts
+    /\$\d+[KMkm]?/g,  // currency
+    /improved|increased|reduced|cut|boosted|decreased|grew|expanded/gi,  // action verbs often with numbers
+  ];
+  
+  let examples: string[] = [];
+  quantifiedPatterns.forEach(pattern => {
+    const matches = text.match(pattern);
+    if (matches) {
+      examples.push(...matches.slice(0, 3)); // Take first 3 examples
+    }
+  });
+  
+  return { count: examples.length, examples: [...new Set(examples)] }; // Remove duplicates
+};
+
 const mockReport = (resumeText: string, fileCtx?: FileContext): ResumeInsightReport => {
   const lengthHint = Math.min(100, Math.round((resumeText?.length || 0) / 40));
+  
+  // Extract basic info from resume text
+  const extractedEmail = extractEmail(resumeText);
+  const extractedPhone = extractPhone(resumeText);
+  const hasEmail = !!extractedEmail;
+  const hasPhone = !!extractedPhone;
+  
+  // Check for LinkedIn and GitHub
+  const hasLinkedIn = /linkedin\.com/i.test(resumeText);
+  const linkedinMatch = resumeText.match(/linkedin\.com\/[\w-]+/i);
+  const extractedLinkedIn = linkedinMatch ? linkedinMatch[0] : undefined;
+  
+  // Check for GitHub
+  const hasGitHub = /github\.com/i.test(resumeText);
+  const githubMatch = resumeText.match(/github\.com\/[\w-]+/i);
+  const extractedGitHub = githubMatch ? githubMatch[0] : undefined;
+  
+  // Collect all web presence links
+  const webLinks: string[] = [];
+  if (extractedLinkedIn) webLinks.push(extractedLinkedIn);
+  if (extractedGitHub) webLinks.push(extractedGitHub);
+  
+  // Check for summary
+  const hasSummary = /summary|professional summary|profile|objective/i.test(resumeText);
+  const summary = hasSummary 
+    ? "We found a summary section on your resume. Good job! The summary provides a quick overview of the candidate's qualifications, helping recruiters and hiring managers promptly grasp the value the candidate can offer in the position."
+    : "We did not find a summary section in your resume. Consider adding a 2-3 line professional summary that highlights your key qualifications and career objectives.";
+  
+  // Check for education
+  const hasEducation = /education|university|college|degree|diploma|bachelor|master|phd/i.test(resumeText);
+  
+  // Check for measurable results
+  const quantified = countQuantifiedResults(resumeText);
+  const hasQuantifiedResults = quantified.count >= 3;
+  const measurableResults = hasQuantifiedResults 
+    ? { present: true, examples: quantified.examples.slice(0, 3) }
+    : { present: false, examples: [] };
+  
+  // Check for negative words/cliches
+  const negativeWords = ["responsible for", "think outside the box", "go-getter", "team player", "hard worker", "self-starter"];
+  const foundNegative = negativeWords.filter(word => new RegExp(word, 'i').test(resumeText));
+  
+  // Check for overused action verbs
+  const commonActionVerbs = [
+    "built", "created", "developed", "managed", "led", "improved", "increased", "decreased",
+    "reduced", "implemented", "designed", "established", "maintained", "coordinated", "analyzed",
+    "assisted", "provided", "supported", "trained", "supervised", "organized", "planned"
+  ];
+  
+  const overusedVerbs: Array<{ verb: string; count: number }> = [];
+  commonActionVerbs.forEach(verb => {
+    const regex = new RegExp(`\\b${verb}\\b`, 'gi');
+    const matches = resumeText.match(regex);
+    const count = matches ? matches.length : 0;
+    if (count > 2) {
+      overusedVerbs.push({ verb: verb.charAt(0).toUpperCase() + verb.slice(1), count });
+    }
+  });
+  
   return {
-    summary: "Preliminary resume analysis generated in development mode.",
+    summary: "Resume analysis generated in development mode. For full AI-powered analysis, configure AI credentials.",
     strengths: [
-      "Clear role progression",
-      "Quantified achievements present",
-      "Relevant keywords included",
+      hasSummary ? "Clear professional summary present" : "Add a professional summary",
+      hasQuantifiedResults ? "Quantified achievements present" : "Consider adding more measurable results",
+      hasEducation ? "Education section properly formatted" : "Include education details",
     ],
     gaps: [
-      "Profile summary could be sharper",
-      "Skills section lacks grouping",
-      "Impact metrics inconsistent across roles",
-    ],
+      !hasSummary ? "Profile summary could be sharper" : null,
+      !hasQuantifiedResults ? "Skills section lacks grouping" : null,
+      "Impact metrics could be more specific",
+    ].filter(Boolean) as string[],
     atsScore: Math.max(55, Math.min(90, 65 + Math.floor(lengthHint / 5))),
     tailoringTips: [
       {
@@ -138,27 +233,34 @@ const mockReport = (resumeText: string, fileCtx?: FileContext): ResumeInsightRep
       },
     ],
     actionItems: [
-      "Add 2-3 line professional summary",
+      !hasSummary ? "Add 2-3 line professional summary" : null,
       "Group skills by category",
       "Normalize bullet tense and structure",
       "Include links to portfolio or GitHub",
-    ],
+    ].filter(Boolean) as string[],
     atsTips: [
       "Use standard section headings",
       "Avoid tables and text boxes",
       "Save as .pdf or .docx with text layer",
     ],
     contactInfo: {
-      hasEmail: true,
-      hasPhone: false,
-      hasLinkedIn: true,
-      extracted: { email: "example@email.com", linkedin: "linkedin.com/in/yourname" },
+      hasEmail,
+      hasPhone,
+      hasLinkedIn,
+      extracted: { 
+        email: extractedEmail, 
+        phone: extractedPhone,
+        linkedin: extractedLinkedIn 
+      },
     },
     dateFormatting: { pattern: "MMM YYYY – MMM YYYY", consistency: "mostly consistent" },
     fileType: fileCtx?.mimeType || inferFileTypeFromName(fileCtx?.fileName) || "unknown",
-    measurableResults: { present: true, examples: ["Cut cost 15%", "Improved CTR 22%"] },
-    resumeTone: "professional and impact-focused",
-    webPresence: { links: ["github.com/you", "portfolio.site"], suggestions: ["Add custom domain", "Ensure HTTPS"] },
+    measurableResults,
+    resumeTone: foundNegative.length > 0 ? `Found ${foundNegative.length} potential cliches` : "professional and impact-focused",
+    webPresence: { 
+      links: webLinks, 
+      suggestions: webLinks.length > 0 ? [] : ["Add LinkedIn profile", "Add GitHub repository", "Add personal website"] 
+    },
     formattingAudit: {
       fontConsistency: "two fonts detected; prefer one family",
       layout: "good hierarchy, room for whitespace",
